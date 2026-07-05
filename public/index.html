@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Universal Logistics & International</title></head>
+<body>
+<script>
+(async function(){
+  try{
+    const res = await fetch("/api/auth/me");
+    window.location.href = res.ok ? "/dashboard.html" : "/login.html";
+  }catch(err){
+    window.location.href = "/login.html";
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login — Universal Logistics & International</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <h1>Universal Logistics</h1>
+    <div class="tag">Login to manage your Airway Bills &amp; Invoices</div>
+
+    <form id="loginForm">
+      <label>Email</label>
+      <input type="email" id="email" required autocomplete="email">
+      <label>Password</label>
+      <input type="password" id="password" required autocomplete="current-password">
+      <div class="auth-error" id="errorBox"></div>
+      <button type="submit">Login</button>
+    </form>
+
+    <div class="switch">Naya account? <a href="/register.html">Register here</a></div>
+  </div>
+</div>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const errorBox = document.getElementById("errorBox");
+  errorBox.style.display = "none";
+
+  try{
+    const res = await fetch("/api/auth/login", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if(!res.ok){
+      errorBox.textContent = data.error || "Login failed";
+      errorBox.style.display = "block";
+      return;
+    }
+    window.location.href = "/dashboard.html";
+  }catch(err){
+    errorBox.textContent = "Network error — server chal raha hai check karein.";
+    errorBox.style.display = "block";
+  }
+});
+</script>
+</body>
+</html>

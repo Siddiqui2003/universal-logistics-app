@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Print — Universal Logistics & International</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<style>
+  body{background:#e9e9e4; padding:24px;}
+  @media print{ body{background:#fff; padding:0;} }
+  #status{text-align:center; padding:40px; font-family:"Inter",sans-serif; color:#666;}
+</style>
+</head>
+<body>
+
+<div id="status">Loading shipment...</div>
+<div id="printArea"></div>
+
+<script src="/js/templates.js"></script>
+<script>
+async function main(){
+  const id = new URLSearchParams(window.location.search).get("id");
+  const statusEl = document.getElementById("status");
+  if(!id){ statusEl.textContent = "No shipment id provided."; return; }
+
+  const meRes = await fetch("/api/auth/me");
+  if(!meRes.ok){ window.location.href = "/login.html"; return; }
+
+  const res = await fetch(`/api/shipments/${id}`);
+  if(!res.ok){ statusEl.textContent = "Shipment not found."; return; }
+  const data = await res.json();
+
+  const v = data.form || {};
+  const products = data.products || [];
+  const copies = parseInt(data.copies, 10) || 1;
+
+  let page1 = "";
+  for(let i=0;i<copies;i++){ page1 += billHTML(v); }
+  if(data.showTnc){ page1 += tncHTML(); }
+
+  let html = pageWrap(page1);
+  if(data.showInvoice){ html += pageWrap(invoiceHTML(v, products)); }
+
+  statusEl.style.display = "none";
+  document.getElementById("printArea").innerHTML = html;
+
+  setTimeout(()=> window.print(), 300);
+}
+main();
+</script>
+</body>
+</html>

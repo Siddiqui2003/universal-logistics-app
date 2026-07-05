@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard — Universal Logistics & International</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<style>body{background:#f3f3f0;}</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">UNIVERSAL <span>LOGISTICS</span></div>
+  <div class="userinfo">
+    <span id="userName"></span>
+    <button id="logoutBtn">Logout</button>
+  </div>
+</div>
+
+<div class="dash-body">
+  <div class="dash-head">
+    <h2>My Shipments</h2>
+    <a href="/form.html" class="btn-primary">+ New Shipment</a>
+  </div>
+
+  <div id="listWrap">
+    <div class="empty-state">Loading...</div>
+  </div>
+</div>
+
+<script>
+async function loadUser(){
+  const res = await fetch("/api/auth/me");
+  if(!res.ok){
+    window.location.href = "/login.html";
+    return null;
+  }
+  const data = await res.json();
+  document.getElementById("userName").textContent = data.user.name;
+  return data.user;
+}
+
+async function loadShipments(){
+  const res = await fetch("/api/shipments");
+  const data = await res.json();
+  const wrap = document.getElementById("listWrap");
+
+  if(!data.shipments || data.shipments.length === 0){
+    wrap.innerHTML = '<div class="empty-state">Abhi tak koi shipment nahi bani. "+ New Shipment" par click kar ke shuru karein.</div>';
+    return;
+  }
+
+  const rows = data.shipments.map(s => `
+    <tr>
+      <td>${s.awbnum || "-"}</td>
+      <td>${escapeHtml(s.shipperName || "-")}</td>
+      <td>${escapeHtml(s.consigneeName || "-")}</td>
+      <td>${new Date(s.updated_at).toLocaleString()}</td>
+      <td>
+        <div class="row-actions">
+          <a class="act-edit" href="/form.html?id=${s.id}">Edit</a>
+          <a class="act-print" href="/print.html?id=${s.id}" target="_blank">Print</a>
+          <button class="act-delete" data-id="${s.id}">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+
+  wrap.innerHTML = `
+    <table class="ship-table">
+      <tr>
+        <th>AWB #</th>
+        <th>Shipper</th>
+        <th>Consignee</th>
+        <th>Last Updated</th>
+        <th>Actions</th>
+      </tr>
+      ${rows}
+    </table>
+  `;
+
+  wrap.querySelectorAll(".act-delete").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      if(!confirm("Ye shipment delete karna chahte hain?")) return;
+      const id = btn.getAttribute("data-id");
+      await fetch(`/api/shipments/${id}`, { method:"DELETE" });
+      loadShipments();
+    });
+  });
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+  await fetch("/api/auth/logout", { method:"POST" });
+  window.location.href = "/login.html";
+});
+
+(async function init(){
+  const user = await loadUser();
+  if(user) loadShipments();
+})();
+</script>
+</body>
+</html>

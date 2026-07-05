@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Shipment Form — Universal Logistics & International</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<style>
+  body{padding:0;}
+  .form-topbar{
+    background:#fff; border-bottom:1px solid #ddd; padding:12px 24px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .form-topbar .brand{font-family:"Playfair Display", serif; font-weight:800; color:var(--blue); font-size:16px;}
+  .form-topbar a{color:var(--blue); text-decoration:none; font-size:13px; font-weight:600;}
+  .wrap{padding:24px;}
+  #saveStatus{font-size:12px; color:var(--muted); margin-left:10px;}
+</style>
+</head>
+<body>
+
+<div class="form-topbar">
+  <div class="brand">UNIVERSAL LOGISTICS &amp; INTERNATIONAL</div>
+  <a href="/dashboard.html">&larr; Back to Dashboard</a>
+</div>
+
+<div class="wrap">
+  <div class="panel" style="flex:0 0 380px;">
+    <h2 style="margin-top:0;">Shipment Details</h2>
+
+    <fieldset>
+      <legend>Bill Info</legend>
+      <div class="row2">
+        <div><label>Date</label><input type="date" id="date"></div>
+        <div><label>Time</label><input type="time" id="time"></div>
+      </div>
+      <div class="row2">
+        <div><label>Origin</label><input type="text" id="origin" placeholder="Pakistan"></div>
+        <div><label>Destination</label><input type="text" id="destination" placeholder="United States of America"></div>
+      </div>
+      <label>Account #</label>
+      <input type="text" id="account">
+      <label>Airway Bill Number</label>
+      <input type="text" id="awbnum" placeholder="10236243">
+    </fieldset>
+
+    <fieldset>
+      <legend>Shipper</legend>
+      <label>Shipper's Name</label>
+      <input type="text" id="shipperName">
+      <label>Shipper's Address</label>
+      <textarea id="shipperAddress"></textarea>
+      <label>Shipper Email</label>
+      <input type="text" id="shipperEmail">
+      <label>Shipper's NTN / CNIC</label>
+      <input type="text" id="shipperCnic">
+      <div class="row2">
+        <div><label>Zip Code</label><input type="text" id="shipperZip"></div>
+        <div><label>City</label><input type="text" id="shipperCity"></div>
+      </div>
+      <label>Country</label>
+      <input type="text" id="shipperCountry" value="Pakistan">
+      <label>Shipper's Telephone #</label>
+      <input type="text" id="shipperPhone">
+    </fieldset>
+
+    <fieldset>
+      <legend>Consignee</legend>
+      <label>Consignee Name</label>
+      <input type="text" id="consigneeName">
+      <label>Consignee Company</label>
+      <input type="text" id="consigneeCompany">
+      <label>Consignee's Address</label>
+      <textarea id="consigneeAddress"></textarea>
+      <label>Consignee's Email</label>
+      <input type="text" id="consigneeEmail">
+      <label>Bag Number</label>
+      <input type="text" id="bagNumber">
+      <div class="row2">
+        <div><label>Zip Code</label><input type="text" id="consigneeZip"></div>
+        <div><label>City</label><input type="text" id="consigneeCity"></div>
+      </div>
+      <label>Country</label>
+      <input type="text" id="consigneeCountry" value="United States of America">
+      <label>Consignee's Telephone #</label>
+      <input type="text" id="consigneePhone">
+    </fieldset>
+
+    <fieldset>
+      <legend>Shipment / Cargo</legend>
+      <label>Shipper's Reference</label>
+      <input type="text" id="reference">
+      <div class="row2">
+        <div><label>Pieces</label><input type="text" id="pieces"></div>
+        <div><label>Weight (KG)</label><input type="text" id="weight"></div>
+      </div>
+      <div class="row2">
+        <div><label>Volumetric Weight (KG)</label><input type="text" id="volWeight"></div>
+        <div><label>Chargeable Weight (KG)</label><input type="text" id="chargeWeight"></div>
+      </div>
+      <label>Dimension</label>
+      <textarea id="dimension" placeholder="33*40*33, 33*40*33 ..."></textarea>
+      <div class="row2">
+        <div><label>Service</label><input type="text" id="service" placeholder="Via UK UPS saver"></div>
+        <div>
+          <label>Fragile</label>
+          <select id="fragile"><option value="No">No</option><option value="Yes">Yes</option></select>
+        </div>
+      </div>
+      <label>Declared Value</label>
+      <input type="text" id="declaredValue">
+      <label>Product Detail</label>
+      <input type="text" id="productDetail">
+      <label>Comments</label>
+      <textarea id="comments"></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend>Invoice (Products / HS Codes)</legend>
+      <label>Invoice Type</label>
+      <select id="invoiceType">
+        <option value="GIFT INVOICE" selected>Gift Invoice</option>
+        <option value="COMMERCIAL INVOICE">Commercial Invoice</option>
+        <option value="PROFORMA INVOICE">Proforma Invoice</option>
+        <option value="SAMPLE INVOICE">Sample Invoice</option>
+      </select>
+      <div id="productRows" style="margin-top:10px;"></div>
+      <button type="button" id="addProductBtn" style="width:100%; margin-top:6px; padding:8px; font-size:12.5px; font-weight:700; background:#e8edff; color:var(--blue); border:1px dashed var(--blue); border-radius:6px; cursor:pointer;">+ Product Add Karein</button>
+      <div class="row2" style="margin-top:10px;">
+        <div><label>Shipper Tax ID</label><input type="text" id="shipperTaxId"></div>
+        <div><label>Consignee Tax ID</label><input type="text" id="consigneeTaxId"></div>
+      </div>
+      <div class="hint" style="margin-top:6px;">Item Description mein type karein — HS Code list se select ho sakta hai.</div>
+    </fieldset>
+
+    <div class="copies">
+      <label style="margin:0;">Copies:</label>
+      <select id="copyCount" style="width:80px;">
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+    </div>
+    <div class="copies">
+      <input type="checkbox" id="showTnc" checked style="width:auto;">
+      <label style="margin:0;" for="showTnc">Terms &amp; Conditions shamil karein</label>
+    </div>
+    <div class="copies">
+      <input type="checkbox" id="showInvoice" checked style="width:auto;">
+      <label style="margin:0;" for="showInvoice">Gift Invoice shamil karein</label>
+    </div>
+
+    <div class="actions">
+      <button id="saveBtn" type="button">💾 Save Shipment</button>
+      <button id="printBtn" type="button">🖨️ Print</button>
+    </div>
+    <div id="saveStatus"></div>
+  </div>
+</div>
+
+<script src="/js/templates.js"></script>
+<script>
+const fieldIds = [
+  "date","time","origin","destination","account","awbnum",
+  "shipperName","shipperAddress","shipperEmail","shipperCnic","shipperZip","shipperCity","shipperCountry","shipperPhone",
+  "consigneeName","consigneeCompany","consigneeAddress","consigneeEmail","bagNumber","consigneeZip","consigneeCity","consigneeCountry","consigneePhone",
+  "reference","pieces","weight","volWeight","chargeWeight","dimension","service","fragile","declaredValue","productDetail","comments",
+  "shipperTaxId","consigneeTaxId","invoiceType"
+];
+
+let products = [{ desc: "BOOKS", hsCode: "4901.9990", uom: "Piece(s)", qty: "150", price: "1.00" }];
+let shipmentId = new URLSearchParams(window.location.search).get("id");
+
+function getValues(){
+  const v = {};
+  fieldIds.forEach(id => {
+    const el = document.getElementById(id);
+    v[id] = el ? el.value : "";
+  });
+  return v;
+}
+
+function setValues(v){
+  fieldIds.forEach(id => {
+    const el = document.getElementById(id);
+    if(el && v[id] !== undefined) el.value = v[id];
+  });
+}
+
+/* ---------- HS Code autocomplete (backed by /api/hscodes) ---------- */
+let searchTimer = null;
+function searchHS(query, cb){
+  clearTimeout(searchTimer);
+  if(query.trim().length < 2){ cb([]); return; }
+  searchTimer = setTimeout(async ()=>{
+    try{
+      const res = await fetch("/api/hscodes?q=" + encodeURIComponent(query));
+      const data = await res.json();
+      cb(data.results || []);
+    }catch(err){ cb([]); }
+  }, 200);
+}
+
+function renderProductRows(){
+  const container = document.getElementById("productRows");
+  container.innerHTML = products.map((p, idx)=>{
+    return `
+    <div class="product-row" data-row="${idx}">
+      <div class="product-row-head">
+        <span>Product #${idx+1}</span>
+        ${products.length > 1 ? `<button type="button" class="remove-product-btn" data-remove="${idx}">&times;</button>` : ""}
+      </div>
+      <label>Item Description</label>
+      <div class="autocomplete-wrap">
+        <input type="text" class="p-desc" data-idx="${idx}" value="${(p.desc||"").replace(/"/g,'&quot;')}" autocomplete="off">
+        <div class="suggestions p-suggestions" data-idx="${idx}"></div>
+      </div>
+      <label>HS Code</label>
+      <input type="text" class="p-hscode" data-idx="${idx}" value="${(p.hsCode||"").replace(/"/g,'&quot;')}">
+      <div class="row2">
+        <div><label>Unit of Measure</label><input type="text" class="p-uom" data-idx="${idx}" value="${(p.uom||"").replace(/"/g,'&quot;')}"></div>
+        <div><label>Quantity</label><input type="text" class="p-qty" data-idx="${idx}" value="${(p.qty||"").replace(/"/g,'&quot;')}"></div>
+      </div>
+      <label>Unit Price (USD)</label>
+      <input type="text" class="p-price" data-idx="${idx}" value="${(p.price||"").replace(/"/g,'&quot;')}">
+    </div>`;
+  }).join("");
+
+  container.querySelectorAll(".p-desc").forEach(el=>{
+    el.addEventListener("input", onDescInput);
+  });
+  container.querySelectorAll(".p-hscode").forEach(el=> el.addEventListener("input", onFieldInput("hsCode")));
+  container.querySelectorAll(".p-uom").forEach(el=> el.addEventListener("input", onFieldInput("uom")));
+  container.querySelectorAll(".p-qty").forEach(el=> el.addEventListener("input", onFieldInput("qty")));
+  container.querySelectorAll(".p-price").forEach(el=> el.addEventListener("input", onFieldInput("price")));
+  container.querySelectorAll(".remove-product-btn").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      products.splice(parseInt(el.getAttribute("data-remove"),10), 1);
+      renderProductRows();
+    });
+  });
+  container.querySelectorAll(".p-suggestions").forEach(box=>{
+    box.addEventListener("mousedown", (e)=>{
+      const item = e.target.closest(".suggestion-item");
+      if(!item) return;
+      const idx = parseInt(box.getAttribute("data-idx"),10);
+      const m = box._matches[parseInt(item.getAttribute("data-idx"),10)];
+      if(m){
+        products[idx].desc = leafName(m.d);
+        products[idx].hsCode = m.c;
+        renderProductRows();
+      }
+    });
+  });
+}
+
+function onFieldInput(field){
+  return function(e){
+    products[parseInt(e.target.getAttribute("data-idx"),10)][field] = e.target.value;
+  };
+}
+
+function onDescInput(e){
+  const idx = parseInt(e.target.getAttribute("data-idx"),10);
+  products[idx].desc = e.target.value;
+  const box = document.querySelector(`.p-suggestions[data-idx="${idx}"]`);
+  searchHS(e.target.value, (matches)=>{
+    box._matches = matches;
+    if(matches.length === 0){
+      box.classList.remove("open");
+      box.innerHTML = "";
+    } else {
+      box.innerHTML = matches.map((m,i)=>`<div class="suggestion-item" data-idx="${i}"><span class="s-code">${m.c}</span><span class="s-desc">${esc(m.d)}</span></div>`).join("");
+      box.classList.add("open");
+    }
+  });
+}
+
+document.addEventListener("click", (e)=>{
+  if(!e.target.classList.contains("p-desc") && !e.target.closest(".p-suggestions")){
+    document.querySelectorAll(".p-suggestions").forEach(b=> b.classList.remove("open"));
+  }
+});
+
+document.getElementById("addProductBtn").addEventListener("click", ()=>{
+  products.push({ desc:"", hsCode:"", uom:"Piece(s)", qty:"1", price:"0.00" });
+  renderProductRows();
+});
+
+/* ---------- Save / Load ---------- */
+async function loadExisting(){
+  if(!shipmentId) return;
+  const res = await fetch(`/api/shipments/${shipmentId}`);
+  if(!res.ok) return;
+  const data = await res.json();
+  if(data.form) setValues(data.form);
+  if(data.products && data.products.length) products = data.products;
+  if(data.copies) document.getElementById("copyCount").value = data.copies;
+  if(data.showTnc !== undefined) document.getElementById("showTnc").checked = !!data.showTnc;
+  if(data.showInvoice !== undefined) document.getElementById("showInvoice").checked = !!data.showInvoice;
+  renderProductRows();
+}
+
+async function saveShipment(){
+  const payload = {
+    form: getValues(),
+    products,
+    copies: document.getElementById("copyCount").value,
+    showTnc: document.getElementById("showTnc").checked,
+    showInvoice: document.getElementById("showInvoice").checked
+  };
+  const status = document.getElementById("saveStatus");
+  status.textContent = "Saving...";
+  try{
+    let res;
+    if(shipmentId){
+      res = await fetch(`/api/shipments/${shipmentId}`, {
+        method:"PUT", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)
+      });
+    } else {
+      res = await fetch(`/api/shipments`, {
+        method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)
+      });
+    }
+    const data = await res.json();
+    if(!res.ok){ status.textContent = data.error || "Save failed"; return; }
+    if(data.id){
+      shipmentId = data.id;
+      const url = new URL(window.location);
+      url.searchParams.set("id", shipmentId);
+      window.history.replaceState({}, "", url);
+    }
+    status.textContent = "Saved ✓";
+    setTimeout(()=> status.textContent = "", 2000);
+  }catch(err){
+    status.textContent = "Network error";
+  }
+  return shipmentId;
+}
+
+document.getElementById("saveBtn").addEventListener("click", saveShipment);
+
+document.getElementById("printBtn").addEventListener("click", async ()=>{
+  const id = await saveShipment();
+  if(id) window.open(`/print.html?id=${id}`, "_blank");
+});
+
+(async function init(){
+  const meRes = await fetch("/api/auth/me");
+  if(!meRes.ok){ window.location.href = "/login.html"; return; }
+  await loadExisting();
+  renderProductRows();
+})();
+</script>
+</body>
+</html>
