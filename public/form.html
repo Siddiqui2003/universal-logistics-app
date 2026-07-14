@@ -96,11 +96,18 @@
         <div><label>Weight (KG)</label><input type="text" id="weight"></div>
       </div>
       <div class="row2">
-        <div><label>Volumetric Weight (KG)</label><input type="text" id="volWeight"></div>
-        <div><label>Chargeable Weight (KG)</label><input type="text" id="chargeWeight"></div>
+        <div>
+          <label>Volumetric Weight (KG) <span style="font-weight:400; color:#888;">(auto)</span></label>
+          <input type="text" id="volWeight" readonly style="background:#f3f3f0;">
+        </div>
+        <div>
+          <label>Chargeable Weight (KG) <span style="font-weight:400; color:#888;">(auto)</span></label>
+          <input type="text" id="chargeWeight" readonly style="background:#f3f3f0;">
+        </div>
       </div>
       <label>Dimension</label>
       <textarea id="dimension" placeholder="33*40*33, 33*40*33 ..."></textarea>
+      <div class="hint" style="margin-top:4px;">Volumetric Weight = (L×W×H sab pieces ka total) ÷ 5000. Agar Service field mein "Australia" likha ho to ÷ 4000 hoga.</div>
       <div class="row2">
         <div><label>Service</label><input type="text" id="service" placeholder="Via UK UPS saver"></div>
         <div>
@@ -108,13 +115,14 @@
           <select id="fragile"><option value="No">No</option><option value="Yes">Yes</option></select>
         </div>
       </div>
-      <label>Declared Value</label>
-      <input type="text" id="declaredValue">
+      <label>Declared Value <span style="font-weight:400; color:#888;">(auto — invoice total se)</span></label>
+      <input type="text" id="declaredValue" readonly style="background:#f3f3f0;">
       <label>Product Detail</label>
       <input type="text" id="productDetail">
       <label>Comments</label>
       <textarea id="comments"></textarea>
     </fieldset>
+
 
     <fieldset>
       <legend>Invoice (Products / HS Codes)</legend>
@@ -254,11 +262,59 @@ function renderProductRows(){
       }
     });
   });
+  calcDerivedFields();
 }
+
+function calcDerivedFields(){
+  // ---- Declared Value = sum of all invoice product totals ----
+  let total = 0;
+  products.forEach(p=>{
+    const qty = parseFloat(p.qty) || 0;
+    const price = parseFloat(p.price) || 0;
+    total += qty * price;
+  });
+  const declaredValueEl = document.getElementById("declaredValue");
+  if(declaredValueEl) declaredValueEl.value = total > 0 ? total.toFixed(2) : "";
+
+  // ---- Volumetric Weight = sum(L*W*H per piece) / divisor ----
+  // Divisor is 5000 by default, 4000 when Service field mentions Australia
+  const dimensionEl = document.getElementById("dimension");
+  const serviceEl = document.getElementById("service");
+  const weightEl = document.getElementById("weight");
+  const volWeightEl = document.getElementById("volWeight");
+  const chargeWeightEl = document.getElementById("chargeWeight");
+  if(!dimensionEl || !serviceEl || !weightEl || !volWeightEl || !chargeWeightEl) return;
+
+  const dimStr = dimensionEl.value || "";
+  const service = (serviceEl.value || "").toLowerCase();
+  const divisor = service.indexOf("australia") !== -1 ? 4000 : 5000;
+
+  const pieces = dimStr.split(",").map(s=>s.trim()).filter(Boolean);
+  let totalVolume = 0;
+  pieces.forEach(piece=>{
+    const nums = piece.split("*").map(n=>parseFloat(n.trim())).filter(n=>!isNaN(n));
+    if(nums.length === 3){
+      totalVolume += nums[0] * nums[1] * nums[2];
+    }
+  });
+  const volWeight = totalVolume > 0 ? (totalVolume / divisor) : 0;
+  volWeightEl.value = volWeight > 0 ? volWeight.toFixed(3) : "";
+
+  // ---- Chargeable Weight = higher of actual weight vs volumetric weight ----
+  const actualWeight = parseFloat(weightEl.value) || 0;
+  const chargeable = Math.max(actualWeight, volWeight);
+  chargeWeightEl.value = chargeable > 0 ? chargeable.toFixed(3) : "";
+}
+
+document.getElementById("dimension").addEventListener("input", calcDerivedFields);
+document.getElementById("service").addEventListener("input", calcDerivedFields);
+document.getElementById("weight").addEventListener("input", calcDerivedFields);
+
 
 function onFieldInput(field){
   return function(e){
     products[parseInt(e.target.getAttribute("data-idx"),10)][field] = e.target.value;
+    calcDerivedFields();
   };
 }
 
