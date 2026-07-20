@@ -44,11 +44,29 @@ function columnExists(table, column) {
   const cols = db.prepare(`PRAGMA table_info(${table})`).all();
   return cols.some((c) => c.name === column);
 }
-if (!columnExists("users", "role")) {
+const isFreshRoleMigration = !columnExists("users", "role");
+if (isFreshRoleMigration) {
   db.exec(`ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'customer'`);
+  // The very first account ever created (lowest id) predates the role system and
+  // was the original owner/admin account — restore its admin role now instead of
+  // leaving it demoted to 'customer' by the DEFAULT above.
+  const firstUser = db.prepare("SELECT id FROM users ORDER BY id ASC LIMIT 1").get();
+  if (firstUser) {
+    db.prepare("UPDATE users SET role = 'admin' WHERE id = ?").run(firstUser.id);
+  }
 }
 if (!columnExists("shipments", "status")) {
   db.exec(`ALTER TABLE shipments ADD COLUMN status TEXT NOT NULL DEFAULT 'Pending'`);
+}
+
+// Safety net: if for any reason there is no admin at all (e.g. manual DB edits),
+// promote the earliest account so the app always has someone who can manage it.
+const adminCount = db.prepare("SELECT COUNT(*) AS n FROM users WHERE role = 'admin'").get().n;
+if (adminCount === 0) {
+  const firstUser = db.prepare("SELECT id FROM users ORDER BY id ASC LIMIT 1").get();
+  if (firstUser) {
+    db.prepare("UPDATE users SET role = 'admin' WHERE id = ?").run(firstUser.id);
+  }
 }
 
 module.exports = db;

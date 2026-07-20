@@ -50,9 +50,21 @@ async function loadUser(){
 }
 
 async function loadShipments(){
-  const res = await fetch("/api/shipments");
-  const data = await res.json();
   const wrap = document.getElementById("listWrap");
+  let data;
+  try{
+    const res = await fetch("/api/shipments");
+    if(!res.ok){
+      let errMsg = "Shipments load nahi ho sakin (server error).";
+      try{ const errData = await res.json(); errMsg = errData.error || errMsg; }catch(e){}
+      wrap.innerHTML = `<div class="empty-state">${escapeHtml(errMsg)}</div>`;
+      return;
+    }
+    data = await res.json();
+  }catch(err){
+    wrap.innerHTML = '<div class="empty-state">Network error — page reload kar ke dobara try karein.</div>';
+    return;
+  }
 
   if(!data.shipments || data.shipments.length === 0){
     wrap.innerHTML = '<div class="empty-state">Abhi tak koi shipment nahi bani. "+ New Shipment" par click kar ke shuru karein.</div>';
