@@ -10,12 +10,12 @@ and only sees their own shipments.
   automatically. After that, public registration is closed — the Admin creates a login for
   each customer from the **Manage Customers** page.
 - **Admin** sees every shipment/booking from every customer in one dashboard, can update
-  status (Pending → Confirmed → Shipped / Cancelled), finalize a booking with HS Codes and
-  invoice pricing using the full Airway Bill form, and print.
-- **Customer** gets a simplified **Booking Portal** — they submit shipper/receiver/package
-  details, see their own bookings and status, and can edit a booking only while it's still
-  "Pending". No HS Codes, invoice pricing, or Terms & Conditions editing — that's the Admin's
-  job when finalizing a booking.
+  each one's status (Pending → Confirmed → Shipped / Cancelled), and can edit or print any
+  shipment.
+- **Customer** gets the full Airway Bill / Invoice form too — including HS Code search and
+  invoice pricing — but only ever sees and manages their own shipments, never anyone else's.
+  Once the Admin moves a shipment past "Pending" (e.g. Confirmed), the customer's copy locks
+  automatically so it can't be changed after the fact.
 - Multiple products per invoice, each with its own HS Code
 - HS Code search powered by the Pakistan Customs Tariff 2017-18 (7,200+ codes), served from
   the backend so the page stays lightweight
@@ -87,8 +87,8 @@ airway-app/
     ├── register.html          # Only works for the very first (Admin) account
     ├── dashboard.html         # Admin: every customer's shipments/bookings + status
     ├── customers.html         # Admin: add/remove customer logins
-    ├── booking.html           # Customer: simplified booking form + their own bookings
-    ├── form.html              # Admin only: full Airway Bill / Invoice / HS Code editor
+    ├── my-shipments.html      # Customer: their own shipments list
+    ├── form.html              # Full Airway Bill / Invoice / HS Code editor (Admin + Customer)
     ├── print.html              # Print-ready view (opened in a new tab)
     ├── css/style.css
     └── js/templates.js        # Shared HTML templates for the Bill / T&C / Invoice

@@ -49,7 +49,7 @@ document.getElementById("registerForm").addEventListener("submit", async (e)=>{
       errorBox.style.display = "block";
       return;
     }
-    window.location.href = data.user.role === "admin" ? "/dashboard.html" : "/booking.html";
+    window.location.href = data.user.role === "admin" ? "/dashboard.html" : "/my-shipments.html";
   }catch(err){
     errorBox.textContent = "Network error — server chal raha hai check karein.";
     errorBox.style.display = "block";

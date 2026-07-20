@@ -8,7 +8,7 @@
     const res = await fetch("/api/auth/me");
     if(!res.ok){ window.location.href = "/login.html"; return; }
     const data = await res.json();
-    window.location.href = data.user.role === "admin" ? "/dashboard.html" : "/booking.html";
+    window.location.href = data.user.role === "admin" ? "/dashboard.html" : "/my-shipments.html";
   }catch(err){
     window.location.href = "/login.html";
   }

@@ -22,7 +22,7 @@
 
 <div class="form-topbar">
   <div class="brand">UNIVERSAL LOGISTICS &amp; INTERNATIONAL</div>
-  <a href="/dashboard.html">&larr; Back to Dashboard</a>
+  <a href="/dashboard.html" id="backLink">&larr; Back to Dashboard</a>
 </div>
 
 <div class="wrap">
@@ -407,7 +407,7 @@ document.getElementById("printBtn").addEventListener("click", async ()=>{
   const meRes = await fetch("/api/auth/me");
   if(!meRes.ok){ window.location.href = "/login.html"; return; }
   const me = await meRes.json();
-  if(me.user.role !== "admin"){ window.location.href = "/booking.html"; return; }
+  document.getElementById("backLink").href = me.user.role === "admin" ? "/dashboard.html" : "/my-shipments.html";
   await loadExisting();
   renderProductRows();
 })();

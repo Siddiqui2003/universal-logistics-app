@@ -84,6 +84,11 @@ router.put("/:id", (req, res) => {
     : db.prepare("SELECT id, status FROM shipments WHERE id = ? AND user_id = ?").get(req.params.id, req.user.id);
 
   if (!existing) return res.status(404).json({ error: "Shipment not found" });
+  if (!isAdmin(req) && existing.status !== "Pending") {
+    return res.status(403).json({
+      error: `This shipment is already "${existing.status}" and can no longer be edited. Please contact the admin.`,
+    });
+  }
 
   const { form, products, showTnc, showInvoice, copies, status } = req.body || {};
   const data = JSON.stringify({ form, products: products || [], showTnc, showInvoice, copies });
@@ -101,10 +106,15 @@ router.put("/:id", (req, res) => {
 // ---------- DELETE a shipment ----------
 router.delete("/:id", (req, res) => {
   const existing = isAdmin(req)
-    ? db.prepare("SELECT id FROM shipments WHERE id = ?").get(req.params.id)
-    : db.prepare("SELECT id FROM shipments WHERE id = ? AND user_id = ?").get(req.params.id, req.user.id);
+    ? db.prepare("SELECT id, status FROM shipments WHERE id = ?").get(req.params.id)
+    : db.prepare("SELECT id, status FROM shipments WHERE id = ? AND user_id = ?").get(req.params.id, req.user.id);
 
   if (!existing) return res.status(404).json({ error: "Shipment not found" });
+  if (!isAdmin(req) && existing.status !== "Pending") {
+    return res.status(403).json({
+      error: `This shipment is already "${existing.status}" and can no longer be deleted. Please contact the admin.`,
+    });
+  }
 
   db.prepare("DELETE FROM shipments WHERE id = ?").run(req.params.id);
   res.json({ ok: true });
