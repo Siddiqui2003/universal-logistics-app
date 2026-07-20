@@ -14,6 +14,9 @@ const COOKIE_OPTIONS = {
 };
 
 // ---------- REGISTER ----------
+// The very first account created on a fresh database automatically becomes the
+// Admin. After that, public registration is closed — the Admin creates
+// customer logins from the "Manage Customers" page instead.
 router.post("/register", (req, res) => {
   const { name, email, password } = req.body || {};
   if (!name || !email || !password) {
@@ -23,6 +26,13 @@ router.post("/register", (req, res) => {
     return res.status(400).json({ error: "Password must be at least 6 characters" });
   }
 
+  const userCount = db.prepare("SELECT COUNT(*) AS n FROM users").get().n;
+  if (userCount > 0) {
+    return res.status(403).json({
+      error: "Public registration is closed. Please ask your administrator for a login.",
+    });
+  }
+
   const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(email.toLowerCase());
   if (existing) {
     return res.status(409).json({ error: "An account with this email already exists" });
@@ -30,10 +40,10 @@ router.post("/register", (req, res) => {
 
   const passwordHash = bcrypt.hashSync(password, 10);
   const result = db
-    .prepare("INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)")
+    .prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'admin')")
     .run(name, email.toLowerCase(), passwordHash);
 
-  const user = { id: Number(result.lastInsertRowid), name, email: email.toLowerCase() };
+  const user = { id: Number(result.lastInsertRowid), name, email: email.toLowerCase(), role: "admin" };
   const token = jwt.sign(user, JWT_SECRET, { expiresIn: "7d" });
   res.cookie("token", token, COOKIE_OPTIONS);
   res.json({ user });
@@ -51,7 +61,7 @@ router.post("/login", (req, res) => {
     return res.status(401).json({ error: "Invalid email or password" });
   }
 
-  const user = { id: row.id, name: row.name, email: row.email };
+  const user = { id: row.id, name: row.name, email: row.email, role: row.role };
   const token = jwt.sign(user, JWT_SECRET, { expiresIn: "7d" });
   res.cookie("token", token, COOKIE_OPTIONS);
   res.json({ user });

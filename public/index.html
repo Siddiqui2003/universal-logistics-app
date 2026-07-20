@@ -6,7 +6,9 @@
 (async function(){
   try{
     const res = await fetch("/api/auth/me");
-    window.location.href = res.ok ? "/dashboard.html" : "/login.html";
+    if(!res.ok){ window.location.href = "/login.html"; return; }
+    const data = await res.json();
+    window.location.href = data.user.role === "admin" ? "/dashboard.html" : "/booking.html";
   }catch(err){
     window.location.href = "/login.html";
   }

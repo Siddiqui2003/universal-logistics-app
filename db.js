@@ -21,6 +21,7 @@ db.exec(`
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'customer',
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
   );
 `);
@@ -31,10 +32,23 @@ db.exec(`
     user_id INTEGER NOT NULL,
     awbnum TEXT,
     data TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'Pending',
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at TEXT NOT NULL DEFAULT (datetime('now')),
     FOREIGN KEY (user_id) REFERENCES users(id)
   );
 `);
+
+// Lightweight migration for databases created before the role/status columns existed
+function columnExists(table, column) {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all();
+  return cols.some((c) => c.name === column);
+}
+if (!columnExists("users", "role")) {
+  db.exec(`ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'customer'`);
+}
+if (!columnExists("shipments", "status")) {
+  db.exec(`ALTER TABLE shipments ADD COLUMN status TEXT NOT NULL DEFAULT 'Pending'`);
+}
 
 module.exports = db;

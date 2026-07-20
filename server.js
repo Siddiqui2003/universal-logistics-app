@@ -6,6 +6,7 @@ const path = require("path");
 const authRoutes = require("./routes/auth");
 const shipmentRoutes = require("./routes/shipments");
 const hsCodeRoutes = require("./routes/hscodes");
+const adminRoutes = require("./routes/admin");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/auth", authRoutes);
 app.use("/api/shipments", shipmentRoutes);
 app.use("/api/hscodes", hsCodeRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.get("/health", (req, res) => res.json({ ok: true }));
 

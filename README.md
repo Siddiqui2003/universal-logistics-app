@@ -6,8 +6,16 @@ and only sees their own shipments.
 
 ## Features
 
-- User registration & login (secure password hashing + session cookie)
-- Create / edit / delete shipments, saved per-user in a database
+- **Two roles: Admin and Customer.** The first account ever created becomes the Admin
+  automatically. After that, public registration is closed — the Admin creates a login for
+  each customer from the **Manage Customers** page.
+- **Admin** sees every shipment/booking from every customer in one dashboard, can update
+  status (Pending → Confirmed → Shipped / Cancelled), finalize a booking with HS Codes and
+  invoice pricing using the full Airway Bill form, and print.
+- **Customer** gets a simplified **Booking Portal** — they submit shipper/receiver/package
+  details, see their own bookings and status, and can edit a booking only while it's still
+  "Pending". No HS Codes, invoice pricing, or Terms & Conditions editing — that's the Admin's
+  job when finalizing a booking.
 - Multiple products per invoice, each with its own HS Code
 - HS Code search powered by the Pakistan Customs Tariff 2017-18 (7,200+ codes), served from
   the backend so the page stays lightweight
@@ -50,7 +58,10 @@ If it's older than 22.5, install a newer version from https://nodejs.org first.
    ```
    http://localhost:3000
    ```
-   You'll be redirected to the login page. Click "Register here" to create the first account.
+   You'll be redirected to the login page. Click "Register here" to create the first
+   account — this becomes your **Admin** account. After that, registration is closed;
+   go to **Manage Customers** (top nav after logging in as Admin) to create a login for
+   each of your customers.
 
 ## Folder structure
 
@@ -64,20 +75,23 @@ airway-app/
 │   ├── app.db              # Created automatically on first run (your data lives here)
 │   └── hs_codes.json       # Pakistan Customs Tariff HS code dataset
 ├── middleware/
-│   └── auth.js             # Login-session verification
+│   └── auth.js             # Login-session verification (requireAuth / requireAdmin)
 ├── routes/
 │   ├── auth.js              # /api/auth/register, /login, /logout, /me
-│   ├── shipments.js         # /api/shipments CRUD
+│   ├── shipments.js         # /api/shipments CRUD (role-aware: admin sees all, customer sees own)
+│   ├── admin.js              # /api/admin/customers, /api/admin/shipments (Admin only)
 │   └── hscodes.js           # /api/hscodes search
 └── public/                 # All front-end pages (plain HTML/CSS/JS, no build step)
     ├── index.html
     ├── login.html
-    ├── register.html
-    ├── dashboard.html        # List of your shipments
-    ├── form.html             # Create/edit a shipment
-    ├── print.html            # Print-ready view (opened in a new tab)
+    ├── register.html          # Only works for the very first (Admin) account
+    ├── dashboard.html         # Admin: every customer's shipments/bookings + status
+    ├── customers.html         # Admin: add/remove customer logins
+    ├── booking.html           # Customer: simplified booking form + their own bookings
+    ├── form.html              # Admin only: full Airway Bill / Invoice / HS Code editor
+    ├── print.html              # Print-ready view (opened in a new tab)
     ├── css/style.css
-    └── js/templates.js       # Shared HTML templates for the Bill / T&C / Invoice
+    └── js/templates.js        # Shared HTML templates for the Bill / T&C / Invoice
 ```
 
 ## Backing up your data

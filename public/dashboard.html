@@ -2,17 +2,35 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard — Universal Logistics & International</title>
+<title>Admin Dashboard — Universal Logistics & International</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
-<style>body{background:#f3f3f0;}</style>
+<style>
+  body{background:#f3f3f0;}
+  .status-pill{
+    display:inline-block; padding:3px 10px; border-radius:20px;
+    font-size:11px; font-weight:700; letter-spacing:0.3px;
+  }
+  .status-Pending{background:#fff3cd; color:#8a6300;}
+  .status-Confirmed{background:#d4f5df; color:#1a7d43;}
+  .status-Shipped{background:#dbe9ff; color:var(--blue);}
+  .status-Cancelled{background:#fdeaea; color:#9c2b2b;}
+  .status-select{
+    font-size:12px; padding:4px 6px; border-radius:6px; border:1px solid #ccc;
+  }
+  .nav-links{display:flex; gap:16px; align-items:center;}
+  .nav-links a{color:var(--blue); text-decoration:none; font-size:13px; font-weight:600;}
+</style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="brand">UNIVERSAL <span>LOGISTICS</span></div>
+  <div class="brand">UNIVERSAL <span>LOGISTICS</span> — Admin</div>
   <div class="userinfo">
+    <div class="nav-links">
+      <a href="/customers.html">Manage Customers</a>
+    </div>
     <span id="userName"></span>
     <button id="logoutBtn">Logout</button>
   </div>
@@ -20,7 +38,7 @@
 
 <div class="dash-body">
   <div class="dash-head">
-    <h2>My Shipments</h2>
+    <h2>All Shipments &amp; Bookings</h2>
     <a href="/form.html" class="btn-primary">+ New Shipment</a>
   </div>
 
@@ -30,13 +48,16 @@
 </div>
 
 <script>
+const STATUS_OPTIONS = ["Pending", "Confirmed", "Shipped", "Cancelled"];
+
 async function loadUser(){
   const res = await fetch("/api/auth/me");
-  if(!res.ok){
-    window.location.href = "/login.html";
+  if(!res.ok){ window.location.href = "/login.html"; return null; }
+  const data = await res.json();
+  if(data.user.role !== "admin"){
+    window.location.href = "/booking.html";
     return null;
   }
-  const data = await res.json();
   document.getElementById("userName").textContent = data.user.name;
   return data.user;
 }
@@ -47,15 +68,21 @@ async function loadShipments(){
   const wrap = document.getElementById("listWrap");
 
   if(!data.shipments || data.shipments.length === 0){
-    wrap.innerHTML = '<div class="empty-state">Abhi tak koi shipment nahi bani. "+ New Shipment" par click kar ke shuru karein.</div>';
+    wrap.innerHTML = '<div class="empty-state">Abhi tak koi shipment/booking nahi bani.</div>';
     return;
   }
 
   const rows = data.shipments.map(s => `
     <tr>
       <td>${s.awbnum || "-"}</td>
+      <td>${escapeHtml(s.customerName || "-")}</td>
       <td>${escapeHtml(s.shipperName || "-")}</td>
       <td>${escapeHtml(s.consigneeName || "-")}</td>
+      <td>
+        <select class="status-select" data-id="${s.id}">
+          ${STATUS_OPTIONS.map(opt => `<option value="${opt}" ${opt===s.status?"selected":""}>${opt}</option>`).join("")}
+        </select>
+      </td>
       <td>${new Date(s.updated_at).toLocaleString()}</td>
       <td>
         <div class="row-actions">
@@ -71,14 +98,29 @@ async function loadShipments(){
     <table class="ship-table">
       <tr>
         <th>AWB #</th>
+        <th>Customer</th>
         <th>Shipper</th>
         <th>Consignee</th>
+        <th>Status</th>
         <th>Last Updated</th>
         <th>Actions</th>
       </tr>
       ${rows}
     </table>
   `;
+
+  wrap.querySelectorAll(".status-select").forEach(sel=>{
+    sel.addEventListener("change", async ()=>{
+      const id = sel.getAttribute("data-id");
+      const shipRes = await fetch(`/api/shipments/${id}`);
+      const shipData = await shipRes.json();
+      await fetch(`/api/shipments/${id}`, {
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ ...shipData, status: sel.value })
+      });
+    });
+  });
 
   wrap.querySelectorAll(".act-delete").forEach(btn=>{
     btn.addEventListener("click", async ()=>{

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Manage Customers — Universal Logistics & International</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<style>
+  body{background:#f3f3f0;}
+  .nav-links{display:flex; gap:16px; align-items:center;}
+  .nav-links a{color:var(--blue); text-decoration:none; font-size:13px; font-weight:600;}
+  .add-card{
+    background:#fff; border-radius:10px; padding:20px 22px; margin-bottom:22px;
+    box-shadow:0 1px 6px rgba(0,0,0,.08);
+  }
+  .add-card h3{margin:0 0 14px; font-family:"Playfair Display", serif; color:var(--blue);}
+  .add-row{display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;}
+  .add-row > div{flex:1; min-width:180px;}
+  .add-row label{display:block; font-size:12px; color:var(--muted); margin-bottom:4px;}
+  .add-row input{width:100%; padding:9px 11px; border:1px solid #ccc; border-radius:7px; font-size:13.5px; font-family:inherit;}
+  .add-row button{
+    padding:10px 20px; background:var(--blue); color:#fff; border:none; border-radius:7px;
+    font-weight:700; font-size:13.5px; cursor:pointer; white-space:nowrap;
+  }
+  .add-row button:hover{background:#092a4d;}
+  .msg{font-size:12.5px; margin-top:10px; display:none; padding:8px 10px; border-radius:6px;}
+  .msg.error{background:#fdeaea; color:#9c2b2b; display:block;}
+  .msg.success{background:#d4f5df; color:#1a7d43; display:block;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">UNIVERSAL <span>LOGISTICS</span> — Admin</div>
+  <div class="userinfo">
+    <div class="nav-links">
+      <a href="/dashboard.html">&larr; All Shipments</a>
+    </div>
+    <span id="userName"></span>
+    <button id="logoutBtn">Logout</button>
+  </div>
+</div>
+
+<div class="dash-body">
+  <div class="add-card">
+    <h3>+ Add New Customer</h3>
+    <div class="add-row">
+      <div><label>Full Name</label><input type="text" id="newName"></div>
+      <div><label>Email</label><input type="email" id="newEmail"></div>
+      <div><label>Password</label><input type="password" id="newPassword" placeholder="Kam se kam 6 characters"></div>
+      <button id="addBtn">+ Add Customer</button>
+    </div>
+    <div class="msg" id="msgBox"></div>
+  </div>
+
+  <div class="dash-head">
+    <h2>Customers (<span id="custCount">0</span>)</h2>
+  </div>
+  <div id="listWrap">
+    <div class="empty-state">Loading...</div>
+  </div>
+</div>
+
+<script>
+async function loadUser(){
+  const res = await fetch("/api/auth/me");
+  if(!res.ok){ window.location.href = "/login.html"; return null; }
+  const data = await res.json();
+  if(data.user.role !== "admin"){ window.location.href = "/booking.html"; return null; }
+  document.getElementById("userName").textContent = data.user.name;
+  return data.user;
+}
+
+async function loadCustomers(){
+  const res = await fetch("/api/admin/customers");
+  const data = await res.json();
+  const wrap = document.getElementById("listWrap");
+  document.getElementById("custCount").textContent = (data.customers || []).length;
+
+  if(!data.customers || data.customers.length === 0){
+    wrap.innerHTML = '<div class="empty-state">Abhi tak koi customer add nahi hua. Upar form se pehla customer add karein.</div>';
+    return;
+  }
+
+  const rows = data.customers.map(c => `
+    <tr>
+      <td>${escapeHtml(c.name)}</td>
+      <td>${escapeHtml(c.email)}</td>
+      <td>${new Date(c.created_at).toLocaleDateString()}</td>
+      <td>
+        <div class="row-actions">
+          <button class="act-delete" data-id="${c.id}">Delete</button>
+        </div>
+      </td>
+    </tr>
+  `).join("");
+
+  wrap.innerHTML = `
+    <table class="ship-table">
+      <tr><th>Name</th><th>Email</th><th>Added On</th><th>Actions</th></tr>
+      ${rows}
+    </table>
+  `;
+
+  wrap.querySelectorAll(".act-delete").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      if(!confirm("Ye customer account delete karna chahte hain? Unki sab bookings bhi delete ho jayengi.")) return;
+      const id = btn.getAttribute("data-id");
+      await fetch(`/api/admin/customers/${id}`, { method:"DELETE" });
+      loadCustomers();
+    });
+  });
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+document.getElementById("addBtn").addEventListener("click", async ()=>{
+  const name = document.getElementById("newName").value.trim();
+  const email = document.getElementById("newEmail").value.trim();
+  const password = document.getElementById("newPassword").value;
+  const msgBox = document.getElementById("msgBox");
+  msgBox.className = "msg";
+
+  if(!name || !email || !password){
+    msgBox.textContent = "Name, email, aur password teeno zaroori hain.";
+    msgBox.className = "msg error";
+    return;
+  }
+
+  const res = await fetch("/api/admin/customers", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ name, email, password })
+  });
+  const data = await res.json();
+  if(!res.ok){
+    msgBox.textContent = data.error || "Customer add nahi ho saka";
+    msgBox.className = "msg error";
+    return;
+  }
+
+  msgBox.textContent = `Customer add ho gaya! Login details unhe bhej dein — Email: ${email}`;
+  msgBox.className = "msg success";
+  document.getElementById("newName").value = "";
+  document.getElementById("newEmail").value = "";
+  document.getElementById("newPassword").value = "";
+  loadCustomers();
+});
+
+document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+  await fetch("/api/auth/logout", { method:"POST" });
+  window.location.href = "/login.html";
+});
+
+(async function init(){
+  const user = await loadUser();
+  if(user) loadCustomers();
+})();
+</script>
+</body>
+</html>
