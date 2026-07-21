@@ -203,6 +203,41 @@
     overflow:hidden;
   }
   .bill + .bill{margin-top:16px;}
+  .tracking-strip{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    padding:8px 14px;
+    background:#f7f7f5;
+    border-bottom:2px solid var(--line);
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .tn-block{flex:1; min-width:0;}
+  .tn-label{
+    font-size:8px;
+    font-weight:700;
+    color:var(--muted);
+    letter-spacing:1px;
+  }
+  .tn-value{
+    font-family:"Playfair Display", serif;
+    font-weight:800;
+    font-size:16px;
+    color:var(--blue);
+    letter-spacing:1px;
+  }
+  .tn-barcode{
+    height:42px;
+    flex-shrink:0;
+  }
+  .tn-qr{
+    width:46px;
+    height:46px;
+    flex-shrink:0;
+    image-rendering:pixelated;
+  }
   .bill-table{
     width:100%;
     border-collapse:collapse;

@@ -6,9 +6,11 @@ and only sees their own shipments.
 
 ## Features
 
-- **Automatic QR tracking.** Every printed Airway Bill includes a real, scannable QR code
-  (generated locally, no external service) that links to a public tracking page — anyone who
-  scans it sees the shipment's live status, route, pieces, and weight, with no login required.
+- **Unique Tracking Number, Barcode & QR code — automatically, at the top of every Bill.**
+  Each shipment gets a unique tracking number (e.g. `ULI26000042`) generated from its database
+  ID, shown alongside a real scannable **CODE128 barcode** and a **QR code** — all generated
+  locally (no external service). Scanning the QR opens a public tracking page (no login) with
+  live status, route, pieces, and weight.
 - **Two roles: Admin and Customer.** The first account ever created becomes the Admin
   automatically. After that, public registration is closed — the Admin creates a login for
   each customer from the **Manage Customers** page.
@@ -98,7 +100,8 @@ airway-app/
     ├── css/style.css
     └── js/
         ├── templates.js        # Shared HTML templates for the Bill / T&C / Invoice
-        └── qrcode.js            # Local QR code generator (no external service/API)
+        ├── qrcode.js            # Local QR code generator (no external service/API)
+        └── jsbarcode.js         # Local CODE128 barcode generator (no external service/API)
 ```
 
 ## Backing up your data

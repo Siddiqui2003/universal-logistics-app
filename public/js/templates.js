@@ -24,6 +24,34 @@ function qrDataUri(text){
   }
 }
 
+function barcodeDataUri(text){
+  try{
+    if(typeof JsBarcode === "undefined" || !text || typeof document === "undefined") return "";
+    const canvas = document.createElement("canvas");
+    JsBarcode(canvas, text, {
+      format: "CODE128",
+      displayValue: false,
+      height: 42,
+      margin: 0,
+      background: "#ffffff"
+    });
+    return canvas.toDataURL();
+  }catch(e){
+    return "";
+  }
+}
+
+function formatTrackingNo(shipmentId, createdAt){
+  if(!shipmentId) return "";
+  let yy = new Date().getFullYear().toString().slice(-2);
+  if(createdAt){
+    const d = new Date(createdAt.replace(" ", "T") + "Z");
+    if(!isNaN(d.getTime())) yy = d.getFullYear().toString().slice(-2);
+  }
+  const padded = String(shipmentId).padStart(6, "0");
+  return `ULI${yy}${padded}`;
+}
+
 function trackingUrl(shipmentId){
   if(!shipmentId) return "";
   const origin = (typeof window !== "undefined" && window.location) ? window.location.origin : "";
@@ -31,9 +59,21 @@ function trackingUrl(shipmentId){
 }
 
 function billHTML(v){
+  const trackNo = formatTrackingNo(v.id, v.created_at);
   const qrSrc = qrDataUri(trackingUrl(v.id));
+  const barcodeSrc = barcodeDataUri(trackNo);
+  const trackingStrip = trackNo ? `
+    <div class="tracking-strip">
+      <div class="tn-block">
+        <div class="tn-label">TRACKING NUMBER</div>
+        <div class="tn-value">${esc(trackNo)}</div>
+      </div>
+      ${barcodeSrc ? `<img src="${barcodeSrc}" class="tn-barcode" alt="Barcode">` : ""}
+      ${qrSrc ? `<img src="${qrSrc}" class="tn-qr" alt="Scan to track">` : ""}
+    </div>` : "";
   return `
   <div class="bill">
+    ${trackingStrip}
     <table class="bill-table">
       <tr>
         <td class="head-logo" style="width:30%;" rowspan="3">
@@ -48,7 +88,6 @@ function billHTML(v){
           <div class="awb-title">AIRWAY BILL</div>
           <div class="barcode">*${esc(v.awbnum||"00000000")}*</div>
           <div class="awb-num">${esc(v.awbnum)}</div>
-          ${qrSrc ? `<img src="${qrSrc}" class="qr-img" alt="Scan to track"><div class="qr-label">Scan to Track</div>` : ""}
         </td>
       </tr>
       <tr>
@@ -292,5 +331,5 @@ function pageWrap(innerHtml){
 
 // Support both browser (<script> tag) and Node.js (require) usage
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { esc, fmtDate, billHTML, tncHTML, invoiceHTML, leafName, pageWrap, LOGO_DATA_URI, qrDataUri, trackingUrl };
+  module.exports = { esc, fmtDate, billHTML, tncHTML, invoiceHTML, leafName, pageWrap, LOGO_DATA_URI, qrDataUri, trackingUrl, barcodeDataUri, formatTrackingNo };
 }
