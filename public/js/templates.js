@@ -12,7 +12,26 @@ function fmtDate(d){
   return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
 
+function qrDataUri(text){
+  try{
+    if(typeof qrcode === "undefined" || !text) return "";
+    const qr = qrcode(0, "M");
+    qr.addData(text);
+    qr.make();
+    return qr.createDataURL(5, 2);
+  }catch(e){
+    return "";
+  }
+}
+
+function trackingUrl(shipmentId){
+  if(!shipmentId) return "";
+  const origin = (typeof window !== "undefined" && window.location) ? window.location.origin : "";
+  return `${origin}/track.html?id=${shipmentId}`;
+}
+
 function billHTML(v){
+  const qrSrc = qrDataUri(trackingUrl(v.id));
   return `
   <div class="bill">
     <table class="bill-table">
@@ -29,6 +48,7 @@ function billHTML(v){
           <div class="awb-title">AIRWAY BILL</div>
           <div class="barcode">*${esc(v.awbnum||"00000000")}*</div>
           <div class="awb-num">${esc(v.awbnum)}</div>
+          ${qrSrc ? `<img src="${qrSrc}" class="qr-img" alt="Scan to track"><div class="qr-label">Scan to Track</div>` : ""}
         </td>
       </tr>
       <tr>
@@ -272,5 +292,5 @@ function pageWrap(innerHtml){
 
 // Support both browser (<script> tag) and Node.js (require) usage
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { esc, fmtDate, billHTML, tncHTML, invoiceHTML, leafName, pageWrap, LOGO_DATA_URI };
+  module.exports = { esc, fmtDate, billHTML, tncHTML, invoiceHTML, leafName, pageWrap, LOGO_DATA_URI, qrDataUri, trackingUrl };
 }

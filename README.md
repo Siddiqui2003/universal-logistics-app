@@ -6,6 +6,9 @@ and only sees their own shipments.
 
 ## Features
 
+- **Automatic QR tracking.** Every printed Airway Bill includes a real, scannable QR code
+  (generated locally, no external service) that links to a public tracking page — anyone who
+  scans it sees the shipment's live status, route, pieces, and weight, with no login required.
 - **Two roles: Admin and Customer.** The first account ever created becomes the Admin
   automatically. After that, public registration is closed — the Admin creates a login for
   each customer from the **Manage Customers** page.
@@ -80,6 +83,7 @@ airway-app/
 │   ├── auth.js              # /api/auth/register, /login, /logout, /me
 │   ├── shipments.js         # /api/shipments CRUD (role-aware: admin sees all, customer sees own)
 │   ├── admin.js              # /api/admin/customers, /api/admin/shipments (Admin only)
+│   ├── track.js               # /api/track/:id — public tracking, no login required
 │   └── hscodes.js           # /api/hscodes search
 └── public/                 # All front-end pages (plain HTML/CSS/JS, no build step)
     ├── index.html
@@ -90,8 +94,11 @@ airway-app/
     ├── my-shipments.html      # Customer: their own shipments list
     ├── form.html              # Full Airway Bill / Invoice / HS Code editor (Admin + Customer)
     ├── print.html              # Print-ready view (opened in a new tab)
+    ├── track.html              # Public tracking page (no login) — opened by scanning the QR code
     ├── css/style.css
-    └── js/templates.js        # Shared HTML templates for the Bill / T&C / Invoice
+    └── js/
+        ├── templates.js        # Shared HTML templates for the Bill / T&C / Invoice
+        └── qrcode.js            # Local QR code generator (no external service/API)
 ```
 
 ## Backing up your data

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Track Shipment — Universal Logistics & International</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<style>
+  body{background:#eef0ed; padding:0;}
+  .hero-topbar{
+    background:linear-gradient(120deg, var(--blue) 0%, #123a63 55%, #0a2340 100%);
+    position:relative; overflow:hidden;
+  }
+  .hero-topbar::before{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 85% -20%, rgba(200,149,44,0.35), transparent 55%);
+  }
+  .hero-inner{
+    position:relative; max-width:640px; margin:0 auto; padding:22px 24px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .hero-logo{
+    width:52px; height:52px; border-radius:12px; overflow:hidden;
+    background:#fff; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.25); flex-shrink:0;
+  }
+  .hero-logo img{width:100%; height:100%; object-fit:cover;}
+  .hero-title{color:#fff;}
+  .hero-title .name{font-family:"Playfair Display", serif; font-weight:800; font-size:19px;}
+  .hero-title .tag{font-size:11.5px; color:#cfe0f5; margin-top:1px;}
+
+  .track-body{max-width:640px; margin:0 auto; padding:28px 24px 40px;}
+  .track-card{
+    background:#fff; border-radius:14px; padding:26px 28px;
+    box-shadow:0 6px 24px rgba(20,30,50,.10);
+  }
+  .track-card h2{font-family:"Playfair Display", serif; margin:0 0 4px; color:var(--ink); font-size:19px;}
+  .awb-line{color:var(--muted); font-size:13px; margin-bottom:18px;}
+  .status-badge{
+    display:inline-block; padding:6px 16px; border-radius:24px;
+    font-size:13px; font-weight:800; letter-spacing:0.4px; margin-bottom:22px;
+  }
+  .status-Pending{background:#fff3cd; color:#8a6300;}
+  .status-Confirmed{background:#d4f5df; color:#1a7d43;}
+  .status-Shipped{background:#dbe9ff; color:var(--blue);}
+  .status-Cancelled{background:#fdeaea; color:#9c2b2b;}
+
+  .route-row{display:flex; align-items:center; gap:14px; margin-bottom:24px;}
+  .route-point{flex:1;}
+  .route-point .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.4px;}
+  .route-point .val{font-family:"Playfair Display", serif; font-size:16px; font-weight:700; color:var(--ink); margin-top:3px;}
+  .route-point .sub{font-size:12px; color:var(--muted); margin-top:1px;}
+  .route-arrow{font-size:20px; color:var(--orange); flex-shrink:0;}
+
+  .detail-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:6px;}
+  .detail-item{background:#f7f7f5; border-radius:8px; padding:10px 12px;}
+  .detail-item .lbl{font-size:10.5px; color:var(--muted); text-transform:uppercase;}
+  .detail-item .val{font-size:14px; font-weight:700; color:var(--ink); margin-top:2px;}
+
+  .updated-note{font-size:11.5px; color:var(--muted); margin-top:18px; text-align:center;}
+  .empty-state{text-align:center; padding:40px 20px; color:var(--muted);}
+</style>
+</head>
+<body>
+
+<div class="hero-topbar">
+  <div class="hero-inner">
+    <div class="hero-logo"><img id="logoImg" alt="Universal Logistics & International"></div>
+    <div class="hero-title">
+      <div class="name">Universal Logistics &amp; International</div>
+      <div class="tag">Track Your Shipment</div>
+    </div>
+  </div>
+</div>
+
+<div class="track-body">
+  <div class="track-card" id="card">
+    <div class="empty-state">Loading...</div>
+  </div>
+</div>
+
+<script src="/js/templates.js"></script>
+<script>
+document.getElementById("logoImg").src = LOGO_DATA_URI;
+
+function escapeHtml(s){
+  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+async function main(){
+  const id = new URLSearchParams(window.location.search).get("id");
+  const card = document.getElementById("card");
+  if(!id){
+    card.innerHTML = '<div class="empty-state">Koi shipment ID nahi mila.</div>';
+    return;
+  }
+
+  try{
+    const res = await fetch(`/api/track/${id}`);
+    if(!res.ok){
+      card.innerHTML = '<div class="empty-state">Ye shipment nahi mili. AWB number check kar lein.</div>';
+      return;
+    }
+    const s = await res.json();
+
+    card.innerHTML = `
+      <h2>Shipment Tracking</h2>
+      <div class="awb-line">AWB #${escapeHtml(s.awbnum || "—")}</div>
+      <div class="status-badge status-${s.status}">${escapeHtml(s.status)}</div>
+
+      <div class="route-row">
+        <div class="route-point">
+          <div class="lbl">From</div>
+          <div class="val">${escapeHtml(s.shipperCity || s.shipperName || "—")}</div>
+          <div class="sub">${escapeHtml(s.shipperCountry || "")}</div>
+        </div>
+        <div class="route-arrow">&#10230;</div>
+        <div class="route-point">
+          <div class="lbl">To</div>
+          <div class="val">${escapeHtml(s.consigneeCity || s.consigneeName || "—")}</div>
+          <div class="sub">${escapeHtml(s.consigneeCountry || "")}</div>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-item"><div class="lbl">Pieces</div><div class="val">${escapeHtml(s.pieces || "—")}</div></div>
+        <div class="detail-item"><div class="lbl">Weight</div><div class="val">${escapeHtml(s.weight || "—")} KG</div></div>
+      </div>
+
+      <div class="updated-note">Last updated: ${new Date(s.updated_at).toLocaleString()}</div>
+    `;
+  }catch(err){
+    card.innerHTML = '<div class="empty-state">Network error — page reload karein.</div>';
+  }
+}
+main();
+</script>
+</body>
+</html>

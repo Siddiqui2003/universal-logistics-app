@@ -17,6 +17,7 @@
 <div id="status">Loading shipment...</div>
 <div id="printArea"></div>
 
+<script src="/js/qrcode.js"></script>
 <script src="/js/templates.js"></script>
 <script>
 async function main(){
@@ -32,6 +33,7 @@ async function main(){
   const data = await res.json();
 
   const v = data.form || {};
+  v.id = data.id;
   const products = data.products || [];
   const copies = parseInt(data.copies, 10) || 1;
 

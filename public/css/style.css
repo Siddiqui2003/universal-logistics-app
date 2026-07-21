@@ -251,6 +251,18 @@
     text-align:center;
     padding:7px;
   }
+  .qr-img{
+    width:56px;
+    height:56px;
+    margin-top:4px;
+    image-rendering:pixelated;
+  }
+  .qr-label{
+    font-size:7.5px;
+    color:var(--muted);
+    letter-spacing:0.3px;
+    margin-top:1px;
+  }
   .awb-title{font-weight:700; font-size:12.5px; margin-bottom:3px; font-family:"Playfair Display", serif; letter-spacing:1px; color:var(--blue);}
   .barcode{
     font-family:'Libre Barcode 39', monospace;
