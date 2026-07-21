@@ -10,6 +10,7 @@
 <body>
 <div class="auth-wrap">
   <div class="auth-card">
+    <div class="auth-logo"><img id="logoImg" alt="Universal Logistics & International"></div>
     <h1>Universal Logistics</h1>
     <div class="tag">Login to manage your Airway Bills &amp; Invoices</div>
 
@@ -26,7 +27,9 @@
   </div>
 </div>
 
+<script src="/js/templates.js"></script>
 <script>
+document.getElementById("logoImg").src = LOGO_DATA_URI;
 document.getElementById("loginForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
   const email = document.getElementById("email").value.trim();

@@ -537,3 +537,10 @@
   background:#fff;
   border-radius:10px;
 }
+
+/* ---------- AUTH LOGO ---------- */
+.auth-logo{
+  width:64px; height:64px; border-radius:14px; overflow:hidden;
+  margin:0 auto 14px; box-shadow:0 4px 14px rgba(0,0,0,.12);
+}
+.auth-logo img{width:100%; height:100%; object-fit:cover;}

@@ -4,10 +4,77 @@
 <meta charset="UTF-8">
 <title>My Shipments — Universal Logistics & International</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
 <style>
-  body{background:#f3f3f0;}
+  body{background:#eef0ed; padding:0;}
+
+  /* ---------- HERO TOPBAR ---------- */
+  .hero-topbar{
+    background:linear-gradient(120deg, var(--blue) 0%, #123a63 55%, #0a2340 100%);
+    padding:0;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-topbar::before{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 85% -20%, rgba(200,149,44,0.35), transparent 55%);
+  }
+  .hero-inner{
+    position:relative;
+    max-width:1100px; margin:0 auto;
+    padding:18px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .hero-brand{display:flex; align-items:center; gap:14px;}
+  .hero-logo{
+    width:52px; height:52px; border-radius:12px; overflow:hidden;
+    background:#fff; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 10px rgba(0,0,0,.25);
+  }
+  .hero-logo img{width:100%; height:100%; object-fit:cover;}
+  .hero-title{color:#fff;}
+  .hero-title .name{font-family:"Playfair Display", serif; font-weight:800; font-size:20px; letter-spacing:0.3px;}
+  .hero-title .tag{font-size:11.5px; color:#cfe0f5; letter-spacing:0.5px; margin-top:1px;}
+  .hero-user{display:flex; align-items:center; gap:12px;}
+  .hero-user .avatar{
+    width:34px; height:34px; border-radius:50%; background:var(--orange); color:#1c1300;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px;
+  }
+  .hero-user span{color:#fff; font-size:13px; font-weight:600;}
+  .hero-user button{
+    background:rgba(255,255,255,.14); color:#fff; border:1px solid rgba(255,255,255,.3);
+    padding:8px 14px; border-radius:7px; font-size:12.5px; font-weight:600; cursor:pointer;
+  }
+  .hero-user button:hover{background:rgba(255,255,255,.24);}
+
+  /* ---------- STAT CARDS ---------- */
+  .stats-row{
+    max-width:1100px; margin:-26px auto 0; padding:0 24px;
+    display:grid; grid-template-columns:repeat(4, 1fr); gap:14px;
+    position:relative; z-index:2;
+  }
+  .stat-card{
+    background:#fff; border-radius:12px; padding:16px 18px;
+    box-shadow:0 6px 20px rgba(20,30,50,.10);
+    border-top:3px solid var(--blue);
+  }
+  .stat-card .num{font-family:"Playfair Display", serif; font-size:26px; font-weight:800; color:var(--ink);}
+  .stat-card .lbl{font-size:11.5px; color:var(--muted); margin-top:2px; letter-spacing:0.3px;}
+  .stat-card.total{border-top-color:var(--blue);}
+  .stat-card.pending{border-top-color:#c8952c;}
+  .stat-card.confirmed{border-top-color:#1a7d43;}
+  .stat-card.shipped{border-top-color:#1a56c4;}
+
+  /* ---------- BODY ---------- */
+  .dash-body{max-width:1100px; margin:0 auto; padding:26px 24px 40px;}
+  .dash-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+  .dash-head h2{font-family:"Playfair Display", serif; margin:0; color:var(--ink); font-size:21px;}
+
+  .ship-table{border-top:none;}
+  .ship-table th{background:#f7f7f5;}
+  .ship-table tr:not(:first-child):hover td{background:#fbfbfa;}
   .status-pill{
     display:inline-block; padding:3px 10px; border-radius:20px;
     font-size:11px; font-weight:700; letter-spacing:0.3px;
@@ -20,12 +87,28 @@
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand">UNIVERSAL <span>LOGISTICS</span></div>
-  <div class="userinfo">
-    <span id="userName"></span>
-    <button id="logoutBtn">Logout</button>
+<div class="hero-topbar">
+  <div class="hero-inner">
+    <div class="hero-brand">
+      <div class="hero-logo"><img id="logoImg" alt="Universal Logistics & International"></div>
+      <div class="hero-title">
+        <div class="name">Universal Logistics &amp; International</div>
+        <div class="tag">Customer Portal</div>
+      </div>
+    </div>
+    <div class="hero-user">
+      <div class="avatar" id="avatarLetter"></div>
+      <span id="userName"></span>
+      <button id="logoutBtn">Logout</button>
+    </div>
   </div>
+</div>
+
+<div class="stats-row" id="statsRow">
+  <div class="stat-card total"><div class="num" id="statTotal">0</div><div class="lbl">TOTAL SHIPMENTS</div></div>
+  <div class="stat-card pending"><div class="num" id="statPending">0</div><div class="lbl">PENDING</div></div>
+  <div class="stat-card confirmed"><div class="num" id="statConfirmed">0</div><div class="lbl">CONFIRMED</div></div>
+  <div class="stat-card shipped"><div class="num" id="statShipped">0</div><div class="lbl">SHIPPED</div></div>
 </div>
 
 <div class="dash-body">
@@ -39,14 +122,27 @@
   </div>
 </div>
 
+<script src="/js/templates.js"></script>
 <script>
+document.getElementById("logoImg").src = LOGO_DATA_URI;
+
 async function loadUser(){
   const res = await fetch("/api/auth/me");
   if(!res.ok){ window.location.href = "/login.html"; return null; }
   const data = await res.json();
   if(data.user.role === "admin"){ window.location.href = "/dashboard.html"; return null; }
   document.getElementById("userName").textContent = data.user.name;
+  document.getElementById("avatarLetter").textContent = data.user.name.charAt(0).toUpperCase();
   return data.user;
+}
+
+function updateStats(shipments){
+  const counts = { Pending:0, Confirmed:0, Shipped:0, Cancelled:0 };
+  shipments.forEach(s => { if(counts[s.status] !== undefined) counts[s.status]++; });
+  document.getElementById("statTotal").textContent = shipments.length;
+  document.getElementById("statPending").textContent = counts.Pending;
+  document.getElementById("statConfirmed").textContent = counts.Confirmed;
+  document.getElementById("statShipped").textContent = counts.Shipped;
 }
 
 async function loadShipments(){
@@ -65,6 +161,8 @@ async function loadShipments(){
     wrap.innerHTML = '<div class="empty-state">Network error — page reload kar ke dobara try karein.</div>';
     return;
   }
+
+  updateStats(data.shipments || []);
 
   if(!data.shipments || data.shipments.length === 0){
     wrap.innerHTML = '<div class="empty-state">Abhi tak koi shipment nahi bani. "+ New Shipment" par click kar ke shuru karein.</div>';
