@@ -41,14 +41,17 @@ router.get("/", (req, res) => {
 
   const shipments = rows.map((r) => {
     const parsed = JSON.parse(r.data);
+    const f = parsed.form || {};
     return {
       id: r.id,
       awbnum: r.awbnum,
       trackingNo: r.tracking_no,
       status: r.status,
       customerName: r.customer_name,
-      shipperName: parsed.form ? parsed.form.shipperName : "",
-      consigneeName: parsed.form ? parsed.form.consigneeName : "",
+      shipperName: f.shipperName || "",
+      consigneeName: f.consigneeName || "",
+      service: f.service || "",
+      destination: f.destination || "",
       created_at: r.created_at,
       updated_at: r.updated_at,
     };

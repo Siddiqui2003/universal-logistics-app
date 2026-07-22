@@ -23,6 +23,7 @@
 <script>
 async function main(){
   const id = new URLSearchParams(window.location.search).get("id");
+  const only = new URLSearchParams(window.location.search).get("only"); // "bill" | "invoice" | null (both)
   const statusEl = document.getElementById("status");
   if(!id){ statusEl.textContent = "No shipment id provided."; return; }
 
@@ -40,12 +41,21 @@ async function main(){
   const products = data.products || [];
   const copies = parseInt(data.copies, 10) || 1;
 
-  let page1 = "";
-  for(let i=0;i<copies;i++){ page1 += billHTML(v); }
-  if(data.showTnc){ page1 += tncHTML(); }
+  let html = "";
+  if(only !== "invoice"){
+    let page1 = "";
+    for(let i=0;i<copies;i++){ page1 += billHTML(v); }
+    if(data.showTnc){ page1 += tncHTML(); }
+    html += pageWrap(page1);
+  }
+  if(only !== "bill" && data.showInvoice){
+    html += pageWrap(invoiceHTML(v, products));
+  }
 
-  let html = pageWrap(page1);
-  if(data.showInvoice){ html += pageWrap(invoiceHTML(v, products)); }
+  if(!html){
+    statusEl.textContent = "This shipment doesn't have an invoice to print.";
+    return;
+  }
 
   statusEl.style.display = "none";
   document.getElementById("printArea").innerHTML = html;

@@ -8,23 +8,16 @@
 <link rel="stylesheet" href="/css/style.css">
 <style>
   body{background:#eef0ed; padding:0;}
-
-  /* ---------- HERO TOPBAR ---------- */
   .hero-topbar{
     background:linear-gradient(120deg, var(--blue) 0%, #123a63 55%, #0a2340 100%);
-    padding:0;
-    position:relative;
-    overflow:hidden;
+    padding:0; position:relative; overflow:hidden;
   }
   .hero-topbar::before{
-    content:"";
-    position:absolute; inset:0;
+    content:""; position:absolute; inset:0;
     background:radial-gradient(circle at 85% -20%, rgba(200,149,44,0.35), transparent 55%);
   }
   .hero-inner{
-    position:relative;
-    max-width:1100px; margin:0 auto;
-    padding:18px 24px;
+    position:relative; max-width:1200px; margin:0 auto; padding:18px 24px;
     display:flex; align-items:center; justify-content:space-between;
   }
   .hero-brand{display:flex; align-items:center; gap:14px;}
@@ -55,10 +48,8 @@
     padding:8px 14px; border-radius:7px; font-size:12.5px; font-weight:600; cursor:pointer;
   }
   .hero-user button:hover{background:rgba(255,255,255,.24);}
-
-  /* ---------- STAT CARDS ---------- */
   .stats-row{
-    max-width:1100px; margin:-26px auto 0; padding:0 24px;
+    max-width:1200px; margin:-26px auto 0; padding:0 24px;
     display:grid; grid-template-columns:repeat(5, 1fr); gap:14px;
     position:relative; z-index:2;
   }
@@ -74,34 +65,50 @@
   .stat-card.confirmed{border-top-color:#1a7d43;}
   .stat-card.shipped{border-top-color:#1a56c4;}
   .stat-card.cancelled{border-top-color:#9c2b2b;}
-
-  /* ---------- BODY ---------- */
-  .dash-body{max-width:1100px; margin:0 auto; padding:26px 24px 40px;}
+  .dash-body{max-width:1200px; margin:0 auto; padding:26px 24px 40px;}
   .dash-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
   .dash-head h2{font-family:"Playfair Display", serif; margin:0; color:var(--ink); font-size:21px;}
-
+  .filter-bar{
+    background:#fff; border-radius:10px; padding:14px 16px; margin-bottom:16px;
+    box-shadow:0 1px 6px rgba(0,0,0,.06);
+    display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;
+  }
+  .filter-group{display:flex; flex-direction:column; min-width:150px;}
+  .filter-group label{font-size:10.5px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.3px;}
+  .filter-group select, .filter-group input{
+    padding:8px 10px; border:1px solid #ccc; border-radius:7px; font-size:13px; font-family:inherit;
+  }
+  .filter-actions{display:flex; gap:8px; margin-left:auto;}
+  .btn-show{
+    background:var(--blue); color:#fff; border:none; padding:9px 20px; border-radius:7px;
+    font-weight:700; font-size:13px; cursor:pointer;
+  }
+  .btn-show:hover{background:#092a4d;}
+  .btn-excel{
+    background:#1a7d43; color:#fff; border:none; padding:9px 18px; border-radius:7px;
+    font-weight:700; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+  }
+  .btn-excel:hover{background:#146334;}
   .ship-table{border-top:none;}
   .ship-table th{background:#f7f7f5;}
   .ship-table tr:not(:first-child):hover td{background:#fbfbfa;}
-  .customer-chip{
-    display:inline-flex; align-items:center; gap:7px; font-weight:600; font-size:12.5px;
-  }
+  .consig-cell .awb-main{font-weight:700; color:var(--ink); font-size:13px;}
+  .consig-cell .track-sub{font-size:10.5px; color:var(--muted); margin-top:2px;}
+  .customer-chip{display:inline-flex; align-items:center; gap:7px; font-weight:600; font-size:12.5px;}
   .customer-chip .dot{
     width:22px; height:22px; border-radius:50%; background:var(--blue); color:#fff;
     display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800;
     flex-shrink:0;
   }
-  .status-pill{
-    display:inline-block; padding:3px 10px; border-radius:20px;
-    font-size:11px; font-weight:700; letter-spacing:0.3px;
-  }
+  .status-pill{display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.3px;}
   .status-Pending{background:#fff3cd; color:#8a6300;}
   .status-Confirmed{background:#d4f5df; color:#1a7d43;}
   .status-Shipped{background:#dbe9ff; color:var(--blue);}
   .status-Cancelled{background:#fdeaea; color:#9c2b2b;}
-  .status-select{
-    font-size:12px; padding:5px 7px; border-radius:6px; border:1px solid #ccc; font-family:inherit;
-  }
+  .status-select{font-size:12px; padding:5px 7px; border-radius:6px; border:1px solid #ccc; font-family:inherit;}
+  .datetime-cell{font-size:11.5px; line-height:1.5;}
+  .datetime-cell b{color:var(--ink); font-weight:600;}
+  .row-actions{display:flex; flex-direction:column; gap:3px; align-items:flex-start;}
 </style>
 </head>
 <body>
@@ -140,6 +147,35 @@
     <a href="/form.html" class="btn-primary">+ New Shipment</a>
   </div>
 
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>Search</label>
+      <input type="text" id="fSearch" placeholder="AWB, tracking #, name...">
+    </div>
+    <div class="filter-group">
+      <label>Destination</label>
+      <select id="fDestination"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Service</label>
+      <select id="fService"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <label>Status</label>
+      <select id="fStatus">
+        <option value="">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Confirmed">Confirmed</option>
+        <option value="Shipped">Shipped</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+    </div>
+    <div class="filter-actions">
+      <button class="btn-show" id="showNowBtn">Show Now</button>
+      <button class="btn-excel" id="excelBtn">Excel</button>
+    </div>
+  </div>
+
   <div id="listWrap">
     <div class="empty-state">Loading...</div>
   </div>
@@ -150,6 +186,7 @@
 document.getElementById("logoImg").src = LOGO_DATA_URI;
 
 const STATUS_OPTIONS = ["Pending", "Confirmed", "Shipped", "Cancelled"];
+let allShipments = [];
 
 async function loadUser(){
   const res = await fetch("/api/auth/me");
@@ -174,6 +211,39 @@ function updateStats(shipments){
   document.getElementById("statCancelled").textContent = counts.Cancelled;
 }
 
+function populateFilterOptions(shipments){
+  const destSel = document.getElementById("fDestination");
+  const svcSel = document.getElementById("fService");
+  const destVal = destSel.value, svcVal = svcSel.value;
+
+  const destinations = [...new Set(shipments.map(s => s.destination).filter(Boolean))].sort();
+  const services = [...new Set(shipments.map(s => s.service).filter(Boolean))].sort();
+
+  destSel.innerHTML = '<option value="">All</option>' + destinations.map(d => `<option value="${escapeHtml(d)}">${escapeHtml(d)}</option>`).join("");
+  svcSel.innerHTML = '<option value="">All</option>' + services.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join("");
+
+  destSel.value = destVal;
+  svcSel.value = svcVal;
+}
+
+function applyFilters(shipments){
+  const search = document.getElementById("fSearch").value.trim().toLowerCase();
+  const destination = document.getElementById("fDestination").value;
+  const service = document.getElementById("fService").value;
+  const status = document.getElementById("fStatus").value;
+
+  return shipments.filter(s => {
+    if(destination && s.destination !== destination) return false;
+    if(service && s.service !== service) return false;
+    if(status && s.status !== status) return false;
+    if(search){
+      const haystack = [s.awbnum, s.trackingNo, s.shipperName, s.consigneeName, s.customerName].join(" ").toLowerCase();
+      if(haystack.indexOf(search) === -1) return false;
+    }
+    return true;
+  });
+}
+
 async function loadShipments(){
   const wrap = document.getElementById("listWrap");
   let data;
@@ -182,7 +252,7 @@ async function loadShipments(){
     if(!res.ok){
       let errMsg = "Shipments load nahi ho sakin (server error).";
       try{ const errData = await res.json(); errMsg = errData.error || errMsg; }catch(e){}
-      wrap.innerHTML = `<div class="empty-state">${escapeHtml(errMsg)}</div>`;
+      wrap.innerHTML = '<div class="empty-state">' + escapeHtml(errMsg) + '</div>';
       return;
     }
     data = await res.json();
@@ -191,16 +261,27 @@ async function loadShipments(){
     return;
   }
 
-  updateStats(data.shipments || []);
+  allShipments = data.shipments || [];
+  updateStats(allShipments);
+  populateFilterOptions(allShipments);
+  renderTable();
+}
 
-  if(!data.shipments || data.shipments.length === 0){
-    wrap.innerHTML = '<div class="empty-state">Abhi tak koi shipment/booking nahi bani.</div>';
+function renderTable(){
+  const wrap = document.getElementById("listWrap");
+  const shipments = applyFilters(allShipments);
+
+  if(shipments.length === 0){
+    wrap.innerHTML = '<div class="empty-state">Koi shipment is filter se match nahi hui.</div>';
     return;
   }
 
-  const rows = data.shipments.map(s => `
+  const rows = shipments.map(s => `
     <tr>
-      <td>${s.awbnum || "-"}</td>
+      <td class="consig-cell">
+        <div class="awb-main">${escapeHtml(s.awbnum || "(no AWB)")}</div>
+        ${s.trackingNo ? `<div class="track-sub">Track #${escapeHtml(s.trackingNo)}</div>` : ""}
+      </td>
       <td>
         <span class="customer-chip">
           <span class="dot">${escapeHtml((s.customerName||"?").charAt(0).toUpperCase())}</span>
@@ -209,16 +290,21 @@ async function loadShipments(){
       </td>
       <td>${escapeHtml(s.shipperName || "-")}</td>
       <td>${escapeHtml(s.consigneeName || "-")}</td>
+      <td>${escapeHtml(s.service || "-")}</td>
       <td>
         <select class="status-select" data-id="${s.id}">
           ${STATUS_OPTIONS.map(opt => `<option value="${opt}" ${opt===s.status?"selected":""}>${opt}</option>`).join("")}
         </select>
       </td>
-      <td>${new Date(s.updated_at).toLocaleString()}</td>
+      <td class="datetime-cell">
+        <div><b>Created:</b> ${new Date(s.created_at).toLocaleString()}</div>
+        <div><b>Updated:</b> ${new Date(s.updated_at).toLocaleString()}</div>
+      </td>
       <td>
         <div class="row-actions">
           <a class="act-edit" href="/form.html?id=${s.id}">Edit</a>
-          <a class="act-print" href="/print.html?id=${s.id}" target="_blank">Print</a>
+          <a class="act-print" href="/print.html?id=${s.id}&only=bill" target="_blank">Print AWB</a>
+          <a class="act-print" href="/print.html?id=${s.id}&only=invoice" target="_blank">Print Invoice</a>
           <button class="act-delete" data-id="${s.id}">Delete</button>
         </div>
       </td>
@@ -228,12 +314,13 @@ async function loadShipments(){
   wrap.innerHTML = `
     <table class="ship-table">
       <tr>
-        <th>AWB #</th>
+        <th>Consig. #</th>
         <th>Customer</th>
         <th>Shipper</th>
         <th>Consignee</th>
+        <th>Service</th>
         <th>Status</th>
-        <th>Last Updated</th>
+        <th>Date-Time</th>
         <th>Actions</th>
       </tr>
       ${rows}
@@ -265,8 +352,39 @@ async function loadShipments(){
 }
 
 function escapeHtml(s){
-  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
+
+function exportToExcel(){
+  const shipments = applyFilters(allShipments);
+  const headers = ["Consignment #","Tracking #","Customer","Shipper","Consignee","Service","Status","Created","Updated"];
+  const rows = shipments.map(s => [
+    s.awbnum || "", s.trackingNo || "", s.customerName || "", s.shipperName || "",
+    s.consigneeName || "", s.service || "", s.status || "",
+    new Date(s.created_at).toLocaleString(), new Date(s.updated_at).toLocaleString()
+  ]);
+
+  function csvEscape(val){
+    val = String(val === undefined || val === null ? "" : val);
+    if(/[",\n]/.test(val)) return '"' + val.replace(/"/g, '""') + '"';
+    return val;
+  }
+
+  const csv = [headers].concat(rows).map(function(row){ return row.map(csvEscape).join(","); }).join("\r\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "shipments-" + new Date().toISOString().slice(0,10) + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("showNowBtn").addEventListener("click", renderTable);
+document.getElementById("excelBtn").addEventListener("click", exportToExcel);
+document.getElementById("fSearch").addEventListener("keydown", (e)=>{ if(e.key === "Enter") renderTable(); });
 
 document.getElementById("logoutBtn").addEventListener("click", async ()=>{
   await fetch("/api/auth/logout", { method:"POST" });

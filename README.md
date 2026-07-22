@@ -6,6 +6,11 @@ and only sees their own shipments.
 
 ## Features
 
+- **Admin dashboard with filters and Excel export.** Search by AWB/tracking number/name,
+  filter by Destination, Service, or Status, and export the currently filtered list to a
+  CSV file (opens directly in Excel) with one click. Each row shows the consignment number,
+  tracking number, customer, shipper/consignee, service, status (editable inline), and
+  created/updated timestamps, with separate **Print AWB** and **Print Invoice** links.
 - **Unique Tracking Number, Barcode & QR code — right inside the AWB box on every Bill.**
   Each shipment gets a random, unique 7-digit tracking number (generated when it's first
   saved and guaranteed not to collide with any other shipment), shown alongside a real
