@@ -15,6 +15,7 @@ router.get("/:id", (req, res) => {
 
   res.json({
     awbnum: row.awbnum,
+    trackingNo: row.tracking_no,
     status: row.status,
     shipperName: form.shipperName || "",
     shipperCity: form.shipperCity || "",

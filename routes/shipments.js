@@ -9,13 +9,25 @@ function isAdmin(req) {
   return req.user.role === "admin";
 }
 
+// Generates a random 7-digit tracking number and makes sure it isn't already
+// in use by another shipment (extremely unlikely to collide, but we check anyway).
+function generateTrackingNo() {
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const candidate = String(Math.floor(1000000 + Math.random() * 9000000)); // 1000000-9999999
+    const existing = db.prepare("SELECT id FROM shipments WHERE tracking_no = ?").get(candidate);
+    if (!existing) return candidate;
+  }
+  // Extremely unlikely fallback: timestamp-based 7 digits
+  return String(Date.now()).slice(-7);
+}
+
 // ---------- LIST shipments ----------
 // Admin sees every shipment from every customer. Customers see only their own.
 router.get("/", (req, res) => {
   const rows = isAdmin(req)
     ? db
         .prepare(
-          `SELECT s.id, s.awbnum, s.data, s.status, s.created_at, s.updated_at,
+          `SELECT s.id, s.awbnum, s.tracking_no, s.data, s.status, s.created_at, s.updated_at,
                   u.name AS customer_name
            FROM shipments s JOIN users u ON u.id = s.user_id
            ORDER BY s.updated_at DESC`
@@ -23,7 +35,7 @@ router.get("/", (req, res) => {
         .all()
     : db
         .prepare(
-          "SELECT id, awbnum, data, status, created_at, updated_at FROM shipments WHERE user_id = ? ORDER BY updated_at DESC"
+          "SELECT id, awbnum, tracking_no, data, status, created_at, updated_at FROM shipments WHERE user_id = ? ORDER BY updated_at DESC"
         )
         .all(req.user.id);
 
@@ -32,6 +44,7 @@ router.get("/", (req, res) => {
     return {
       id: r.id,
       awbnum: r.awbnum,
+      trackingNo: r.tracking_no,
       status: r.status,
       customerName: r.customer_name,
       shipperName: parsed.form ? parsed.form.shipperName : "",
@@ -50,9 +63,18 @@ router.get("/:id", (req, res) => {
     : db.prepare("SELECT * FROM shipments WHERE id = ? AND user_id = ?").get(req.params.id, req.user.id);
 
   if (!row) return res.status(404).json({ error: "Shipment not found" });
+
+  // Backfill a tracking number for shipments created before this feature existed.
+  let trackingNo = row.tracking_no;
+  if (!trackingNo) {
+    trackingNo = generateTrackingNo();
+    db.prepare("UPDATE shipments SET tracking_no = ? WHERE id = ?").run(trackingNo, row.id);
+  }
+
   res.json({
     id: row.id,
     awbnum: row.awbnum,
+    trackingNo,
     status: row.status,
     ...JSON.parse(row.data),
     created_at: row.created_at,
@@ -68,13 +90,14 @@ router.post("/", (req, res) => {
   // Customers always start a new booking as "Pending" — only the admin can set a
   // different status. This keeps the booking review workflow trustworthy.
   const finalStatus = isAdmin(req) ? status || "Pending" : "Pending";
+  const trackingNo = generateTrackingNo();
 
   const data = JSON.stringify({ form, products: products || [], showTnc, showInvoice, copies });
   const result = db
-    .prepare("INSERT INTO shipments (user_id, awbnum, data, status) VALUES (?, ?, ?, ?)")
-    .run(req.user.id, form.awbnum || "", data, finalStatus);
+    .prepare("INSERT INTO shipments (user_id, awbnum, tracking_no, data, status) VALUES (?, ?, ?, ?, ?)")
+    .run(req.user.id, form.awbnum || "", trackingNo, data, finalStatus);
 
-  res.json({ id: Number(result.lastInsertRowid) });
+  res.json({ id: Number(result.lastInsertRowid), trackingNo });
 });
 
 // ---------- UPDATE an existing shipment ----------

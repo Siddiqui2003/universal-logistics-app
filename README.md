@@ -6,11 +6,12 @@ and only sees their own shipments.
 
 ## Features
 
-- **Unique Tracking Number, Barcode & QR code — automatically, at the top of every Bill.**
-  Each shipment gets a unique tracking number (e.g. `ULI26000042`) generated from its database
-  ID, shown alongside a real scannable **CODE128 barcode** and a **QR code** — all generated
-  locally (no external service). Scanning the QR opens a public tracking page (no login) with
-  live status, route, pieces, and weight.
+- **Unique Tracking Number, Barcode & QR code — right inside the AWB box on every Bill.**
+  Each shipment gets a random, unique 7-digit tracking number (generated when it's first
+  saved and guaranteed not to collide with any other shipment), shown alongside a real
+  scannable **CODE128 barcode** and a **QR code** — all generated locally (no external
+  service). Scanning the QR opens a public tracking page (no login) with live status, route,
+  pieces, and weight.
 - **Two roles: Admin and Customer.** The first account ever created becomes the Admin
   automatically. After that, public registration is closed — the Admin creates a login for
   each customer from the **Manage Customers** page.

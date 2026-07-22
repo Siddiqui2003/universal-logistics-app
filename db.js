@@ -31,6 +31,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     awbnum TEXT,
+    tracking_no TEXT,
     data TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'Pending',
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
@@ -57,6 +58,9 @@ if (isFreshRoleMigration) {
 }
 if (!columnExists("shipments", "status")) {
   db.exec(`ALTER TABLE shipments ADD COLUMN status TEXT NOT NULL DEFAULT 'Pending'`);
+}
+if (!columnExists("shipments", "tracking_no")) {
+  db.exec(`ALTER TABLE shipments ADD COLUMN tracking_no TEXT`);
 }
 
 // Safety net: if for any reason there is no admin at all (e.g. manual DB edits),

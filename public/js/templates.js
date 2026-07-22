@@ -59,21 +59,11 @@ function trackingUrl(shipmentId){
 }
 
 function billHTML(v){
-  const trackNo = formatTrackingNo(v.id, v.created_at);
+  const trackNo = v.trackingNo || "";
   const qrSrc = qrDataUri(trackingUrl(v.id));
   const barcodeSrc = barcodeDataUri(trackNo);
-  const trackingStrip = trackNo ? `
-    <div class="tracking-strip">
-      <div class="tn-block">
-        <div class="tn-label">TRACKING NUMBER</div>
-        <div class="tn-value">${esc(trackNo)}</div>
-      </div>
-      ${barcodeSrc ? `<img src="${barcodeSrc}" class="tn-barcode" alt="Barcode">` : ""}
-      ${qrSrc ? `<img src="${qrSrc}" class="tn-qr" alt="Scan to track">` : ""}
-    </div>` : "";
   return `
   <div class="bill">
-    ${trackingStrip}
     <table class="bill-table">
       <tr>
         <td class="head-logo" style="width:30%;" rowspan="3">
@@ -85,9 +75,9 @@ function billHTML(v){
         <td class="lbl" style="width:8%;">Time</td>
         <td class="val" style="width:12%;" colspan="2">${esc(v.time)}</td>
         <td rowspan="3" style="width:28%;" class="awb-box">
-          <div class="awb-title">AIRWAY BILL</div>
-          <div class="barcode">*${esc(v.awbnum||"00000000")}*</div>
-          <div class="awb-num">${esc(v.awbnum)}</div>
+          ${trackNo ? `<div class="tn-label">TRACKING NUMBER</div><div class="tn-value">${esc(trackNo)}</div>` : `<div class="awb-title">AIRWAY BILL</div>`}
+          ${barcodeSrc ? `<img src="${barcodeSrc}" class="tn-barcode" alt="Barcode">` : ""}
+          ${qrSrc ? `<img src="${qrSrc}" class="tn-qr" alt="Scan to track">` : ""}
         </td>
       </tr>
       <tr>
@@ -110,9 +100,11 @@ function billHTML(v){
       </tr>
       <tr>
         <td class="lbl">Shipper's Address</td>
-        <td class="val" colspan="2">${esc(v.shipperAddress)}</td>
+        <td class="val" colspan="6">${esc(v.shipperAddress)}</td>
+      </tr>
+      <tr>
         <td class="lbl">Consignee's Address</td>
-        <td class="val" colspan="3">${esc(v.consigneeAddress)}</td>
+        <td class="val" colspan="6">${esc(v.consigneeAddress)}</td>
       </tr>
       <tr>
         <td class="lbl">Shipper Email</td>

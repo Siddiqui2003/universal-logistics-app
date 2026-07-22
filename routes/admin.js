@@ -51,7 +51,7 @@ router.delete("/customers/:id", (req, res) => {
 router.get("/shipments", (req, res) => {
   const rows = db
     .prepare(
-      `SELECT s.id, s.awbnum, s.data, s.status, s.created_at, s.updated_at,
+      `SELECT s.id, s.awbnum, s.tracking_no, s.data, s.status, s.created_at, s.updated_at,
               u.name AS customer_name, u.email AS customer_email
        FROM shipments s
        JOIN users u ON u.id = s.user_id
@@ -64,6 +64,7 @@ router.get("/shipments", (req, res) => {
     return {
       id: r.id,
       awbnum: r.awbnum,
+      trackingNo: r.tracking_no,
       status: r.status,
       customerName: r.customer_name,
       customerEmail: r.customer_email,

@@ -36,6 +36,7 @@ async function main(){
   const v = data.form || {};
   v.id = data.id;
   v.created_at = data.created_at;
+  v.trackingNo = data.trackingNo;
   const products = data.products || [];
   const copies = parseInt(data.copies, 10) || 1;
 
