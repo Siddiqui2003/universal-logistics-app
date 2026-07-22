@@ -75,9 +75,9 @@ function billHTML(v){
         <td class="lbl" style="width:8%;">Time</td>
         <td class="val" style="width:12%;" colspan="2">${esc(v.time)}</td>
         <td rowspan="3" style="width:28%;" class="awb-box">
-          ${trackNo ? `<div class="tn-label">TRACKING NUMBER</div><div class="tn-value">${esc(trackNo)}</div>` : `<div class="awb-title">AIRWAY BILL</div>`}
+          <div class="awb-title">AIRWAY BILL</div>
           ${barcodeSrc ? `<img src="${barcodeSrc}" class="tn-barcode" alt="Barcode">` : ""}
-          ${qrSrc ? `<img src="${qrSrc}" class="tn-qr" alt="Scan to track">` : ""}
+          ${trackNo ? `<div class="tn-value">${esc(trackNo)}</div>` : ""}
         </td>
       </tr>
       <tr>
@@ -159,14 +159,21 @@ function billHTML(v){
       </tr>
       <tr>
         <td class="lbl">Product Detail</td>
-        <td class="val" colspan="6">${esc(v.productDetail)}</td>
+        <td class="val" colspan="5">${esc(v.productDetail)}</td>
+        <td class="qr-box" rowspan="3">
+          <div class="qr-scan-row">
+            <span class="qr-scan-label">Scan</span>
+            ${qrSrc ? `<img src="${qrSrc}" class="qr-img" alt="Scan to track">` : ""}
+            <span class="qr-scan-label">to Track</span>
+          </div>
+        </td>
       </tr>
       <tr>
         <td class="lbl">Comments</td>
-        <td class="val" colspan="6">${esc(v.comments)}</td>
+        <td class="val" colspan="5">${esc(v.comments)}</td>
       </tr>
       <tr class="note-row">
-        <td colspan="7">NOTE: PLEASE DO NOT ACCEPT, IF THE SHIPMENT IS NOT INTACT.</td>
+        <td colspan="6">NOTE: PLEASE DO NOT ACCEPT, IF THE SHIPMENT IS NOT INTACT.</td>
       </tr>
       <tr>
         <td colspan="7" style="text-align:right;">

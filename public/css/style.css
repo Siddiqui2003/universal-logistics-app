@@ -203,32 +203,19 @@
     overflow:hidden;
   }
   .bill + .bill{margin-top:16px;}
-  .tn-label{
-    font-size:7.5px;
-    font-weight:700;
-    color:var(--muted);
-    letter-spacing:1px;
-  }
   .tn-value{
     font-family:"Playfair Display", serif;
     font-weight:800;
-    font-size:14px;
-    color:var(--blue);
-    letter-spacing:0.5px;
+    font-size:15px;
+    color:var(--ink);
+    letter-spacing:1px;
     white-space:nowrap;
-    margin-bottom:3px;
+    margin-top:3px;
   }
   .tn-barcode{
     max-width:95%;
-    height:32px;
-    margin:2px auto;
-    display:block;
-  }
-  .tn-qr{
-    width:44px;
-    height:44px;
+    height:34px;
     margin:2px auto 0;
-    image-rendering:pixelated;
     display:block;
   }
   .bill-table{
@@ -293,8 +280,30 @@
   }
   .awb-num{font-weight:800; font-size:14px; letter-spacing:1.5px; margin-top:2px; color:var(--red);}
   .note-row td{font-size:10px; font-weight:700; background:#fff7e6; -webkit-print-color-adjust:exact; print-color-adjust:exact;}
-  .qr-cell{text-align:center; font-size:10px;}
-  .qr-cell img{width:70px; height:70px;}
+  .qr-box{
+    text-align:center;
+    vertical-align:middle;
+    padding:6px;
+  }
+  .qr-scan-row{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+  }
+  .qr-scan-label{
+    font-size:9px;
+    font-weight:700;
+    color:var(--ink);
+    letter-spacing:0.3px;
+  }
+  .qr-img{
+    width:56px;
+    height:56px;
+    image-rendering:pixelated;
+    margin:2px 0;
+  }
   .section-title{font-weight:800; text-align:center; padding:7px; font-size:12.5px; letter-spacing:1px; font-family:"Playfair Display", serif;}
   .sig-line{margin-top:12px; font-size:12px;}
 
