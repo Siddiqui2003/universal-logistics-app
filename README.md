@@ -6,6 +6,10 @@ and only sees their own shipments.
 
 ## Features
 
+- **Bootstrap 5.3.8 included** (vendored locally, no internet/CDN required) for building new
+  UI components — modals, toasts, dropdowns, grid utilities, etc. It loads before the app's
+  own `style.css`, so the existing custom theme (fonts, colors, buttons, tables) is untouched;
+  Bootstrap only fills in anything not already styled.
 - **Admin dashboard with filters and Excel export.** Search by AWB/tracking number/name,
   filter by Destination, Service, or Status, and export the currently filtered list to a
   CSV file (opens directly in Excel) with one click. Each row shows the consignment number,
@@ -103,11 +107,14 @@ airway-app/
     ├── form.html              # Full Airway Bill / Invoice / HS Code editor (Admin + Customer)
     ├── print.html              # Print-ready view (opened in a new tab)
     ├── track.html              # Public tracking page (no login) — opened by scanning the QR code
-    ├── css/style.css
+    ├── css/
+    │   ├── style.css               # Custom theme (loads AFTER Bootstrap so it always wins visually)
+    │   └── bootstrap.min.css       # Bootstrap 5.3.8 (vendored, no CDN/internet needed)
     └── js/
         ├── templates.js        # Shared HTML templates for the Bill / T&C / Invoice
         ├── qrcode.js            # Local QR code generator (no external service/API)
         └── jsbarcode.js         # Local CODE128 barcode generator (no external service/API)
+        └── bootstrap.bundle.min.js  # Bootstrap 5.3.8 JS (Modal, Toast, Dropdown, etc.)
 ```
 
 ## Backing up your data
