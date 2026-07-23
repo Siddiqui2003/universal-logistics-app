@@ -2,183 +2,246 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin Dashboard — Universal Logistics & International</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/style.css">
 <style>
-  body{background:#eef0ed; padding:0;}
-  .hero-topbar{
+  :root{
+    --bs-body-font-family: "Inter", sans-serif;
+  }
+  body{background:#eef0ed; font-family:"Inter", sans-serif;}
+
+  /* ---------- NAVBAR ---------- */
+  .navbar-brand-custom{
     background:linear-gradient(120deg, var(--blue) 0%, #123a63 55%, #0a2340 100%);
-    padding:0; position:relative; overflow:hidden;
+    position:relative; overflow:hidden;
   }
-  .hero-topbar::before{
+  .navbar-brand-custom::before{
     content:""; position:absolute; inset:0;
-    background:radial-gradient(circle at 85% -20%, rgba(200,149,44,0.35), transparent 55%);
+    background:radial-gradient(circle at 90% -30%, rgba(200,149,44,0.35), transparent 55%);
+    pointer-events:none;
   }
-  .hero-inner{
-    position:relative; max-width:1200px; margin:0 auto; padding:18px 24px;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .hero-brand{display:flex; align-items:center; gap:14px;}
-  .hero-logo{
-    width:52px; height:52px; border-radius:12px; overflow:hidden;
+  .brand-logo{
+    width:44px; height:44px; border-radius:10px; overflow:hidden;
     background:#fff; display:flex; align-items:center; justify-content:center;
-    box-shadow:0 3px 10px rgba(0,0,0,.25);
+    box-shadow:0 3px 10px rgba(0,0,0,.25); flex-shrink:0;
   }
-  .hero-logo img{width:100%; height:100%; object-fit:cover;}
-  .hero-title{color:#fff;}
-  .hero-title .name{font-family:"Playfair Display", serif; font-weight:800; font-size:20px; letter-spacing:0.3px;}
-  .hero-title .tag{font-size:11.5px; color:#cfe0f5; letter-spacing:0.5px; margin-top:1px;}
-  .hero-right{display:flex; align-items:center; gap:18px;}
-  .hero-nav a{
-    color:#e8eefc; text-decoration:none; font-size:13px; font-weight:600;
-    padding:8px 14px; border-radius:7px; border:1px solid rgba(255,255,255,.25);
-    transition:background .15s;
+  .brand-logo img{width:100%; height:100%; object-fit:cover;}
+  .brand-text .name{font-family:"Playfair Display", serif; font-weight:800; font-size:17px; color:#fff; line-height:1.1;}
+  .brand-text .tag{font-size:10.5px; color:#cfe0f5; letter-spacing:0.4px;}
+  .navbar .nav-link{color:#e8eefc !important; font-weight:600; font-size:13.5px;}
+  .navbar .nav-link:hover{color:#fff !important;}
+  .avatar-circle{
+    width:32px; height:32px; border-radius:50%; background:var(--orange); color:#1c1300;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12.5px;
   }
-  .hero-nav a:hover{background:rgba(255,255,255,.12);}
-  .hero-user{display:flex; align-items:center; gap:12px;}
-  .hero-user .avatar{
-    width:34px; height:34px; border-radius:50%; background:var(--orange); color:#1c1300;
-    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px;
-  }
-  .hero-user span{color:#fff; font-size:13px; font-weight:600;}
-  .hero-user button{
+  .btn-logout{
     background:rgba(255,255,255,.14); color:#fff; border:1px solid rgba(255,255,255,.3);
-    padding:8px 14px; border-radius:7px; font-size:12.5px; font-weight:600; cursor:pointer;
   }
-  .hero-user button:hover{background:rgba(255,255,255,.24);}
-  .stats-row{
-    max-width:1200px; margin:-26px auto 0; padding:0 24px;
-    display:grid; grid-template-columns:repeat(5, 1fr); gap:14px;
-    position:relative; z-index:2;
-  }
+  .btn-logout:hover{background:rgba(255,255,255,.24); color:#fff;}
+
+  /* ---------- STAT CARDS ---------- */
   .stat-card{
-    background:#fff; border-radius:12px; padding:16px 18px;
-    box-shadow:0 6px 20px rgba(20,30,50,.10);
+    border:none; border-radius:12px; box-shadow:0 6px 20px rgba(20,30,50,.08);
     border-top:3px solid var(--blue);
   }
-  .stat-card .num{font-family:"Playfair Display", serif; font-size:26px; font-weight:800; color:var(--ink);}
-  .stat-card .lbl{font-size:11.5px; color:var(--muted); margin-top:2px; letter-spacing:0.3px;}
+  .stat-card .stat-num{font-family:"Playfair Display", serif; font-size:26px; font-weight:800; color:var(--ink);}
+  .stat-card .stat-lbl{font-size:11px; color:var(--muted); letter-spacing:0.3px; text-transform:uppercase;}
   .stat-card.total{border-top-color:var(--blue);}
   .stat-card.pending{border-top-color:#c8952c;}
   .stat-card.confirmed{border-top-color:#1a7d43;}
   .stat-card.shipped{border-top-color:#1a56c4;}
   .stat-card.cancelled{border-top-color:#9c2b2b;}
-  .dash-body{max-width:1200px; margin:0 auto; padding:26px 24px 40px;}
-  .dash-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
-  .dash-head h2{font-family:"Playfair Display", serif; margin:0; color:var(--ink); font-size:21px;}
-  .filter-bar{
-    background:#fff; border-radius:10px; padding:14px 16px; margin-bottom:16px;
-    box-shadow:0 1px 6px rgba(0,0,0,.06);
-    display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;
+
+  /* ---------- SECTION HEADING ---------- */
+  .section-heading{font-family:"Playfair Display", serif; color:var(--ink); font-weight:700;}
+  .btn-brand{background:var(--blue); border-color:var(--blue); color:#fff; font-weight:700;}
+  .btn-brand:hover{background:#092a4d; border-color:#092a4d; color:#fff;}
+  .btn-brand-outline{border-color:var(--blue); color:var(--blue); font-weight:600;}
+  .btn-brand-outline:hover{background:var(--blue); color:#fff;}
+  .btn-excel-brand{background:#1a7d43; border-color:#1a7d43; color:#fff; font-weight:700;}
+  .btn-excel-brand:hover{background:#146334; border-color:#146334; color:#fff;}
+
+  /* ---------- FILTER CARD ---------- */
+  .filter-card{border:none; border-radius:12px; box-shadow:0 1px 8px rgba(0,0,0,.06);}
+  .filter-card label{font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.3px; font-weight:600;}
+
+  /* ---------- TABLE ---------- */
+  .shipment-table thead th{
+    background:#f7f7f5; font-size:11px; text-transform:uppercase; letter-spacing:0.3px;
+    color:var(--muted); font-weight:700; border-bottom:2px solid #e5e5e0; white-space:nowrap;
   }
-  .filter-group{display:flex; flex-direction:column; min-width:150px;}
-  .filter-group label{font-size:10.5px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.3px;}
-  .filter-group select, .filter-group input{
-    padding:8px 10px; border:1px solid #ccc; border-radius:7px; font-size:13px; font-family:inherit;
-  }
-  .filter-actions{display:flex; gap:8px; margin-left:auto;}
-  .btn-show{
-    background:var(--blue); color:#fff; border:none; padding:9px 20px; border-radius:7px;
-    font-weight:700; font-size:13px; cursor:pointer;
-  }
-  .btn-show:hover{background:#092a4d;}
-  .btn-excel{
-    background:#1a7d43; color:#fff; border:none; padding:9px 18px; border-radius:7px;
-    font-weight:700; font-size:13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;
-  }
-  .btn-excel:hover{background:#146334;}
-  .ship-table{border-top:none;}
-  .ship-table th{background:#f7f7f5;}
-  .ship-table tr:not(:first-child):hover td{background:#fbfbfa;}
-  .consig-cell .awb-main{font-weight:700; color:var(--ink); font-size:13px;}
-  .consig-cell .track-sub{font-size:10.5px; color:var(--muted); margin-top:2px;}
-  .customer-chip{display:inline-flex; align-items:center; gap:7px; font-weight:600; font-size:12.5px;}
-  .customer-chip .dot{
+  .shipment-table td{vertical-align:middle; font-size:13px;}
+  .awb-main{font-weight:700; color:var(--ink); font-size:13px;}
+  .track-sub{font-size:10.5px; color:var(--muted);}
+  .customer-chip{display:inline-flex; align-items:center; gap:6px; font-weight:600; font-size:12.5px;}
+  .customer-dot{
     width:22px; height:22px; border-radius:50%; background:var(--blue); color:#fff;
-    display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800;
-    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;
   }
-  .status-pill{display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.3px;}
-  .status-Pending{background:#fff3cd; color:#8a6300;}
-  .status-Confirmed{background:#d4f5df; color:#1a7d43;}
-  .status-Shipped{background:#dbe9ff; color:var(--blue);}
-  .status-Cancelled{background:#fdeaea; color:#9c2b2b;}
-  .status-select{font-size:12px; padding:5px 7px; border-radius:6px; border:1px solid #ccc; font-family:inherit;}
-  .datetime-cell{font-size:11.5px; line-height:1.5;}
+  .datetime-cell{font-size:11px; line-height:1.5; white-space:nowrap;}
   .datetime-cell b{color:var(--ink); font-weight:600;}
-  .row-actions{display:flex; flex-direction:column; gap:3px; align-items:flex-start;}
+  .status-select-sm{font-size:12px; min-width:120px;}
+  .action-btns .btn{font-size:11.5px; padding:3px 8px;}
+  .empty-state{text-align:center; padding:50px 20px; color:var(--muted);}
 </style>
 </head>
 <body>
 
-<div class="hero-topbar">
-  <div class="hero-inner">
-    <div class="hero-brand">
-      <div class="hero-logo"><img id="logoImg" alt="Universal Logistics & International"></div>
-      <div class="hero-title">
-        <div class="name">Universal Logistics &amp; International</div>
-        <div class="tag">Admin Control Panel</div>
+<!-- ===================== NAVBAR ===================== -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-brand-custom py-2">
+  <div class="container-fluid px-3 px-lg-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/dashboard.html">
+      <span class="brand-logo"><img id="logoImg" alt="Universal Logistics & International"></span>
+      <span class="brand-text">
+        <span class="d-block name">Universal Logistics</span>
+        <span class="d-block tag">Admin Control Panel</span>
+      </span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navContent">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3 mt-3 mt-lg-0">
+        <li class="nav-item"><a class="nav-link" href="/customers.html">Manage Customers</a></li>
+        <li class="nav-item d-flex align-items-center gap-2 mt-2 mt-lg-0">
+          <span class="avatar-circle" id="avatarLetter"></span>
+          <span class="text-white small fw-semibold" id="userName"></span>
+        </li>
+        <li class="nav-item mt-2 mt-lg-0">
+          <button class="btn btn-sm btn-logout w-100" id="logoutBtn">Logout</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid px-3 px-lg-4" style="max-width:1240px;">
+
+  <!-- ===================== STAT CARDS ===================== -->
+  <div class="row g-3 mt-1 mb-4">
+    <div class="col-6 col-md-4 col-lg">
+      <div class="card stat-card total h-100">
+        <div class="card-body py-3">
+          <div class="stat-num" id="statTotal">0</div>
+          <div class="stat-lbl">Total Shipments</div>
+        </div>
       </div>
     </div>
-    <div class="hero-right">
-      <div class="hero-nav"><a href="/customers.html">Manage Customers</a></div>
-      <div class="hero-user">
-        <div class="avatar" id="avatarLetter"></div>
-        <span id="userName"></span>
-        <button id="logoutBtn">Logout</button>
+    <div class="col-6 col-md-4 col-lg">
+      <div class="card stat-card pending h-100">
+        <div class="card-body py-3">
+          <div class="stat-num" id="statPending">0</div>
+          <div class="stat-lbl">Pending</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg">
+      <div class="card stat-card confirmed h-100">
+        <div class="card-body py-3">
+          <div class="stat-num" id="statConfirmed">0</div>
+          <div class="stat-lbl">Confirmed</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg">
+      <div class="card stat-card shipped h-100">
+        <div class="card-body py-3">
+          <div class="stat-num" id="statShipped">0</div>
+          <div class="stat-lbl">Shipped</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg">
+      <div class="card stat-card cancelled h-100">
+        <div class="card-body py-3">
+          <div class="stat-num" id="statCancelled">0</div>
+          <div class="stat-lbl">Cancelled</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== HEADER ROW ===================== -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+    <h2 class="section-heading mb-0 fs-4">All Shipments &amp; Bookings</h2>
+    <a href="/form.html" class="btn btn-brand">+ New Shipment</a>
+  </div>
+
+  <!-- ===================== FILTER BAR ===================== -->
+  <div class="card filter-card mb-3">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-sm-6 col-lg-3">
+          <label class="form-label mb-1">Search</label>
+          <input type="text" class="form-control" id="fSearch" placeholder="AWB, tracking #, name...">
+        </div>
+        <div class="col-6 col-sm-6 col-lg-2">
+          <label class="form-label mb-1">Destination</label>
+          <select class="form-select" id="fDestination"><option value="">All</option></select>
+        </div>
+        <div class="col-6 col-sm-6 col-lg-2">
+          <label class="form-label mb-1">Service</label>
+          <select class="form-select" id="fService"><option value="">All</option></select>
+        </div>
+        <div class="col-6 col-sm-6 col-lg-2">
+          <label class="form-label mb-1">Status</label>
+          <select class="form-select" id="fStatus">
+            <option value="">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="col-12 col-lg-3 d-flex gap-2">
+          <button class="btn btn-brand flex-fill" id="showNowBtn">Show Now</button>
+          <button class="btn btn-excel-brand flex-fill" id="excelBtn">⬇ Excel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== TABLE ===================== -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-0">
+      <div id="listWrap">
+        <div class="empty-state">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== DELETE CONFIRM MODAL ===================== -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Shipment?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        Ye shipment permanently delete ho jayegi. Ye action wapas nahi ho sakta.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
       </div>
     </div>
   </div>
 </div>
 
-<div class="stats-row" id="statsRow">
-  <div class="stat-card total"><div class="num" id="statTotal">0</div><div class="lbl">TOTAL SHIPMENTS</div></div>
-  <div class="stat-card pending"><div class="num" id="statPending">0</div><div class="lbl">PENDING</div></div>
-  <div class="stat-card confirmed"><div class="num" id="statConfirmed">0</div><div class="lbl">CONFIRMED</div></div>
-  <div class="stat-card shipped"><div class="num" id="statShipped">0</div><div class="lbl">SHIPPED</div></div>
-  <div class="stat-card cancelled"><div class="num" id="statCancelled">0</div><div class="lbl">CANCELLED</div></div>
-</div>
-
-<div class="dash-body">
-  <div class="dash-head">
-    <h2>All Shipments &amp; Bookings</h2>
-    <a href="/form.html" class="btn-primary">+ New Shipment</a>
-  </div>
-
-  <div class="filter-bar">
-    <div class="filter-group">
-      <label>Search</label>
-      <input type="text" id="fSearch" placeholder="AWB, tracking #, name...">
+<!-- ===================== TOAST ===================== -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="statusToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMsg">Updated</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
-    <div class="filter-group">
-      <label>Destination</label>
-      <select id="fDestination"><option value="">All</option></select>
-    </div>
-    <div class="filter-group">
-      <label>Service</label>
-      <select id="fService"><option value="">All</option></select>
-    </div>
-    <div class="filter-group">
-      <label>Status</label>
-      <select id="fStatus">
-        <option value="">All</option>
-        <option value="Pending">Pending</option>
-        <option value="Confirmed">Confirmed</option>
-        <option value="Shipped">Shipped</option>
-        <option value="Cancelled">Cancelled</option>
-      </select>
-    </div>
-    <div class="filter-actions">
-      <button class="btn-show" id="showNowBtn">Show Now</button>
-      <button class="btn-excel" id="excelBtn">Excel</button>
-    </div>
-  </div>
-
-  <div id="listWrap">
-    <div class="empty-state">Loading...</div>
   </div>
 </div>
 
@@ -188,7 +251,25 @@
 document.getElementById("logoImg").src = LOGO_DATA_URI;
 
 const STATUS_OPTIONS = ["Pending", "Confirmed", "Shipped", "Cancelled"];
+const STATUS_BADGE_CLASS = {
+  Pending: "bg-warning text-dark",
+  Confirmed: "bg-success",
+  Shipped: "bg-primary",
+  Cancelled: "bg-danger"
+};
 let allShipments = [];
+let pendingDeleteId = null;
+
+const deleteModal = new bootstrap.Modal(document.getElementById("deleteModal"));
+const statusToastEl = document.getElementById("statusToast");
+const statusToast = new bootstrap.Toast(statusToastEl, { delay: 2200 });
+
+function showToast(msg, isError){
+  document.getElementById("toastMsg").textContent = msg;
+  statusToastEl.classList.toggle("bg-success", !isError);
+  statusToastEl.classList.toggle("bg-danger", !!isError);
+  statusToast.show();
+}
 
 async function loadUser(){
   const res = await fetch("/api/auth/me");
@@ -254,7 +335,7 @@ async function loadShipments(){
     if(!res.ok){
       let errMsg = "Shipments load nahi ho sakin (server error).";
       try{ const errData = await res.json(); errMsg = errData.error || errMsg; }catch(e){}
-      wrap.innerHTML = '<div class="empty-state">' + escapeHtml(errMsg) + '</div>';
+      wrap.innerHTML = `<div class="empty-state">${escapeHtml(errMsg)}</div>`;
       return;
     }
     data = await res.json();
@@ -280,13 +361,13 @@ function renderTable(){
 
   const rows = shipments.map(s => `
     <tr>
-      <td class="consig-cell">
+      <td>
         <div class="awb-main">${escapeHtml(s.awbnum || "(no AWB)")}</div>
         ${s.trackingNo ? `<div class="track-sub">Track #${escapeHtml(s.trackingNo)}</div>` : ""}
       </td>
       <td>
         <span class="customer-chip">
-          <span class="dot">${escapeHtml((s.customerName||"?").charAt(0).toUpperCase())}</span>
+          <span class="customer-dot">${escapeHtml((s.customerName||"?").charAt(0).toUpperCase())}</span>
           ${escapeHtml(s.customerName || "-")}
         </span>
       </td>
@@ -294,7 +375,7 @@ function renderTable(){
       <td>${escapeHtml(s.consigneeName || "-")}</td>
       <td>${escapeHtml(s.service || "-")}</td>
       <td>
-        <select class="status-select" data-id="${s.id}">
+        <select class="form-select form-select-sm status-select-sm" data-id="${s.id}">
           ${STATUS_OPTIONS.map(opt => `<option value="${opt}" ${opt===s.status?"selected":""}>${opt}</option>`).join("")}
         </select>
       </td>
@@ -303,33 +384,37 @@ function renderTable(){
         <div><b>Updated:</b> ${new Date(s.updated_at).toLocaleString()}</div>
       </td>
       <td>
-        <div class="row-actions">
-          <a class="act-edit" href="/form.html?id=${s.id}">Edit</a>
-          <a class="act-print" href="/print.html?id=${s.id}&only=bill" target="_blank">Print AWB</a>
-          <a class="act-print" href="/print.html?id=${s.id}&only=invoice" target="_blank">Print Invoice</a>
-          <button class="act-delete" data-id="${s.id}">Delete</button>
+        <div class="d-flex flex-column gap-1 action-btns">
+          <a class="btn btn-sm btn-brand-outline" href="/form.html?id=${s.id}">Edit</a>
+          <a class="btn btn-sm btn-outline-success" href="/print.html?id=${s.id}&only=bill" target="_blank">Print AWB</a>
+          <a class="btn btn-sm btn-outline-success" href="/print.html?id=${s.id}&only=invoice" target="_blank">Print Invoice</a>
+          <button class="btn btn-sm btn-outline-danger btn-delete" data-id="${s.id}">Delete</button>
         </div>
       </td>
     </tr>
   `).join("");
 
   wrap.innerHTML = `
-    <table class="ship-table">
-      <tr>
-        <th>Consig. #</th>
-        <th>Customer</th>
-        <th>Shipper</th>
-        <th>Consignee</th>
-        <th>Service</th>
-        <th>Status</th>
-        <th>Date-Time</th>
-        <th>Actions</th>
-      </tr>
-      ${rows}
-    </table>
+    <div class="table-responsive">
+      <table class="table shipment-table mb-0 align-middle">
+        <thead>
+          <tr>
+            <th>Consig. #</th>
+            <th>Customer</th>
+            <th>Shipper</th>
+            <th>Consignee</th>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Date-Time</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
   `;
 
-  wrap.querySelectorAll(".status-select").forEach(sel=>{
+  wrap.querySelectorAll(".status-select-sm").forEach(sel=>{
     sel.addEventListener("change", async ()=>{
       const id = sel.getAttribute("data-id");
       const shipRes = await fetch(`/api/shipments/${id}`);
@@ -339,19 +424,27 @@ function renderTable(){
         headers:{"Content-Type":"application/json"},
         body: JSON.stringify({ ...shipData, status: sel.value })
       });
+      showToast("Status updated");
       loadShipments();
     });
   });
 
-  wrap.querySelectorAll(".act-delete").forEach(btn=>{
-    btn.addEventListener("click", async ()=>{
-      if(!confirm("Ye shipment delete karna chahte hain?")) return;
-      const id = btn.getAttribute("data-id");
-      await fetch(`/api/shipments/${id}`, { method:"DELETE" });
-      loadShipments();
+  wrap.querySelectorAll(".btn-delete").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      pendingDeleteId = btn.getAttribute("data-id");
+      deleteModal.show();
     });
   });
 }
+
+document.getElementById("confirmDeleteBtn").addEventListener("click", async ()=>{
+  if(!pendingDeleteId) return;
+  await fetch(`/api/shipments/${pendingDeleteId}`, { method:"DELETE" });
+  deleteModal.hide();
+  showToast("Shipment deleted");
+  pendingDeleteId = null;
+  loadShipments();
+});
 
 function escapeHtml(s){
   return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
@@ -382,6 +475,7 @@ function exportToExcel(){
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+  showToast("Excel file downloaded");
 }
 
 document.getElementById("showNowBtn").addEventListener("click", renderTable);
