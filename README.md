@@ -6,6 +6,9 @@ and only sees their own shipments.
 
 ## Features
 
+- **Admin dashboard analytics.** A live status-breakdown donut chart (Chart.js, vendored
+  locally) and a "Recent Activity" feed showing the latest status changes across all
+  customers, updating automatically whenever shipments are filtered or refreshed.
 - **Bootstrap 5.3.8 included** (vendored locally, no internet/CDN required) for building new
   UI components — modals, toasts, dropdowns, grid utilities, etc. It loads before the app's
   own `style.css`, so the existing custom theme (fonts, colors, buttons, tables) is untouched;
@@ -115,6 +118,7 @@ airway-app/
         ├── qrcode.js            # Local QR code generator (no external service/API)
         └── jsbarcode.js         # Local CODE128 barcode generator (no external service/API)
         └── bootstrap.bundle.min.js  # Bootstrap 5.3.8 JS (Modal, Toast, Dropdown, etc.)
+        └── chart.umd.min.js         # Chart.js (status breakdown donut chart on the dashboard)
 ```
 
 ## Backing up your data

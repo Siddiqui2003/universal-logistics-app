@@ -47,6 +47,11 @@
   .stat-card{
     border:none; border-radius:12px; box-shadow:0 6px 20px rgba(20,30,50,.08);
     border-top:3px solid var(--blue);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .stat-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 26px rgba(20,30,50,.14);
   }
   .stat-card .stat-num{font-family:"Playfair Display", serif; font-size:26px; font-weight:800; color:var(--ink);}
   .stat-card .stat-lbl{font-size:11px; color:var(--muted); letter-spacing:0.3px; text-transform:uppercase;}
@@ -55,6 +60,30 @@
   .stat-card.confirmed{border-top-color:#1a7d43;}
   .stat-card.shipped{border-top-color:#1a56c4;}
   .stat-card.cancelled{border-top-color:#9c2b2b;}
+
+  /* ---------- CHART & ACTIVITY WIDGETS ---------- */
+  .chart-card{border:none; border-radius:12px; box-shadow:0 6px 20px rgba(20,30,50,.08);}
+  .widget-heading{
+    font-family:"Playfair Display", serif; font-size:15px; font-weight:700;
+    color:var(--ink); margin-bottom:14px;
+  }
+  .chart-wrap{position:relative; height:220px;}
+  .activity-item{
+    display:flex; align-items:flex-start; gap:10px;
+    padding:9px 0; border-bottom:1px solid #f0f0ee;
+  }
+  .activity-item:last-child{border-bottom:none;}
+  .activity-dot{
+    width:8px; height:8px; border-radius:50%; margin-top:6px; flex-shrink:0;
+  }
+  .activity-dot.Pending{background:#c8952c;}
+  .activity-dot.Confirmed{background:#1a7d43;}
+  .activity-dot.Shipped{background:#1a56c4;}
+  .activity-dot.Cancelled{background:#9c2b2b;}
+  .activity-text{font-size:12.5px; color:var(--ink); line-height:1.4;}
+  .activity-text b{font-weight:700;}
+  .activity-time{font-size:10.5px; color:var(--muted); margin-top:1px;}
+  .activity-feed-scroll{max-height:220px; overflow-y:auto;}
 
   /* ---------- SECTION HEADING ---------- */
   .section-heading{font-family:"Playfair Display", serif; color:var(--ink); font-weight:700;}
@@ -165,6 +194,31 @@
     </div>
   </div>
 
+  <!-- ===================== CHART + RECENT ACTIVITY ===================== -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-lg-5">
+      <div class="card chart-card h-100">
+        <div class="card-body">
+          <h3 class="widget-heading">Status Breakdown</h3>
+          <div class="chart-wrap">
+            <canvas id="statusChart"></canvas>
+          </div>
+          <div id="chartEmpty" class="empty-state py-4" style="display:none;">Koi data nahi hai.</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-7">
+      <div class="card chart-card h-100">
+        <div class="card-body">
+          <h3 class="widget-heading">Recent Activity</h3>
+          <div id="activityFeed" class="activity-feed-scroll">
+            <div class="empty-state py-4">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ===================== HEADER ROW ===================== -->
   <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
     <h2 class="section-heading mb-0 fs-4">All Shipments &amp; Bookings</h2>
@@ -246,6 +300,7 @@
 </div>
 
 <script src="/js/bootstrap.bundle.min.js"></script>
+<script src="/js/chart.umd.min.js"></script>
 <script src="/js/templates.js"></script>
 <script>
 document.getElementById("logoImg").src = LOGO_DATA_URI;
@@ -292,6 +347,88 @@ function updateStats(shipments){
   document.getElementById("statConfirmed").textContent = counts.Confirmed;
   document.getElementById("statShipped").textContent = counts.Shipped;
   document.getElementById("statCancelled").textContent = counts.Cancelled;
+  renderStatusChart(counts);
+  renderActivityFeed(shipments);
+}
+
+let statusChartInstance = null;
+function renderStatusChart(counts){
+  const total = counts.Pending + counts.Confirmed + counts.Shipped + counts.Cancelled;
+  const canvas = document.getElementById("statusChart");
+  const emptyEl = document.getElementById("chartEmpty");
+
+  if(total === 0){
+    canvas.style.display = "none";
+    emptyEl.style.display = "block";
+    if(statusChartInstance){ statusChartInstance.destroy(); statusChartInstance = null; }
+    return;
+  }
+  canvas.style.display = "block";
+  emptyEl.style.display = "none";
+
+  const data = {
+    labels: ["Pending", "Confirmed", "Shipped", "Cancelled"],
+    datasets: [{
+      data: [counts.Pending, counts.Confirmed, counts.Shipped, counts.Cancelled],
+      backgroundColor: ["#c8952c", "#1a7d43", "#1a56c4", "#9c2b2b"],
+      borderWidth: 2,
+      borderColor: "#ffffff"
+    }]
+  };
+
+  if(statusChartInstance){
+    statusChartInstance.data = data;
+    statusChartInstance.update();
+    return;
+  }
+
+  statusChartInstance = new Chart(canvas, {
+    type: "doughnut",
+    data: data,
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "62%",
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { boxWidth: 10, font: { family: "Inter", size: 11.5 }, padding: 14 }
+        }
+      }
+    }
+  });
+}
+
+function timeAgo(dateStr){
+  const diffMs = Date.now() - new Date(dateStr.replace(" ", "T") + "Z").getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if(mins < 1) return "just now";
+  if(mins < 60) return mins + "m ago";
+  const hrs = Math.floor(mins / 60);
+  if(hrs < 24) return hrs + "h ago";
+  const days = Math.floor(hrs / 24);
+  return days + "d ago";
+}
+
+function renderActivityFeed(shipments){
+  const feed = document.getElementById("activityFeed");
+  if(shipments.length === 0){
+    feed.innerHTML = '<div class="empty-state py-4">Abhi tak koi activity nahi hai.</div>';
+    return;
+  }
+  const recent = [...shipments].sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at)).slice(0, 8);
+  feed.innerHTML = recent.map(s => `
+    <div class="activity-item">
+      <span class="activity-dot ${s.status}"></span>
+      <div>
+        <div class="activity-text">
+          <b>${escapeHtml(s.customerName || "Someone")}</b> — ${escapeHtml(s.awbnum || "shipment")}
+          is now <b>${escapeHtml(s.status)}</b>
+        </div>
+        <div class="activity-time">${timeAgo(s.updated_at)}</div>
+      </div>
+    </div>
+  `).join("");
 }
 
 function populateFilterOptions(shipments){
