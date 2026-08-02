@@ -105,6 +105,57 @@
     .wrap{flex-direction:column;}
     .panel{position:static; max-height:none; flex:1 1 auto; width:100%;}
   }
+
+  /* ---------- ACCOUNT BLOCK (compact AWB-style grid) ---------- */
+  fieldset.account-block{
+    padding:12px 14px 14px !important;
+    background:var(--v-slate-50);
+  }
+  fieldset.account-block legend{
+    font-size:12.5px !important; text-transform:uppercase; letter-spacing:.4px;
+  }
+  .ab-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    column-gap:14px;
+    row-gap:8px;
+  }
+  .ab-field{display:flex; flex-direction:column; min-width:0;}
+  .ab-field label{
+    display:block; font-size:10.5px; font-weight:700; color:var(--v-slate-500) !important;
+    text-transform:uppercase; letter-spacing:.3px;
+    margin:0 0 3px !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .ab-field label .ab-tag{
+    text-transform:none; font-weight:600; color:var(--v-slate-400); letter-spacing:0;
+  }
+  .ab-field label .ab-auto{
+    text-transform:none; font-weight:500; color:var(--v-slate-400); letter-spacing:0; font-size:10px;
+  }
+  .ab-grid input[type=text]{
+    height:34px !important; padding:0 9px !important; font-size:12.5px !important;
+    box-sizing:border-box;
+  }
+  .ab-triple{
+    display:grid; grid-template-columns:0.8fr 1fr 1.2fr; gap:6px;
+  }
+  .ab-triple input{min-width:0;}
+  .ab-row-five{
+    grid-column:1 / -1;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(62px, 1fr));
+    gap:8px 10px;
+    margin-top:2px;
+    padding-top:10px;
+    border-top:1px dashed var(--v-slate-200);
+  }
+  .ab-row-five .ab-field label{white-space:normal;}
+  @media (max-width: 700px){
+    .ab-grid{grid-template-columns:1fr;}
+  }
+  @media (max-width: 420px){
+    .ab-triple{grid-template-columns:1fr;}
+  }
 </style>
 </head>
 <body>
@@ -145,58 +196,92 @@
       <textarea id="shipperAddress"></textarea>
       <label>Shipper Email</label>
       <input type="text" id="shipperEmail">
-      <label>Shipper's NTN / CNIC</label>
-      <input type="text" id="shipperCnic">
-      <div class="row2">
-        <div><label>Zip Code</label><input type="text" id="shipperZip"></div>
-        <div><label>City</label><input type="text" id="shipperCity"></div>
-      </div>
-      <label>Country</label>
-      <input type="text" id="shipperCountry" value="Pakistan">
-      <label>Shipper's Telephone #</label>
-      <input type="text" id="shipperPhone">
     </fieldset>
 
     <fieldset>
       <legend>Consignee</legend>
-      <label>Consignee Name</label>
-      <input type="text" id="consigneeName">
       <label>Consignee Company</label>
       <input type="text" id="consigneeCompany">
       <label>Consignee's Address</label>
       <textarea id="consigneeAddress"></textarea>
-      <label>Consignee's Email</label>
-      <input type="text" id="consigneeEmail">
-      <label>Bag Number</label>
-      <input type="text" id="bagNumber">
-      <div class="row2">
-        <div><label>Zip Code</label><input type="text" id="consigneeZip"></div>
-        <div><label>City</label><input type="text" id="consigneeCity"></div>
+    </fieldset>
+
+    <fieldset class="account-block">
+      <legend>Account Block</legend>
+      <div class="ab-grid">
+
+        <div class="ab-field">
+          <label>Consignee Name</label>
+          <input type="text" id="consigneeName">
+        </div>
+        <div class="ab-field">
+          <label>Consignee's Email</label>
+          <input type="text" id="consigneeEmail">
+        </div>
+
+        <div class="ab-field">
+          <label>Shipper's NTN / CNIC</label>
+          <input type="text" id="shipperCnic">
+        </div>
+        <div class="ab-field">
+          <label>Bag Number</label>
+          <input type="text" id="bagNumber">
+        </div>
+
+        <div class="ab-field">
+          <label>Zip / City / Country <span class="ab-tag">Shipper</span></label>
+          <div class="ab-triple">
+            <input type="text" id="shipperZip" placeholder="Zip">
+            <input type="text" id="shipperCity" placeholder="City">
+            <input type="text" id="shipperCountry" value="Pakistan" placeholder="Country">
+          </div>
+        </div>
+        <div class="ab-field">
+          <label>Zip / City / Country <span class="ab-tag">Consignee</span></label>
+          <div class="ab-triple">
+            <input type="text" id="consigneeZip" placeholder="Zip">
+            <input type="text" id="consigneeCity" placeholder="City">
+            <input type="text" id="consigneeCountry" value="United States of America" placeholder="Country">
+          </div>
+        </div>
+
+        <div class="ab-field">
+          <label>Shipper's Telephone #</label>
+          <input type="text" id="shipperPhone">
+        </div>
+        <div class="ab-field">
+          <label>Consignee's Telephone #</label>
+          <input type="text" id="consigneePhone">
+        </div>
+
+        <div class="ab-row-five">
+          <div class="ab-field">
+            <label>Shipper's Reference</label>
+            <input type="text" id="reference">
+          </div>
+          <div class="ab-field">
+            <label>Pieces</label>
+            <input type="text" id="pieces">
+          </div>
+          <div class="ab-field">
+            <label>Weight (KG)</label>
+            <input type="text" id="weight">
+          </div>
+          <div class="ab-field">
+            <label>Vol. Weight (KG) <span class="ab-auto">auto</span></label>
+            <input type="text" id="volWeight" readonly style="background:#f3f3f0;">
+          </div>
+          <div class="ab-field">
+            <label>Chg. Weight (KG) <span class="ab-auto">auto</span></label>
+            <input type="text" id="chargeWeight" readonly style="background:#f3f3f0;">
+          </div>
+        </div>
+
       </div>
-      <label>Country</label>
-      <input type="text" id="consigneeCountry" value="United States of America">
-      <label>Consignee's Telephone #</label>
-      <input type="text" id="consigneePhone">
     </fieldset>
 
     <fieldset>
       <legend>Shipment / Cargo</legend>
-      <label>Shipper's Reference</label>
-      <input type="text" id="reference">
-      <div class="row2">
-        <div><label>Pieces</label><input type="text" id="pieces"></div>
-        <div><label>Weight (KG)</label><input type="text" id="weight"></div>
-      </div>
-      <div class="row2">
-        <div>
-          <label>Volumetric Weight (KG) <span style="font-weight:400; color:#888;">(auto)</span></label>
-          <input type="text" id="volWeight" readonly style="background:#f3f3f0;">
-        </div>
-        <div>
-          <label>Chargeable Weight (KG) <span style="font-weight:400; color:#888;">(auto)</span></label>
-          <input type="text" id="chargeWeight" readonly style="background:#f3f3f0;">
-        </div>
-      </div>
       <label>Dimension</label>
       <textarea id="dimension" placeholder="33*40*33, 33*40*33 ..."></textarea>
       <div class="hint" style="margin-top:4px;">Volumetric Weight = (L×W×H sab pieces ka total) ÷ 5000. Agar Service field mein "Australia" likha ho to ÷ 4000 hoga.</div>
