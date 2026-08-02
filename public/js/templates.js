@@ -105,54 +105,33 @@ function billHTML(v){
         <td class="val" colspan="4">${esc(v.account)}</td>
       </tr>
 
-      <!-- ===== SHIPPER / CONSIGNEE IDENTITY ===== -->
+      <!-- ===== SHIPPER (left) / CONSIGNEE (right) — all details grouped per party ===== -->
       <tr class="section-start">
-        <td class="lbl">Shipper's Name</td>
-        <td class="val" colspan="2">${esc(v.shipperName)}</td>
-        <td class="lbl nowrap">Consignee Company</td>
-        <td class="val" colspan="3">${esc(v.consigneeCompany)}</td>
-      </tr>
-      <tr>
-        <td class="lbl">Shipper's Address</td>
-        <td class="val" colspan="6">${esc(v.shipperAddress)}</td>
-      </tr>
-      <tr>
-        <td class="lbl nowrap">Consignee's Address</td>
-        <td class="val" colspan="6">${esc(v.consigneeAddress)}</td>
-      </tr>
-      <tr>
-        <td class="lbl">Shipper Email</td>
-        <td class="val" colspan="6">${esc(v.shipperEmail)}</td>
+        <td colspan="7" class="party-cell">
+          <div class="party-grid">
+            <div class="party-col">
+              <div class="party-head">Shipper</div>
+              <div class="party-row"><span class="party-lbl">Name</span><span class="party-val">${esc(v.shipperName)}</span></div>
+              <div class="party-row"><span class="party-lbl">Address</span><span class="party-val">${esc(v.shipperAddress)}</span></div>
+              <div class="party-row"><span class="party-lbl">Email</span><span class="party-val">${esc(v.shipperEmail)}</span></div>
+              <div class="party-row"><span class="party-lbl nowrap">NTN / CNIC</span><span class="party-val">${esc(v.shipperCnic)}</span></div>
+              <div class="party-row"><span class="party-lbl nowrap">Zip / City / Country</span><span class="party-val">${esc(v.shipperZip)} — ${esc(v.shipperCity)}, ${esc(v.shipperCountry)}</span></div>
+              <div class="party-row"><span class="party-lbl nowrap">Telephone #</span><span class="party-val">${esc(v.shipperPhone)}</span></div>
+            </div>
+            <div class="party-col">
+              <div class="party-head">Consignee</div>
+              <div class="party-row"><span class="party-lbl">Company</span><span class="party-val">${esc(v.consigneeCompany)}</span></div>
+              <div class="party-row"><span class="party-lbl">Name</span><span class="party-val">${esc(v.consigneeName)}</span></div>
+              <div class="party-row"><span class="party-lbl">Address</span><span class="party-val">${esc(v.consigneeAddress)}</span></div>
+              <div class="party-row"><span class="party-lbl">Email</span><span class="party-val">${esc(v.consigneeEmail)}</span></div>
+              <div class="party-row"><span class="party-lbl nowrap">Bag Number</span><span class="party-val">${esc(v.bagNumber)}</span></div>
+              <div class="party-row"><span class="party-lbl nowrap">Zip / City / Country</span><span class="party-val">${esc(v.consigneeZip)} — ${esc(v.consigneeCity)}, ${esc(v.consigneeCountry)}</span></div>
+              <div class="party-row"><span class="party-lbl nowrap">Telephone #</span><span class="party-val">${esc(v.consigneePhone)}</span></div>
+            </div>
+          </div>
+        </td>
       </tr>
 
-      <!-- ===== ACCOUNT BLOCK — compact two-column reference/contact grid ===== -->
-      <tr class="ab-section-row">
-        <td colspan="7" class="ab-section-title">Account Block</td>
-      </tr>
-      <tr>
-        <td class="lbl">Consignee Name</td>
-        <td class="val" colspan="2">${esc(v.consigneeName)}</td>
-        <td class="lbl nowrap">Consignee's Email</td>
-        <td class="val" colspan="3">${esc(v.consigneeEmail)}</td>
-      </tr>
-      <tr>
-        <td class="lbl nowrap">Shipper's NTN / CNIC</td>
-        <td class="val" colspan="2">${esc(v.shipperCnic)}</td>
-        <td class="lbl">Bag Number</td>
-        <td class="val" colspan="3">${esc(v.bagNumber)}</td>
-      </tr>
-      <tr>
-        <td class="lbl nowrap">Zip / City / Country (Shipper)</td>
-        <td class="val" colspan="2">${esc(v.shipperZip)} — ${esc(v.shipperCity)}, ${esc(v.shipperCountry)}</td>
-        <td class="lbl nowrap">Zip / City / Country (Consignee)</td>
-        <td class="val" colspan="3">${esc(v.consigneeZip)} — ${esc(v.consigneeCity)}, ${esc(v.consigneeCountry)}</td>
-      </tr>
-      <tr>
-        <td class="lbl nowrap">Shipper's Telephone #</td>
-        <td class="val" colspan="2">${esc(v.shipperPhone)}</td>
-        <td class="lbl nowrap">Consignee's Telephone #</td>
-        <td class="val" colspan="3">${esc(v.consigneePhone)}</td>
-      </tr>
       <tr>
         <td colspan="7" class="ab-five-cell">
           <div class="ab-five">
