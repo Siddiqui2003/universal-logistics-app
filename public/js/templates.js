@@ -94,9 +94,8 @@ function billHTML(v){
       <tr>
         <td class="lbl">Shipper's Name</td>
         <td class="val" colspan="2">${esc(v.shipperName)}</td>
-        <td class="lbl">Consignee Name</td>
-        <td class="val" colspan="2">${esc(v.consigneeName)}</td>
         <td class="lbl">Consignee Company</td>
+        <td class="val" colspan="3">${esc(v.consigneeCompany)}</td>
       </tr>
       <tr>
         <td class="lbl">Shipper's Address</td>
@@ -108,7 +107,15 @@ function billHTML(v){
       </tr>
       <tr>
         <td class="lbl">Shipper Email</td>
-        <td class="val" colspan="2">${esc(v.shipperEmail)}</td>
+        <td class="val" colspan="6">${esc(v.shipperEmail)}</td>
+      </tr>
+
+      <tr class="ab-section-row">
+        <td colspan="7" class="ab-section-title">Account Block</td>
+      </tr>
+      <tr>
+        <td class="lbl">Consignee Name</td>
+        <td class="val" colspan="2">${esc(v.consigneeName)}</td>
         <td class="lbl">Consignee's Email</td>
         <td class="val" colspan="3">${esc(v.consigneeEmail)}</td>
       </tr>
@@ -130,21 +137,18 @@ function billHTML(v){
         <td class="lbl">Consignee's Telephone #</td>
         <td class="val" colspan="3">${esc(v.consigneePhone)}</td>
       </tr>
+      <tr>
+        <td colspan="7" class="ab-five-cell">
+          <div class="ab-five">
+            <div class="ab-five-item"><span class="ab-five-lbl">Shipper's Reference</span><span class="ab-five-val">${esc(v.reference)}</span></div>
+            <div class="ab-five-item"><span class="ab-five-lbl">Pieces</span><span class="ab-five-val">${esc(v.pieces)}</span></div>
+            <div class="ab-five-item"><span class="ab-five-lbl">Weight (KG)</span><span class="ab-five-val">${esc(v.weight)}</span></div>
+            <div class="ab-five-item"><span class="ab-five-lbl">Vol. Weight (KG)</span><span class="ab-five-val">${esc(v.volWeight)}</span></div>
+            <div class="ab-five-item"><span class="ab-five-lbl">Chg. Weight (KG)</span><span class="ab-five-val">${esc(v.chargeWeight)}</span></div>
+          </div>
+        </td>
+      </tr>
 
-      <tr>
-        <td class="lbl">Shipper's Reference</td>
-        <td class="val" colspan="2">${esc(v.reference)}</td>
-        <td class="lbl">Pieces</td>
-        <td class="val">${esc(v.pieces)}</td>
-        <td class="lbl">Weight</td>
-        <td class="val">${esc(v.weight)} KG</td>
-      </tr>
-      <tr>
-        <td class="lbl">Volumetric Weight</td>
-        <td class="val" colspan="2">${esc(v.volWeight)} KG</td>
-        <td class="lbl">Chargeable Weight</td>
-        <td class="val" colspan="3">${esc(v.chargeWeight)} KG</td>
-      </tr>
       <tr>
         <td class="lbl">Dimension</td>
         <td class="val" colspan="2">${esc(v.dimension)}</td>
