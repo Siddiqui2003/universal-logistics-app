@@ -8,188 +8,116 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/theme.css">
 <style>
-  :root{
-    --bs-body-font-family: "Inter", sans-serif;
-  }
-  body{background:#eef0ed; font-family:"Inter", sans-serif;}
-
-  /* ---------- NAVBAR ---------- */
-  .navbar-brand-custom{
-    background:linear-gradient(120deg, var(--blue) 0%, #123a63 55%, #0a2340 100%);
-    position:relative; overflow:hidden;
-  }
-  .navbar-brand-custom::before{
-    content:""; position:absolute; inset:0;
-    background:radial-gradient(circle at 90% -30%, rgba(200,149,44,0.35), transparent 55%);
-    pointer-events:none;
-  }
-  .brand-logo{
-    width:44px; height:44px; border-radius:10px; overflow:hidden;
-    background:#fff; display:flex; align-items:center; justify-content:center;
-    box-shadow:0 3px 10px rgba(0,0,0,.25); flex-shrink:0;
-  }
-  .brand-logo img{width:100%; height:100%; object-fit:cover;}
-  .brand-text .name{font-family:"Playfair Display", serif; font-weight:800; font-size:17px; color:#fff; line-height:1.1;}
-  .brand-text .tag{font-size:10.5px; color:#cfe0f5; letter-spacing:0.4px;}
-  .navbar .nav-link{color:#e8eefc !important; font-weight:600; font-size:13.5px;}
-  .navbar .nav-link:hover{color:#fff !important;}
-  .avatar-circle{
-    width:32px; height:32px; border-radius:50%; background:var(--orange); color:#1c1300;
-    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12.5px;
-  }
-  .btn-logout{
-    background:rgba(255,255,255,.14); color:#fff; border:1px solid rgba(255,255,255,.3);
-  }
-  .btn-logout:hover{background:rgba(255,255,255,.24); color:#fff;}
-
-  /* ---------- STAT CARDS ---------- */
-  .stat-card{
-    border:none; border-radius:12px; box-shadow:0 6px 20px rgba(20,30,50,.08);
-    border-top:3px solid var(--blue);
-    transition:transform .18s ease, box-shadow .18s ease;
-  }
-  .stat-card:hover{
-    transform:translateY(-3px);
-    box-shadow:0 10px 26px rgba(20,30,50,.14);
-  }
-  .stat-card .stat-num{font-family:"Playfair Display", serif; font-size:26px; font-weight:800; color:var(--ink);}
-  .stat-card .stat-lbl{font-size:11px; color:var(--muted); letter-spacing:0.3px; text-transform:uppercase;}
-  .stat-card.total{border-top-color:var(--blue);}
-  .stat-card.pending{border-top-color:#c8952c;}
-  .stat-card.confirmed{border-top-color:#1a7d43;}
-  .stat-card.shipped{border-top-color:#1a56c4;}
-  .stat-card.cancelled{border-top-color:#9c2b2b;}
-
   /* ---------- CHART & ACTIVITY WIDGETS ---------- */
-  .chart-card{border:none; border-radius:12px; box-shadow:0 6px 20px rgba(20,30,50,.08);}
-  .widget-heading{
-    font-family:"Playfair Display", serif; font-size:15px; font-weight:700;
-    color:var(--ink); margin-bottom:14px;
-  }
   .chart-wrap{position:relative; height:220px;}
   .activity-item{
     display:flex; align-items:flex-start; gap:10px;
-    padding:9px 0; border-bottom:1px solid #f0f0ee;
+    padding:9px 0; border-bottom:1px solid var(--v-slate-100);
   }
   .activity-item:last-child{border-bottom:none;}
-  .activity-dot{
-    width:8px; height:8px; border-radius:50%; margin-top:6px; flex-shrink:0;
-  }
-  .activity-dot.Pending{background:#c8952c;}
-  .activity-dot.Confirmed{background:#1a7d43;}
-  .activity-dot.Shipped{background:#1a56c4;}
-  .activity-dot.Cancelled{background:#9c2b2b;}
-  .activity-text{font-size:12.5px; color:var(--ink); line-height:1.4;}
+  .activity-dot{width:7px; height:7px; border-radius:50%; margin-top:6px; flex-shrink:0;}
+  .activity-text{font-size:12.5px; color:var(--v-slate-800); line-height:1.4;}
   .activity-text b{font-weight:700;}
-  .activity-time{font-size:10.5px; color:var(--muted); margin-top:1px;}
+  .activity-time{font-size:10.5px; color:var(--v-slate-400); margin-top:1px; font-family:var(--v-mono);}
   .activity-feed-scroll{max-height:220px; overflow-y:auto;}
 
-  /* ---------- SECTION HEADING ---------- */
-  .section-heading{font-family:"Playfair Display", serif; color:var(--ink); font-weight:700;}
-  .btn-brand{background:var(--blue); border-color:var(--blue); color:#fff; font-weight:700;}
-  .btn-brand:hover{background:#092a4d; border-color:#092a4d; color:#fff;}
-  .btn-brand-outline{border-color:var(--blue); color:var(--blue); font-weight:600;}
-  .btn-brand-outline:hover{background:var(--blue); color:#fff;}
-  .btn-excel-brand{background:#1a7d43; border-color:#1a7d43; color:#fff; font-weight:700;}
-  .btn-excel-brand:hover{background:#146334; border-color:#146334; color:#fff;}
-
-  /* ---------- FILTER CARD ---------- */
-  .filter-card{border:none; border-radius:12px; box-shadow:0 1px 8px rgba(0,0,0,.06);}
-  .filter-card label{font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.3px; font-weight:600;}
-
-  /* ---------- TABLE ---------- */
-  .shipment-table thead th{
-    background:#f7f7f5; font-size:11px; text-transform:uppercase; letter-spacing:0.3px;
-    color:var(--muted); font-weight:700; border-bottom:2px solid #e5e5e0; white-space:nowrap;
-  }
-  .shipment-table td{vertical-align:middle; font-size:13px;}
-  .awb-main{font-weight:700; color:var(--ink); font-size:13px;}
-  .track-sub{font-size:10.5px; color:var(--muted);}
   .customer-chip{display:inline-flex; align-items:center; gap:6px; font-weight:600; font-size:12.5px;}
   .customer-dot{
-    width:22px; height:22px; border-radius:50%; background:var(--blue); color:#fff;
+    width:22px; height:22px; border-radius:50%; color:#fff;
     display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0;
   }
-  .datetime-cell{font-size:11px; line-height:1.5; white-space:nowrap;}
-  .datetime-cell b{color:var(--ink); font-weight:600;}
-  .status-select-sm{font-size:12px; min-width:120px;}
-  .action-btns .btn{font-size:11.5px; padding:3px 8px;}
-  .empty-state{text-align:center; padding:50px 20px; color:var(--muted);}
+  .datetime-cell{font-size:11px; line-height:1.5; white-space:nowrap; font-family:var(--v-mono); color:var(--v-slate-500);}
+  .datetime-cell b{color:var(--v-slate-700); font-weight:600;}
+  .status-select-sm{font-size:12px; min-width:120px; border-radius:8px !important;}
+  .action-btns .btn{font-size:11px; padding:4px 9px; border-radius:7px;}
 </style>
 </head>
-<body>
+<body class="v-app">
 
-<!-- ===================== NAVBAR ===================== -->
-<nav class="navbar navbar-expand-lg navbar-dark navbar-brand-custom py-2">
-  <div class="container-fluid px-3 px-lg-4">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="/dashboard.html">
-      <span class="brand-logo"><img id="logoImg" alt="Universal Logistics & International"></span>
+<div class="app-shell">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+  <aside class="app-sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <span class="logo-box"><img id="logoImg" alt="Universal Logistics & International"></span>
       <span class="brand-text">
         <span class="d-block name">Universal Logistics</span>
-        <span class="d-block tag">Admin Control Panel</span>
+        <span class="d-block tag">Admin Panel</span>
       </span>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navContent">
-      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3 mt-3 mt-lg-0">
-        <li class="nav-item"><a class="nav-link" href="/customers.html">Manage Customers</a></li>
-        <li class="nav-item d-flex align-items-center gap-2 mt-2 mt-lg-0">
-          <span class="avatar-circle" id="avatarLetter"></span>
-          <span class="text-white small fw-semibold" id="userName"></span>
-        </li>
-        <li class="nav-item mt-2 mt-lg-0">
-          <button class="btn btn-sm btn-logout w-100" id="logoutBtn">Logout</button>
-        </li>
-      </ul>
     </div>
-  </div>
-</nav>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-lbl">Operations</div>
+      <a class="sidebar-link active" href="/dashboard.html">
+        <span class="link-label"><span class="dot"></span><span>Dashboard</span></span>
+        <span class="sidebar-badge blue" id="navShipCount">0</span>
+      </a>
+      <a class="sidebar-link" href="/customers.html">
+        <span class="link-label"><span class="dot"></span><span>Manage Customers</span></span>
+      </a>
+      <a class="sidebar-link" href="/form.html">
+        <span class="link-label"><span class="dot"></span><span>New Shipment</span></span>
+        <span class="sidebar-badge slate">Quick</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="avatar" id="avatarLetter"></span>
+      <span class="who">
+        <span class="d-block nm" id="userName"></span>
+        <span class="d-block rl">Admin</span>
+      </span>
+      <button class="logout-btn" id="logoutBtn" title="Logout">&#8594;|</button>
+    </div>
+  </aside>
 
-<div class="container-fluid px-3 px-lg-4" style="max-width:1240px;">
+  <div class="app-main">
+    <!-- ===================== TOPBAR ===================== -->
+    <header class="app-topbar">
+      <div class="topbar-title">
+        <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+        <h1>Shipment Operations</h1>
+        <span class="status-live"><span class="dot-pulse"></span>Live</span>
+      </div>
+      <div class="topbar-actions">
+        <a href="/form.html" class="btn-v-primary">+ Create Shipment</a>
+        <span class="topbar-clock" id="topbarClock">--:--:--</span>
+      </div>
+    </header>
+
+    <div class="content-area">
 
   <!-- ===================== STAT CARDS ===================== -->
   <div class="row g-3 mt-1 mb-4">
     <div class="col-6 col-md-4 col-lg">
-      <div class="card stat-card total h-100">
-        <div class="card-body py-3">
-          <div class="stat-num" id="statTotal">0</div>
-          <div class="stat-lbl">Total Shipments</div>
-        </div>
+      <div class="v-stat-card c-blue h-100">
+        <div class="v-stat-lbl">Total Shipments</div>
+        <div class="v-stat-num" id="statTotal">0</div>
       </div>
     </div>
     <div class="col-6 col-md-4 col-lg">
-      <div class="card stat-card pending h-100">
-        <div class="card-body py-3">
-          <div class="stat-num" id="statPending">0</div>
-          <div class="stat-lbl">Pending</div>
-        </div>
+      <div class="v-stat-card c-amber h-100">
+        <div class="v-stat-lbl">Pending</div>
+        <div class="v-stat-num" id="statPending">0</div>
       </div>
     </div>
     <div class="col-6 col-md-4 col-lg">
-      <div class="card stat-card confirmed h-100">
-        <div class="card-body py-3">
-          <div class="stat-num" id="statConfirmed">0</div>
-          <div class="stat-lbl">Confirmed</div>
-        </div>
+      <div class="v-stat-card c-emerald h-100">
+        <div class="v-stat-lbl">Confirmed</div>
+        <div class="v-stat-num" id="statConfirmed">0</div>
       </div>
     </div>
     <div class="col-6 col-md-4 col-lg">
-      <div class="card stat-card shipped h-100">
-        <div class="card-body py-3">
-          <div class="stat-num" id="statShipped">0</div>
-          <div class="stat-lbl">Shipped</div>
-        </div>
+      <div class="v-stat-card c-indigo h-100">
+        <div class="v-stat-lbl">Shipped</div>
+        <div class="v-stat-num" id="statShipped">0</div>
       </div>
     </div>
     <div class="col-6 col-md-4 col-lg">
-      <div class="card stat-card cancelled h-100">
-        <div class="card-body py-3">
-          <div class="stat-num" id="statCancelled">0</div>
-          <div class="stat-lbl">Cancelled</div>
-        </div>
+      <div class="v-stat-card c-rose h-100">
+        <div class="v-stat-lbl">Cancelled</div>
+        <div class="v-stat-num" id="statCancelled">0</div>
       </div>
     </div>
   </div>
@@ -197,9 +125,9 @@
   <!-- ===================== CHART + RECENT ACTIVITY ===================== -->
   <div class="row g-3 mb-4">
     <div class="col-12 col-lg-5">
-      <div class="card chart-card h-100">
-        <div class="card-body">
-          <h3 class="widget-heading">Status Breakdown</h3>
+      <div class="v-card h-100">
+        <div class="v-card-body">
+          <h3 class="v-widget-heading">Status Breakdown</h3>
           <div class="chart-wrap">
             <canvas id="statusChart"></canvas>
           </div>
@@ -208,9 +136,9 @@
       </div>
     </div>
     <div class="col-12 col-lg-7">
-      <div class="card chart-card h-100">
-        <div class="card-body">
-          <h3 class="widget-heading">Recent Activity</h3>
+      <div class="v-card h-100">
+        <div class="v-card-body">
+          <h3 class="v-widget-heading">Recent Activity</h3>
           <div id="activityFeed" class="activity-feed-scroll">
             <div class="empty-state py-4">Loading...</div>
           </div>
@@ -221,13 +149,13 @@
 
   <!-- ===================== HEADER ROW ===================== -->
   <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-    <h2 class="section-heading mb-0 fs-4">All Shipments &amp; Bookings</h2>
-    <a href="/form.html" class="btn btn-brand">+ New Shipment</a>
+    <h2 class="v-section-heading mb-0 fs-5">All Shipments &amp; Bookings</h2>
+    <a href="/form.html" class="btn-v-primary">+ New Shipment</a>
   </div>
 
   <!-- ===================== FILTER BAR ===================== -->
-  <div class="card filter-card mb-3">
-    <div class="card-body">
+  <div class="v-filter-bar mb-3">
+    <div class="v-card-body">
       <div class="row g-3 align-items-end">
         <div class="col-12 col-sm-6 col-lg-3">
           <label class="form-label mb-1">Search</label>
@@ -252,23 +180,25 @@
           </select>
         </div>
         <div class="col-12 col-lg-3 d-flex gap-2">
-          <button class="btn btn-brand flex-fill" id="showNowBtn">Show Now</button>
-          <button class="btn btn-excel-brand flex-fill" id="excelBtn">⬇ Excel</button>
+          <button class="btn-v-primary flex-fill" id="showNowBtn">Show Now</button>
+          <button class="btn-v-success flex-fill" id="excelBtn">⬇ Excel</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ===================== TABLE ===================== -->
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-0">
+  <div class="v-card mb-4">
+    <div class="v-card-body p-0">
       <div id="listWrap">
         <div class="empty-state">Loading...</div>
       </div>
     </div>
   </div>
 
-</div>
+    </div> <!-- /content-area -->
+  </div> <!-- /app-main -->
+</div> <!-- /app-shell -->
 
 <!-- ===================== DELETE CONFIRM MODAL ===================== -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
@@ -304,6 +234,26 @@
 <script src="/js/templates.js"></script>
 <script>
 document.getElementById("logoImg").src = LOGO_DATA_URI;
+
+/* ---------- Sidebar toggle (mobile) + live clock ---------- */
+const sidebarToggleBtn = document.getElementById("sidebarToggle");
+const appSidebar = document.getElementById("appSidebar");
+const sidebarScrim = document.getElementById("sidebarScrim");
+function closeSidebar(){ appSidebar.classList.remove("open"); sidebarScrim.classList.remove("open"); }
+if(sidebarToggleBtn){
+  sidebarToggleBtn.addEventListener("click", ()=>{
+    appSidebar.classList.toggle("open");
+    sidebarScrim.classList.toggle("open");
+  });
+}
+if(sidebarScrim) sidebarScrim.addEventListener("click", closeSidebar);
+
+function tickClock(){
+  const el = document.getElementById("topbarClock");
+  if(el) el.textContent = new Date().toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit", second:"2-digit" });
+}
+tickClock();
+setInterval(tickClock, 1000);
 
 const STATUS_OPTIONS = ["Pending", "Confirmed", "Shipped", "Cancelled"];
 const STATUS_BADGE_CLASS = {
@@ -347,6 +297,8 @@ function updateStats(shipments){
   document.getElementById("statConfirmed").textContent = counts.Confirmed;
   document.getElementById("statShipped").textContent = counts.Shipped;
   document.getElementById("statCancelled").textContent = counts.Cancelled;
+  const navCount = document.getElementById("navShipCount");
+  if(navCount) navCount.textContent = shipments.length;
   renderStatusChart(counts);
   renderActivityFeed(shipments);
 }
