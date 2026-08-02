@@ -7,27 +7,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/theme.css">
 </head>
-<body>
-<div class="auth-wrap">
-  <div class="auth-card">
-    <div class="auth-logo"><img id="logoImg" alt="Universal Logistics & International"></div>
-    <h1>Universal Logistics</h1>
-    <div class="tag">Pehla account (Admin/Owner) banayen — is ke baad public registration band ho jayegi</div>
+<body class="v-auth">
+<div class="v-auth-card">
+  <div class="v-auth-logo"><img id="logoImg" alt="Universal Logistics & International"></div>
+  <h1>Universal Logistics</h1>
+  <div class="v-auth-tag">Pehla account (Admin/Owner) banayen — is ke baad public registration band ho jayegi</div>
 
-    <form id="registerForm">
-      <label>Full Name</label>
-      <input type="text" id="name" required autocomplete="name">
-      <label>Email</label>
-      <input type="email" id="email" required autocomplete="email">
-      <label>Password</label>
-      <input type="password" id="password" required minlength="6" autocomplete="new-password">
-      <div class="auth-error" id="errorBox"></div>
-      <button type="submit">Create Account</button>
-    </form>
+  <form id="registerForm">
+    <label>Full Name</label>
+    <input type="text" id="name" required autocomplete="name">
+    <label>Email</label>
+    <input type="email" id="email" required autocomplete="email">
+    <label>Password</label>
+    <input type="password" id="password" required minlength="6" autocomplete="new-password">
+    <div class="v-auth-error" id="errorBox"></div>
+    <button type="submit">Create Account</button>
+  </form>
 
-    <div class="switch">Pehle se account hai? <a href="/login.html">Login here</a></div>
-  </div>
+  <div class="v-auth-switch">Pehle se account hai? <a href="/login.html">Login here</a></div>
 </div>
 
 <script src="/js/bootstrap.bundle.min.js"></script>

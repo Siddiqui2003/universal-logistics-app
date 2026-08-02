@@ -7,119 +7,101 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/theme.css">
 <style>
-  body{background:#eef0ed; padding:0;}
+  .dash-head{display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; align-items:center; margin-bottom:16px;}
+  .dash-head h2{margin:0; color:var(--v-slate-900); font-size:16.5px; font-weight:800;}
 
-  /* ---------- HERO TOPBAR ---------- */
-  .hero-topbar{
-    background:linear-gradient(120deg, var(--blue) 0%, #123a63 55%, #0a2340 100%);
-    padding:0;
-    position:relative;
-    overflow:hidden;
+  .ship-table{width:100%; border-collapse:collapse;}
+  .ship-table th{background:var(--v-slate-50); text-align:left; padding:11px 14px; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--v-slate-500); font-weight:800; border-bottom:1px solid var(--v-slate-200);}
+  .ship-table td{padding:11px 14px; font-size:13px; border-bottom:1px solid var(--v-slate-100);}
+  .ship-table tr:not(:first-child):hover td{background:var(--v-slate-50);}
+  .status-pill{display:inline-block; padding:3px 11px; border-radius:20px; font-size:10.5px; font-weight:800; letter-spacing:.3px; text-transform:uppercase;}
+  .row-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .row-actions a, .row-actions button{
+    font-size:12px; font-weight:600; border-radius:7px; padding:5px 11px; text-decoration:none; cursor:pointer;
   }
-  .hero-topbar::before{
-    content:"";
-    position:absolute; inset:0;
-    background:radial-gradient(circle at 85% -20%, rgba(200,149,44,0.35), transparent 55%);
-  }
-  .hero-inner{
-    position:relative;
-    max-width:1100px; margin:0 auto;
-    padding:18px 24px;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .hero-brand{display:flex; align-items:center; gap:14px;}
-  .hero-logo{
-    width:52px; height:52px; border-radius:12px; overflow:hidden;
-    background:#fff; display:flex; align-items:center; justify-content:center;
-    box-shadow:0 3px 10px rgba(0,0,0,.25);
-  }
-  .hero-logo img{width:100%; height:100%; object-fit:cover;}
-  .hero-title{color:#fff;}
-  .hero-title .name{font-family:"Playfair Display", serif; font-weight:800; font-size:20px; letter-spacing:0.3px;}
-  .hero-title .tag{font-size:11.5px; color:#cfe0f5; letter-spacing:0.5px; margin-top:1px;}
-  .hero-user{display:flex; align-items:center; gap:12px;}
-  .hero-user .avatar{
-    width:34px; height:34px; border-radius:50%; background:var(--orange); color:#1c1300;
-    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px;
-  }
-  .hero-user span{color:#fff; font-size:13px; font-weight:600;}
-  .hero-user button{
-    background:rgba(255,255,255,.14); color:#fff; border:1px solid rgba(255,255,255,.3);
-    padding:8px 14px; border-radius:7px; font-size:12.5px; font-weight:600; cursor:pointer;
-  }
-  .hero-user button:hover{background:rgba(255,255,255,.24);}
-
-  /* ---------- STAT CARDS ---------- */
-  .stats-row{
-    max-width:1100px; margin:-26px auto 0; padding:0 24px;
-    display:grid; grid-template-columns:repeat(4, 1fr); gap:14px;
-    position:relative; z-index:2;
-  }
-  .stat-card{
-    background:#fff; border-radius:12px; padding:16px 18px;
-    box-shadow:0 6px 20px rgba(20,30,50,.10);
-    border-top:3px solid var(--blue);
-  }
-  .stat-card .num{font-family:"Playfair Display", serif; font-size:26px; font-weight:800; color:var(--ink);}
-  .stat-card .lbl{font-size:11.5px; color:var(--muted); margin-top:2px; letter-spacing:0.3px;}
-  .stat-card.total{border-top-color:var(--blue);}
-  .stat-card.pending{border-top-color:#c8952c;}
-  .stat-card.confirmed{border-top-color:#1a7d43;}
-  .stat-card.shipped{border-top-color:#1a56c4;}
-
-  /* ---------- BODY ---------- */
-  .dash-body{max-width:1100px; margin:0 auto; padding:26px 24px 40px;}
-  .dash-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
-  .dash-head h2{font-family:"Playfair Display", serif; margin:0; color:var(--ink); font-size:21px;}
-
-  .ship-table{border-top:none;}
-  .ship-table th{background:#f7f7f5;}
-  .ship-table tr:not(:first-child):hover td{background:#fbfbfa;}
-  .status-pill{
-    display:inline-block; padding:3px 10px; border-radius:20px;
-    font-size:11px; font-weight:700; letter-spacing:0.3px;
-  }
-  .status-Pending{background:#fff3cd; color:#8a6300;}
-  .status-Confirmed{background:#d4f5df; color:#1a7d43;}
-  .status-Shipped{background:#dbe9ff; color:var(--blue);}
-  .status-Cancelled{background:#fdeaea; color:#9c2b2b;}
+  .row-actions .act-edit{background:#fff; border:1px solid var(--v-slate-200); color:var(--v-slate-700);}
+  .row-actions .act-edit:hover{background:var(--v-slate-50); border-color:var(--v-blue-500); color:var(--v-blue-600);}
+  .row-actions .act-print{background:#fff; border:1px solid var(--v-emerald-100); color:var(--v-emerald-700);}
+  .row-actions .act-print:hover{background:var(--v-emerald-50);}
+  .row-actions .act-delete{background:#fff; border:1px solid var(--v-rose-100); color:var(--v-rose-600);}
+  .row-actions .act-delete:hover{background:var(--v-rose-50);}
 </style>
 </head>
-<body>
+<body class="v-app">
 
-<div class="hero-topbar">
-  <div class="hero-inner">
-    <div class="hero-brand">
-      <div class="hero-logo"><img id="logoImg" alt="Universal Logistics & International"></div>
-      <div class="hero-title">
-        <div class="name">Universal Logistics &amp; International</div>
-        <div class="tag">Customer Portal</div>
+<div class="app-shell">
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+  <aside class="app-sidebar" id="appSidebar">
+    <div class="sidebar-brand">
+      <span class="logo-box"><img id="logoImg" alt="Universal Logistics & International"></span>
+      <span class="brand-text">
+        <span class="d-block name">Universal Logistics</span>
+        <span class="d-block tag">Customer Portal</span>
+      </span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-lbl">My Account</div>
+      <a class="sidebar-link active" href="/my-shipments.html">
+        <span class="link-label"><span class="dot"></span><span>My Shipments</span></span>
+        <span class="sidebar-badge blue" id="navShipCount">0</span>
+      </a>
+      <a class="sidebar-link" href="/form.html">
+        <span class="link-label"><span class="dot"></span><span>New Shipment</span></span>
+        <span class="sidebar-badge slate">Quick</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="avatar" id="avatarLetter"></span>
+      <span class="who">
+        <span class="d-block nm" id="userName"></span>
+        <span class="d-block rl">Customer</span>
+      </span>
+      <button class="logout-btn" id="logoutBtn" title="Logout">&#8594;|</button>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-topbar">
+      <div class="topbar-title">
+        <button class="sidebar-toggle" id="sidebarToggle">&#9776;</button>
+        <h1>My Shipments</h1>
+        <span class="status-live"><span class="dot-pulse"></span>Live</span>
+      </div>
+      <div class="topbar-actions">
+        <a href="/form.html" class="btn-v-primary">+ New Shipment</a>
+      </div>
+    </header>
+
+    <div class="content-area" style="max-width:1100px;">
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="v-stat-card c-blue h-100"><div class="v-stat-lbl">Total Shipments</div><div class="v-stat-num" id="statTotal">0</div></div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="v-stat-card c-amber h-100"><div class="v-stat-lbl">Pending</div><div class="v-stat-num" id="statPending">0</div></div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="v-stat-card c-emerald h-100"><div class="v-stat-lbl">Confirmed</div><div class="v-stat-num" id="statConfirmed">0</div></div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="v-stat-card c-indigo h-100"><div class="v-stat-lbl">Shipped</div><div class="v-stat-num" id="statShipped">0</div></div>
+        </div>
+      </div>
+
+      <div class="dash-head">
+        <h2>Shipment History</h2>
+      </div>
+
+      <div class="v-card">
+        <div class="v-card-body p-0">
+          <div id="listWrap">
+            <div class="empty-state">Loading...</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="hero-user">
-      <div class="avatar" id="avatarLetter"></div>
-      <span id="userName"></span>
-      <button id="logoutBtn">Logout</button>
-    </div>
-  </div>
-</div>
-
-<div class="stats-row" id="statsRow">
-  <div class="stat-card total"><div class="num" id="statTotal">0</div><div class="lbl">TOTAL SHIPMENTS</div></div>
-  <div class="stat-card pending"><div class="num" id="statPending">0</div><div class="lbl">PENDING</div></div>
-  <div class="stat-card confirmed"><div class="num" id="statConfirmed">0</div><div class="lbl">CONFIRMED</div></div>
-  <div class="stat-card shipped"><div class="num" id="statShipped">0</div><div class="lbl">SHIPPED</div></div>
-</div>
-
-<div class="dash-body">
-  <div class="dash-head">
-    <h2>My Shipments</h2>
-    <a href="/form.html" class="btn-primary">+ New Shipment</a>
-  </div>
-
-  <div id="listWrap">
-    <div class="empty-state">Loading...</div>
   </div>
 </div>
 
@@ -127,6 +109,20 @@
 <script src="/js/templates.js"></script>
 <script>
 document.getElementById("logoImg").src = LOGO_DATA_URI;
+
+const sidebarToggleBtn = document.getElementById("sidebarToggle");
+const appSidebar = document.getElementById("appSidebar");
+const sidebarScrim = document.getElementById("sidebarScrim");
+if(sidebarToggleBtn){
+  sidebarToggleBtn.addEventListener("click", ()=>{
+    appSidebar.classList.toggle("open");
+    sidebarScrim.classList.toggle("open");
+  });
+}
+if(sidebarScrim) sidebarScrim.addEventListener("click", ()=>{
+  appSidebar.classList.remove("open");
+  sidebarScrim.classList.remove("open");
+});
 
 async function loadUser(){
   const res = await fetch("/api/auth/me");
@@ -145,6 +141,8 @@ function updateStats(shipments){
   document.getElementById("statPending").textContent = counts.Pending;
   document.getElementById("statConfirmed").textContent = counts.Confirmed;
   document.getElementById("statShipped").textContent = counts.Shipped;
+  const navCount = document.getElementById("navShipCount");
+  if(navCount) navCount.textContent = shipments.length;
 }
 
 async function loadShipments(){

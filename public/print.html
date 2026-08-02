@@ -62,7 +62,26 @@ async function main(){
   statusEl.style.display = "none";
   document.getElementById("printArea").innerHTML = html;
 
-  setTimeout(()=> window.print(), 300);
+  // Guarantee the Bill + Terms&Conditions (and the Invoice) each stay on a
+  // single physical A4 page — shrink slightly if the content would overflow.
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      fitPagesToOnePage(document.getElementById("printArea"));
+      setTimeout(()=> window.print(), 250);
+    });
+  });
+}
+
+function fitPagesToOnePage(container){
+  const TARGET_HEIGHT = 1123; // A4 @ 96dpi
+  container.querySelectorAll(".page").forEach(pageEl=>{
+    pageEl.style.zoom = 1;
+    const h = pageEl.scrollHeight;
+    if(h > TARGET_HEIGHT){
+      const scale = Math.max(0.55, (TARGET_HEIGHT / h) * 0.985);
+      pageEl.style.zoom = scale;
+    }
+  });
 }
 main();
 </script>

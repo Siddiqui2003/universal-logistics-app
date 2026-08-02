@@ -181,12 +181,12 @@
   }
   .page-body{
     flex:1;
-    padding:26px 34px 10px;
+    padding:20px 32px 6px;
     display:flex;
     flex-direction:column;
   }
   .page-footer{
-    padding:9px 34px 16px;
+    padding:6px 34px 12px;
     text-align:center;
     font-size:8.5px;
     letter-spacing:0.4px;
@@ -309,13 +309,13 @@
 
   /* ---------- TERMS AND CONDITIONS ---------- */
   .tnc{
-    margin-top:12px;
-    padding:9px 12px;
+    margin-top:8px;
+    padding:8px 12px;
     border:1px solid #ccc;
     border-radius:6px;
     background:#fbfbf9;
     font-size:6.3px;
-    line-height:1.18;
+    line-height:1.16;
   }
   .tnc h2{
     text-align:center;

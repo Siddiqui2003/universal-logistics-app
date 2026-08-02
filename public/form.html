@@ -7,27 +7,118 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/theme.css">
 <style>
-  body{padding:0;}
+  body{padding:0; background:var(--v-slate-50);}
   .form-topbar{
-    background:#fff; border-bottom:1px solid #ddd; padding:12px 24px;
-    display:flex; justify-content:space-between; align-items:center;
+    background:var(--v-slate-900); padding:14px 26px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+    position:sticky; top:0; z-index:40;
   }
-  .form-topbar .brand{font-family:"Playfair Display", serif; font-weight:800; color:var(--blue); font-size:16px;}
-  .form-topbar a{color:var(--blue); text-decoration:none; font-size:13px; font-weight:600;}
-  .wrap{padding:24px;}
-  #saveStatus{font-size:12px; color:var(--muted); margin-left:10px;}
+  .form-topbar .brand{display:flex; align-items:center; gap:10px; color:#fff; font-weight:800; font-size:14px; letter-spacing:.3px;}
+  .form-topbar .brand .logo-box{width:30px; height:30px; border-radius:7px; overflow:hidden; background:#fff; flex-shrink:0;}
+  .form-topbar .brand .logo-box img{width:100%; height:100%; object-fit:cover;}
+  .form-topbar-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .form-topbar a{
+    color:#cbd5e1; text-decoration:none; font-size:12.5px; font-weight:700;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); padding:7px 14px; border-radius:8px;
+  }
+  .form-topbar a:hover{background:rgba(255,255,255,.16); color:#fff;}
+  #saveStatusTop{font-size:11.5px; color:#94a3b8; font-family:var(--v-mono);}
+
+  /* ---------- FULL-PAGE TWO-COLUMN LAYOUT ---------- */
+  .wrap{display:flex; gap:22px; align-items:flex-start; max-width:1600px; margin:0 auto; padding:22px 26px 60px;}
+  .panel{
+    background:#fff !important; border:1px solid var(--v-slate-200) !important; border-radius:14px !important;
+    box-shadow:0 1px 3px rgba(15,23,42,.04); flex:0 0 400px; max-height:calc(100vh - 90px); overflow-y:auto;
+    position:sticky; top:80px;
+  }
+  .panel h2{color:var(--v-slate-900) !important; font-family:"Inter",sans-serif !important; font-weight:800 !important; font-size:16px !important;}
+  fieldset{border:1px solid var(--v-slate-200) !important; border-radius:10px !important;}
+  legend{color:var(--v-blue-600) !important; font-weight:800 !important;}
+  input[type=text], input[type=date], input[type=time], input[type=number], textarea, select{
+    border:1px solid var(--v-slate-200) !important; border-radius:8px !important;
+  }
+  input:focus, textarea:focus, select:focus{
+    outline:none; border-color:var(--v-blue-500) !important; box-shadow:0 0 0 3px rgba(59,130,246,.15);
+  }
+  #printBtn{background:var(--v-slate-900) !important;}
+  #printBtn:hover{background:#1e293b !important;}
+  #saveBtn{background:var(--v-emerald-600) !important; color:#fff !important;}
+  #saveBtn:hover{background:var(--v-emerald-700) !important;}
+  #saveStatus{font-size:12px; color:var(--v-slate-500); margin-left:10px;}
+
+  /* ---------- PRINT SETTINGS CARD ---------- */
+  .settings-card{
+    background:var(--v-slate-50); border:1px solid var(--v-slate-200); border-radius:12px;
+    padding:14px 16px; margin-top:16px;
+  }
+  .settings-card-title{
+    font-size:11px; font-weight:800; color:var(--v-slate-500); text-transform:uppercase;
+    letter-spacing:.5px; margin-bottom:10px;
+  }
+  .settings-row{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:9px 0; border-top:1px solid var(--v-slate-200);
+  }
+  .settings-row:first-of-type{border-top:none; padding-top:0;}
+  .settings-row-text{display:flex; flex-direction:column; gap:1px; min-width:0;}
+  .settings-row-label{font-size:13px; font-weight:700; color:var(--v-slate-800);}
+  .settings-row-sub{font-size:11px; color:var(--v-slate-400);}
+
+  .copies-stepper{
+    display:flex; align-items:center; gap:0; border:1px solid var(--v-slate-200); border-radius:8px;
+    background:#fff; overflow:hidden; flex-shrink:0;
+  }
+  .copies-stepper button{
+    width:28px; height:28px; border:none; background:#fff; color:var(--v-slate-700); font-size:15px;
+    font-weight:700; cursor:pointer; line-height:1;
+  }
+  .copies-stepper button:hover{background:var(--v-slate-100);}
+  .copies-stepper span{width:26px; text-align:center; font-size:13px; font-weight:800; color:var(--v-slate-900); font-family:var(--v-mono);}
+
+  .v-toggle{position:relative; display:inline-block; width:38px; height:22px; flex-shrink:0;}
+  .v-toggle input{opacity:0; width:0; height:0;}
+  .v-toggle-track{
+    position:absolute; inset:0; background:var(--v-slate-300); border-radius:20px; cursor:pointer; transition:background .15s ease;
+  }
+  .v-toggle-thumb{
+    position:absolute; top:3px; left:3px; width:16px; height:16px; background:#fff; border-radius:50%;
+    box-shadow:0 1px 3px rgba(0,0,0,.25); transition:transform .15s ease;
+  }
+  .v-toggle input:checked + .v-toggle-track{background:var(--v-emerald-500);}
+  .v-toggle input:checked + .v-toggle-track .v-toggle-thumb{transform:translateX(16px);}
+
+  /* ---------- LIVE PREVIEW PANEL ---------- */
+  .preview-col{flex:1; min-width:0;}
+  .preview-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:8px;}
+  .preview-head h3{margin:0; font-size:14.5px; font-weight:800; color:var(--v-slate-900);}
+  .preview-outer{
+    background:var(--v-slate-100); border:1px solid var(--v-slate-200); border-radius:14px;
+    padding:22px; overflow-x:auto;
+  }
+  .preview-outer #printArea .page{margin:0 auto 22px;}
+  .preview-outer #printArea .page:last-child{margin-bottom:0;}
+  .preview-empty{text-align:center; padding:60px 20px; color:var(--v-slate-400); font-size:13px;}
+
+  @media (max-width: 1100px){
+    .wrap{flex-direction:column;}
+    .panel{position:static; max-height:none; flex:1 1 auto; width:100%;}
+  }
 </style>
 </head>
 <body>
 
 <div class="form-topbar">
-  <div class="brand">UNIVERSAL LOGISTICS &amp; INTERNATIONAL</div>
-  <a href="/dashboard.html" id="backLink">&larr; Back to Dashboard</a>
+  <div class="brand"><span class="logo-box"><img id="topbarLogoImg" alt="logo"></span>UNIVERSAL LOGISTICS &amp; INTERNATIONAL</div>
+  <div class="form-topbar-actions">
+    <span id="saveStatusTop"></span>
+    <a href="/dashboard.html" id="backLink">&larr; Back to Dashboard</a>
+  </div>
 </div>
 
 <div class="wrap">
-  <div class="panel" style="flex:0 0 380px;">
+  <div class="panel" style="flex:0 0 400px;">
     <h2 style="margin-top:0;">Shipment Details</h2>
 
     <fieldset>
@@ -143,22 +234,48 @@
       <div class="hint" style="margin-top:6px;">Item Description mein type karein — HS Code list se select ho sakta hai.</div>
     </fieldset>
 
-    <div class="copies">
-      <label style="margin:0;">Copies:</label>
-      <select id="copyCount" style="width:80px;">
-        <option value="1" selected>1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-      </select>
-    </div>
-    <div class="copies">
-      <input type="checkbox" id="showTnc" checked style="width:auto;">
-      <label style="margin:0;" for="showTnc">Terms &amp; Conditions shamil karein</label>
-    </div>
-    <div class="copies">
-      <input type="checkbox" id="showInvoice" checked style="width:auto;">
-      <label style="margin:0;" for="showInvoice">Gift Invoice shamil karein</label>
+    <div class="settings-card">
+      <div class="settings-card-title">Print Settings</div>
+
+      <div class="settings-row">
+        <div class="settings-row-text">
+          <span class="settings-row-label">Copies</span>
+          <span class="settings-row-sub">Kitne nuskhe print karne hain</span>
+        </div>
+        <div class="copies-stepper">
+          <button type="button" id="copiesMinus">&minus;</button>
+          <span id="copiesValue">1</span>
+          <button type="button" id="copiesPlus">+</button>
+        </div>
+        <select id="copyCount" style="display:none;">
+          <option value="1" selected>1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+
+      <div class="settings-row">
+        <div class="settings-row-text">
+          <span class="settings-row-label">Terms &amp; Conditions</span>
+          <span class="settings-row-sub">Bill ke sath ek hi page par print hoti hain</span>
+        </div>
+        <label class="v-toggle">
+          <input type="checkbox" id="showTnc" checked>
+          <span class="v-toggle-track"><span class="v-toggle-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="settings-row">
+        <div class="settings-row-text">
+          <span class="settings-row-label">Include Invoice</span>
+          <span class="settings-row-sub">Alag page par gift/commercial invoice</span>
+        </div>
+        <label class="v-toggle">
+          <input type="checkbox" id="showInvoice" checked>
+          <span class="v-toggle-track"><span class="v-toggle-thumb"></span></span>
+        </label>
+      </div>
     </div>
 
     <div class="actions">
@@ -167,6 +284,18 @@
     </div>
     <div id="saveStatus"></div>
   </div>
+
+  <div class="preview-col">
+    <div class="preview-head">
+      <h3>Live Preview</h3>
+      <span class="status-live"><span class="dot-pulse"></span>Updating</span>
+    </div>
+    <div class="preview-outer">
+      <div id="printArea">
+        <div class="preview-empty">Form bharna shuru karein — bill/invoice yahan live nazar aayegi.</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="/js/bootstrap.bundle.min.js"></script>
@@ -174,6 +303,8 @@
 <script src="/js/jsbarcode.js"></script>
 <script src="/js/templates.js"></script>
 <script>
+document.getElementById("topbarLogoImg").src = LOGO_DATA_URI;
+
 const fieldIds = [
   "date","time","origin","destination","account","awbnum",
   "shipperName","shipperAddress","shipperEmail","shipperCnic","shipperZip","shipperCity","shipperCountry","shipperPhone",
@@ -199,6 +330,58 @@ function setValues(v){
     const el = document.getElementById(id);
     if(el && v[id] !== undefined) el.value = v[id];
   });
+}
+
+/* ---------- LIVE PREVIEW (uses the same templates.js the real print uses) ---------- */
+const previewOuter = document.querySelector(".preview-outer");
+const printAreaEl = document.getElementById("printArea");
+
+function fitPreviewZoom(){
+  if(!previewOuter) return;
+  const avail = previewOuter.clientWidth - 44; // minus padding
+  const z = Math.max(0.3, Math.min(1, avail / 794));
+  printAreaEl.style.zoom = z;
+}
+window.addEventListener("resize", fitPreviewZoom);
+
+function fitPagesToOnePage(container){
+  const TARGET_HEIGHT = 1123; // A4 @ 96dpi
+  container.querySelectorAll(".page").forEach(pageEl=>{
+    pageEl.style.zoom = 1;
+    const h = pageEl.scrollHeight;
+    if(h > TARGET_HEIGHT){
+      const scale = Math.max(0.55, (TARGET_HEIGHT / h) * 0.985);
+      pageEl.style.zoom = scale;
+    }
+  });
+}
+
+let previewTimer = null;
+function updatePreview(){
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(()=>{
+    const v = getValues();
+    v.id = shipmentId || "PREVIEW";
+    v.created_at = new Date().toISOString();
+    v.trackingNo = shipmentId ? formatTrackingNo(shipmentId, v.created_at) : "PREVIEW";
+
+    const copies = parseInt(document.getElementById("copyCount").value, 10) || 1;
+    const showTnc = document.getElementById("showTnc").checked;
+    const showInvoice = document.getElementById("showInvoice").checked;
+
+    let html = "";
+    let page1 = billHTML(v);
+    if(showTnc) page1 += tncHTML();
+    html += pageWrap(page1);
+    if(showInvoice){
+      html += pageWrap(invoiceHTML(v, products));
+    }
+    printAreaEl.innerHTML = html;
+    requestAnimationFrame(()=>{
+      fitPagesToOnePage(printAreaEl);
+      fitPreviewZoom();
+    });
+  }, 180);
 }
 
 /* ---------- HS Code autocomplete (backed by /api/hscodes) ---------- */
@@ -267,6 +450,7 @@ function renderProductRows(){
     });
   });
   calcDerivedFields();
+  updatePreview();
 }
 
 function calcDerivedFields(){
@@ -349,6 +533,29 @@ document.getElementById("addProductBtn").addEventListener("click", ()=>{
   renderProductRows();
 });
 
+/* Any change anywhere inside the form panel refreshes the live preview */
+const panelEl = document.querySelector(".panel");
+panelEl.addEventListener("input", updatePreview);
+panelEl.addEventListener("change", updatePreview);
+
+/* ---------- Copies stepper (styled +/- control bound to the hidden select) ---------- */
+const copyCountEl = document.getElementById("copyCount");
+const copiesValueEl = document.getElementById("copiesValue");
+function syncCopiesDisplay(){ copiesValueEl.textContent = copyCountEl.value; }
+document.getElementById("copiesMinus").addEventListener("click", ()=>{
+  const v = Math.max(1, parseInt(copyCountEl.value, 10) - 1);
+  copyCountEl.value = v;
+  syncCopiesDisplay();
+  updatePreview();
+});
+document.getElementById("copiesPlus").addEventListener("click", ()=>{
+  const v = Math.min(4, parseInt(copyCountEl.value, 10) + 1);
+  copyCountEl.value = v;
+  syncCopiesDisplay();
+  updatePreview();
+});
+syncCopiesDisplay();
+
 /* ---------- Save / Load ---------- */
 async function loadExisting(){
   if(!shipmentId) return;
@@ -358,6 +565,7 @@ async function loadExisting(){
   if(data.form) setValues(data.form);
   if(data.products && data.products.length) products = data.products;
   if(data.copies) document.getElementById("copyCount").value = data.copies;
+  syncCopiesDisplay();
   if(data.showTnc !== undefined) document.getElementById("showTnc").checked = !!data.showTnc;
   if(data.showInvoice !== undefined) document.getElementById("showInvoice").checked = !!data.showInvoice;
   renderProductRows();
@@ -414,6 +622,7 @@ document.getElementById("printBtn").addEventListener("click", async ()=>{
   document.getElementById("backLink").href = me.user.role === "admin" ? "/dashboard.html" : "/my-shipments.html";
   await loadExisting();
   renderProductRows();
+  updatePreview();
 })();
 </script>
 </body>
