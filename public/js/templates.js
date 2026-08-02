@@ -65,36 +65,51 @@ function billHTML(v){
   return `
   <div class="bill">
     <table class="bill-table">
-      <tr>
-        <td class="head-logo" style="width:30%;" rowspan="3">
+      <!-- Fixed column template: col1/col7 are the wide side columns used by the
+           header (logo / AWB box). Every row below the header re-uses these same
+           7 columns via colspan so the whole document stays perfectly aligned. -->
+      <colgroup>
+        <col style="width:24%">
+        <col style="width:8%">
+        <col style="width:10%">
+        <col style="width:26%">
+        <col style="width:7%">
+        <col style="width:7%">
+        <col style="width:18%">
+      </colgroup>
+
+      <!-- ===== HEADER ===== -->
+      <tr class="hd-row">
+        <td class="head-logo" rowspan="3">
           <img src="${LOGO_DATA_URI}" alt="Universal Logistics & International">
           <div class="logo-sub">INT'L COURIER &amp; CARGO</div>
         </td>
-        <td class="lbl" style="width:8%;">Date</td>
-        <td class="val" style="width:14%;">${esc(fmtDate(v.date))}</td>
-        <td class="lbl" style="width:8%;">Time</td>
-        <td class="val" style="width:12%;" colspan="2">${esc(v.time)}</td>
-        <td rowspan="3" style="width:28%;" class="awb-box">
+        <td class="lbl">Date</td>
+        <td class="val">${esc(fmtDate(v.date))}</td>
+        <td class="lbl">Time</td>
+        <td class="val" colspan="2">${esc(v.time)}</td>
+        <td rowspan="3" class="awb-box">
           <div class="awb-title">AIRWAY BILL</div>
           ${barcodeSrc ? `<img src="${barcodeSrc}" class="tn-barcode" alt="Barcode">` : ""}
           ${trackNo ? `<div class="tn-value">${esc(trackNo)}</div>` : ""}
         </td>
       </tr>
-      <tr>
+      <tr class="hd-row">
         <td class="lbl">Origin</td>
         <td class="val">${esc(v.origin)}</td>
         <td class="lbl">Destination</td>
         <td class="val" colspan="2">${esc(v.destination)}</td>
       </tr>
-      <tr>
+      <tr class="hd-row">
         <td class="lbl">Account #</td>
         <td class="val" colspan="4">${esc(v.account)}</td>
       </tr>
 
-      <tr>
+      <!-- ===== SHIPPER / CONSIGNEE IDENTITY ===== -->
+      <tr class="section-start">
         <td class="lbl">Shipper's Name</td>
         <td class="val" colspan="2">${esc(v.shipperName)}</td>
-        <td class="lbl">Consignee Company</td>
+        <td class="lbl nowrap">Consignee Company</td>
         <td class="val" colspan="3">${esc(v.consigneeCompany)}</td>
       </tr>
       <tr>
@@ -102,7 +117,7 @@ function billHTML(v){
         <td class="val" colspan="6">${esc(v.shipperAddress)}</td>
       </tr>
       <tr>
-        <td class="lbl">Consignee's Address</td>
+        <td class="lbl nowrap">Consignee's Address</td>
         <td class="val" colspan="6">${esc(v.consigneeAddress)}</td>
       </tr>
       <tr>
@@ -110,31 +125,32 @@ function billHTML(v){
         <td class="val" colspan="6">${esc(v.shipperEmail)}</td>
       </tr>
 
+      <!-- ===== ACCOUNT BLOCK — compact two-column reference/contact grid ===== -->
       <tr class="ab-section-row">
         <td colspan="7" class="ab-section-title">Account Block</td>
       </tr>
       <tr>
         <td class="lbl">Consignee Name</td>
         <td class="val" colspan="2">${esc(v.consigneeName)}</td>
-        <td class="lbl">Consignee's Email</td>
+        <td class="lbl nowrap">Consignee's Email</td>
         <td class="val" colspan="3">${esc(v.consigneeEmail)}</td>
       </tr>
       <tr>
-        <td class="lbl">Shipper's NTN / CNIC</td>
+        <td class="lbl nowrap">Shipper's NTN / CNIC</td>
         <td class="val" colspan="2">${esc(v.shipperCnic)}</td>
         <td class="lbl">Bag Number</td>
         <td class="val" colspan="3">${esc(v.bagNumber)}</td>
       </tr>
       <tr>
-        <td class="lbl">Zip / City / Country (Shipper)</td>
+        <td class="lbl nowrap">Zip / City / Country (Shipper)</td>
         <td class="val" colspan="2">${esc(v.shipperZip)} — ${esc(v.shipperCity)}, ${esc(v.shipperCountry)}</td>
-        <td class="lbl">Zip / City / Country (Consignee)</td>
+        <td class="lbl nowrap">Zip / City / Country (Consignee)</td>
         <td class="val" colspan="3">${esc(v.consigneeZip)} — ${esc(v.consigneeCity)}, ${esc(v.consigneeCountry)}</td>
       </tr>
       <tr>
-        <td class="lbl">Shipper's Telephone #</td>
+        <td class="lbl nowrap">Shipper's Telephone #</td>
         <td class="val" colspan="2">${esc(v.shipperPhone)}</td>
-        <td class="lbl">Consignee's Telephone #</td>
+        <td class="lbl nowrap">Consignee's Telephone #</td>
         <td class="val" colspan="3">${esc(v.consigneePhone)}</td>
       </tr>
       <tr>
@@ -149,7 +165,8 @@ function billHTML(v){
         </td>
       </tr>
 
-      <tr>
+      <!-- ===== CARGO / SERVICE ===== -->
+      <tr class="section-start">
         <td class="lbl">Dimension</td>
         <td class="val" colspan="2">${esc(v.dimension)}</td>
         <td class="lbl">Service</td>
@@ -157,18 +174,17 @@ function billHTML(v){
       </tr>
       <tr>
         <td class="lbl">Fragile</td>
-        <td class="val">${esc(v.fragile)}</td>
-        <td class="lbl">Declared Value</td>
-        <td class="val" colspan="4">${esc(v.declaredValue)}</td>
+        <td class="val" colspan="2">${esc(v.fragile)}</td>
+        <td class="lbl nowrap">Declared Value</td>
+        <td class="val" colspan="3">${esc(v.declaredValue)}</td>
       </tr>
       <tr>
-        <td class="lbl">Product Detail</td>
-        <td class="val" colspan="5">${esc(v.productDetail)}</td>
+        <td class="lbl nowrap">Product Detail</td>
+        <td class="val product-detail" colspan="5">${esc(v.productDetail)}</td>
         <td class="qr-box" rowspan="3">
           <div class="qr-scan-row">
-            <span class="qr-scan-label">Scan</span>
             ${qrSrc ? `<img src="${qrSrc}" class="qr-img" alt="Scan to track">` : ""}
-            <span class="qr-scan-label">to Track</span>
+            <span class="qr-scan-label">Scan to Track</span>
           </div>
         </td>
       </tr>
@@ -180,8 +196,8 @@ function billHTML(v){
         <td colspan="6">NOTE: PLEASE DO NOT ACCEPT, IF THE SHIPMENT IS NOT INTACT.</td>
       </tr>
       <tr>
-        <td colspan="7" style="text-align:right;">
-          <span class="sig-line">Customer's Signature: ______________________________</span>
+        <td colspan="7" class="sig-row">
+          <span class="sig-line">Customer's Signature: <span class="sig-blank"></span></span>
         </td>
       </tr>
     </table>
