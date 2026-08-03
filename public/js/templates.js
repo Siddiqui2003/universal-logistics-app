@@ -69,13 +69,13 @@ function billHTML(v){
            header (logo / AWB box). Every row below the header re-uses these same
            7 columns via colspan so the whole document stays perfectly aligned. -->
       <colgroup>
-        <col style="width:24%">
-        <col style="width:9%">
-        <col style="width:9%">
-        <col style="width:26%">
+        <col style="width:22%">
+        <col style="width:13%">
+        <col style="width:7%">
+        <col style="width:25%">
         <col style="width:7%">
         <col style="width:7%">
-        <col style="width:18%">
+        <col style="width:19%">
       </colgroup>
 
       <!-- ===== HEADER ===== -->
