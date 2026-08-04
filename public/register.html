@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/theme.css">
+<link rel="stylesheet" href="/css/tailwind.css">
 </head>
 <body class="v-auth">
 <div class="v-auth-card">
@@ -32,7 +33,7 @@
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/templates.js"></script>
 <script>
-document.getElementById("logoImg").src = LOGO_DATA_URI;
+document.getElementById("logoImg").src = LOGO_ICON_DATA_URI;
 document.getElementById("registerForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
   const name = document.getElementById("name").value.trim();

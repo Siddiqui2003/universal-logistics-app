@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Google Font: Inter — used site-wide (except the printed AWB, which
+   intentionally keeps Segoe UI/Arial to match real courier documents). */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+@layer base {
+  body {
+    font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+}
+
+/* Small reusable component classes built from Tailwind utilities.
+   Existing element IDs/classes used by app.js etc. are untouched —
+   these are purely additive visual helpers you can sprinkle onto
+   markup wherever you want the "more attractive" look. */
+@layer components {
+  .tw-card {
+    @apply bg-white rounded-xl2 shadow-card border border-slate-200/70 transition-shadow duration-200;
+  }
+  .tw-card:hover {
+    @apply shadow-card-hover;
+  }
+  .tw-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-ink px-4 py-2.5
+           text-sm font-semibold text-white shadow-sm transition-colors duration-150
+           hover:bg-slate-800 active:bg-slate-900 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .tw-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5
+           text-sm font-semibold text-slate-700 shadow-sm transition-colors duration-150
+           hover:bg-slate-50 active:bg-slate-100;
+  }
+  .tw-input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900
+           shadow-sm transition-shadow duration-150
+           placeholder:text-slate-400
+           focus:outline-none focus:ring-2 focus:ring-brand-blue/40 focus:border-brand-blue;
+  }
+  .tw-label {
+    @apply block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1.5;
+  }
+  .tw-badge {
+    @apply inline-flex items-center rounded-full bg-brand-blue/10 px-2.5 py-1 text-xs font-semibold text-brand-blue;
+  }
+  /* Reusable "lift on hover" polish for cards/widgets across any page */
+  .hover-lift {
+    @apply transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-card-hover;
+  }
+  .btn-press {
+    @apply transition-transform duration-150 hover:scale-[1.02] active:scale-[0.97];
+  }
+}

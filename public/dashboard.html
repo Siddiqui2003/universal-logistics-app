@@ -32,7 +32,14 @@
   .datetime-cell b{color:var(--v-slate-700); font-weight:600;}
   .status-select-sm{font-size:12px; min-width:120px; border-radius:8px !important;}
   .action-btns .btn{font-size:11px; padding:4px 9px; border-radius:7px;}
+
+  /* ---------- TAILWIND-LAYER POLISH ---------- */
+  .shipment-table tbody tr{ transition: background-color .15s ease; }
+  .action-btns .btn{ transition: transform .12s ease, box-shadow .12s ease; }
+  .action-btns .btn:hover{ transform: translateY(-1px); box-shadow:0 3px 8px rgba(15,23,42,.12); }
+  .status-select-sm{ transition: box-shadow .15s ease; }
 </style>
+<link rel="stylesheet" href="/css/tailwind.css">
 </head>
 <body class="v-app">
 
@@ -50,14 +57,14 @@
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section-lbl">Operations</div>
-      <a class="sidebar-link active" href="/dashboard.html">
+      <a class="sidebar-link active transition-colors duration-150" href="/dashboard.html">
         <span class="link-label"><span class="dot"></span><span>Dashboard</span></span>
         <span class="sidebar-badge blue" id="navShipCount">0</span>
       </a>
-      <a class="sidebar-link" href="/customers.html">
+      <a class="sidebar-link transition-colors duration-150" href="/customers.html">
         <span class="link-label"><span class="dot"></span><span>Manage Customers</span></span>
       </a>
-      <a class="sidebar-link" href="/form.html">
+      <a class="sidebar-link transition-colors duration-150" href="/form.html">
         <span class="link-label"><span class="dot"></span><span>New Shipment</span></span>
         <span class="sidebar-badge slate">Quick</span>
       </a>
@@ -68,7 +75,7 @@
         <span class="d-block nm" id="userName"></span>
         <span class="d-block rl">Admin</span>
       </span>
-      <button class="logout-btn" id="logoutBtn" title="Logout">&#8594;|</button>
+      <button class="logout-btn transition-transform duration-150 hover:scale-110" id="logoutBtn" title="Logout">&#8594;|</button>
     </div>
   </aside>
 
@@ -81,7 +88,7 @@
         <span class="status-live"><span class="dot-pulse"></span>Live</span>
       </div>
       <div class="topbar-actions">
-        <a href="/form.html" class="btn-v-primary">+ Create Shipment</a>
+        <a href="/form.html" class="btn-v-primary btn-press">+ Create Shipment</a>
         <span class="topbar-clock" id="topbarClock">--:--:--</span>
       </div>
     </header>
@@ -91,31 +98,31 @@
   <!-- ===================== STAT CARDS ===================== -->
   <div class="row g-3 mt-1 mb-4">
     <div class="col-6 col-md-4 col-lg">
-      <div class="v-stat-card c-blue h-100">
+      <div class="v-stat-card c-blue h-100 transition-shadow duration-200">
         <div class="v-stat-lbl">Total Shipments</div>
         <div class="v-stat-num" id="statTotal">0</div>
       </div>
     </div>
     <div class="col-6 col-md-4 col-lg">
-      <div class="v-stat-card c-amber h-100">
+      <div class="v-stat-card c-amber h-100 transition-shadow duration-200">
         <div class="v-stat-lbl">Pending</div>
         <div class="v-stat-num" id="statPending">0</div>
       </div>
     </div>
     <div class="col-6 col-md-4 col-lg">
-      <div class="v-stat-card c-emerald h-100">
+      <div class="v-stat-card c-emerald h-100 transition-shadow duration-200">
         <div class="v-stat-lbl">Confirmed</div>
         <div class="v-stat-num" id="statConfirmed">0</div>
       </div>
     </div>
     <div class="col-6 col-md-4 col-lg">
-      <div class="v-stat-card c-indigo h-100">
+      <div class="v-stat-card c-indigo h-100 transition-shadow duration-200">
         <div class="v-stat-lbl">Shipped</div>
         <div class="v-stat-num" id="statShipped">0</div>
       </div>
     </div>
     <div class="col-6 col-md-4 col-lg">
-      <div class="v-stat-card c-rose h-100">
+      <div class="v-stat-card c-rose h-100 transition-shadow duration-200">
         <div class="v-stat-lbl">Cancelled</div>
         <div class="v-stat-num" id="statCancelled">0</div>
       </div>
@@ -125,7 +132,7 @@
   <!-- ===================== CHART + RECENT ACTIVITY ===================== -->
   <div class="row g-3 mb-4">
     <div class="col-12 col-lg-5">
-      <div class="v-card h-100">
+      <div class="v-card h-100 hover-lift">
         <div class="v-card-body">
           <h3 class="v-widget-heading">Status Breakdown</h3>
           <div class="chart-wrap">
@@ -136,7 +143,7 @@
       </div>
     </div>
     <div class="col-12 col-lg-7">
-      <div class="v-card h-100">
+      <div class="v-card h-100 hover-lift">
         <div class="v-card-body">
           <h3 class="v-widget-heading">Recent Activity</h3>
           <div id="activityFeed" class="activity-feed-scroll">
@@ -150,28 +157,28 @@
   <!-- ===================== HEADER ROW ===================== -->
   <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
     <h2 class="v-section-heading mb-0 fs-5">All Shipments &amp; Bookings</h2>
-    <a href="/form.html" class="btn-v-primary">+ New Shipment</a>
+    <a href="/form.html" class="btn-v-primary btn-press">+ New Shipment</a>
   </div>
 
   <!-- ===================== FILTER BAR ===================== -->
-  <div class="v-filter-bar mb-3">
+  <div class="v-filter-bar mb-3 hover-lift">
     <div class="v-card-body">
       <div class="row g-3 align-items-end">
         <div class="col-12 col-sm-6 col-lg-3">
           <label class="form-label mb-1">Search</label>
-          <input type="text" class="form-control" id="fSearch" placeholder="AWB, tracking #, name...">
+          <input type="text" class="form-control transition-shadow duration-150" id="fSearch" placeholder="AWB, tracking #, name...">
         </div>
         <div class="col-6 col-sm-6 col-lg-2">
           <label class="form-label mb-1">Destination</label>
-          <select class="form-select" id="fDestination"><option value="">All</option></select>
+          <select class="form-select transition-shadow duration-150" id="fDestination"><option value="">All</option></select>
         </div>
         <div class="col-6 col-sm-6 col-lg-2">
           <label class="form-label mb-1">Service</label>
-          <select class="form-select" id="fService"><option value="">All</option></select>
+          <select class="form-select transition-shadow duration-150" id="fService"><option value="">All</option></select>
         </div>
         <div class="col-6 col-sm-6 col-lg-2">
           <label class="form-label mb-1">Status</label>
-          <select class="form-select" id="fStatus">
+          <select class="form-select transition-shadow duration-150" id="fStatus">
             <option value="">All</option>
             <option value="Pending">Pending</option>
             <option value="Confirmed">Confirmed</option>
@@ -180,15 +187,15 @@
           </select>
         </div>
         <div class="col-12 col-lg-3 d-flex gap-2">
-          <button class="btn-v-primary flex-fill" id="showNowBtn">Show Now</button>
-          <button class="btn-v-success flex-fill" id="excelBtn">⬇ Excel</button>
+          <button class="btn-v-primary btn-press flex-fill" id="showNowBtn">Show Now</button>
+          <button class="btn-v-success btn-press flex-fill" id="excelBtn">⬇ Excel</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- ===================== TABLE ===================== -->
-  <div class="v-card mb-4">
+  <div class="v-card mb-4 hover-lift">
     <div class="v-card-body p-0">
       <div id="listWrap">
         <div class="empty-state">Loading...</div>
@@ -233,7 +240,7 @@
 <script src="/js/chart.umd.min.js"></script>
 <script src="/js/templates.js"></script>
 <script>
-document.getElementById("logoImg").src = LOGO_DATA_URI;
+document.getElementById("logoImg").src = LOGO_ICON_DATA_URI;
 
 /* ---------- Sidebar toggle (mobile) + live clock ---------- */
 const sidebarToggleBtn = document.getElementById("sidebarToggle");

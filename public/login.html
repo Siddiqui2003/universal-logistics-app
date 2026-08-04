@@ -8,20 +8,21 @@
 <link rel="stylesheet" href="/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/theme.css">
+<link rel="stylesheet" href="/css/tailwind.css">
 </head>
 <body class="v-auth">
-<div class="v-auth-card">
+<div class="v-auth-card transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
   <div class="v-auth-logo"><img id="logoImg" alt="Universal Logistics & International"></div>
   <h1>Universal Logistics</h1>
   <div class="v-auth-tag">Login to manage your Airway Bills &amp; Invoices</div>
 
   <form id="loginForm">
     <label>Email</label>
-    <input type="email" id="email" required autocomplete="email">
+    <input type="email" id="email" required autocomplete="email" class="transition-shadow duration-150">
     <label>Password</label>
-    <input type="password" id="password" required autocomplete="current-password">
+    <input type="password" id="password" required autocomplete="current-password" class="transition-shadow duration-150">
     <div class="v-auth-error" id="errorBox"></div>
-    <button type="submit">Login</button>
+    <button type="submit" class="transition-transform duration-150 hover:scale-[1.02] active:scale-[0.98]">Login</button>
   </form>
 
   <div class="v-auth-switch">Naya account? <a href="/register.html">Register here</a></div>
@@ -30,7 +31,7 @@
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/templates.js"></script>
 <script>
-document.getElementById("logoImg").src = LOGO_DATA_URI;
+document.getElementById("logoImg").src = LOGO_ICON_DATA_URI;
 document.getElementById("loginForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
   const email = document.getElementById("email").value.trim();

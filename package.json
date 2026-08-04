@@ -8,13 +8,20 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "build:css": "tailwindcss -i ./src/tailwind.css -o ./public/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./src/tailwind.css -o ./public/css/tailwind.css --watch"
   },
   "dependencies": {
-    "express": "^4.19.2",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
     "cookie-parser": "^1.4.6",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.5.4",
+    "postcss": "^8.5.25",
+    "tailwindcss": "^3.4.19"
   }
 }

@@ -28,6 +28,7 @@
 
   .updated-note{font-size:11.5px; color:var(--v-slate-400); margin-top:18px; text-align:center;}
 </style>
+<link rel="stylesheet" href="/css/tailwind.css">
 </head>
 <body class="v-track">
 
@@ -50,7 +51,7 @@
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/templates.js"></script>
 <script>
-document.getElementById("logoImg").src = LOGO_DATA_URI;
+document.getElementById("logoImg").src = LOGO_ICON_DATA_URI;
 
 function escapeHtml(s){
   return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
