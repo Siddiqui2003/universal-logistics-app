@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workspace — Universal Logistics &amp; International</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/theme.css">
+<link rel="stylesheet" href="/css/tailwind.css">
+<style>
+  body{
+    margin:0; min-height:100vh; overflow-x:hidden;
+    font-family:"Inter",sans-serif; color:#e8ebf1;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(122,31,31,.20), transparent 42%),
+      radial-gradient(circle at 88% 92%, rgba(59,130,246,.14), transparent 45%),
+      #0b1120;
+  }
+  .serif{ font-family:"Playfair Display", serif; }
+  .mono{ font-family:"JetBrains Mono", monospace; }
+
+  /* ---------------- Header ---------------- */
+  .hub-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px 32px; max-width:1180px; margin:0 auto;
+  }
+  .hub-brand{ display:flex; align-items:center; gap:11px; }
+  .hub-brand .mark{
+    width:36px; height:36px; border-radius:9px; background:#fff;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+    box-shadow:0 4px 14px rgba(0,0,0,.35);
+  }
+  .hub-brand .mark img{ width:100%; height:100%; object-fit:cover; }
+  .hub-brand .name{ font-weight:800; font-size:14.5px; letter-spacing:.2px; color:#fff; }
+  .hub-brand .sub{ font-size:10.5px; color:#8b93a7; letter-spacing:.5px; text-transform:uppercase; }
+
+  /* ---------------- Hero ---------------- */
+  .hub-hero{ max-width:1180px; margin:0 auto; padding:8px 32px 6px; }
+  .hub-eyebrow{
+    display:inline-flex; align-items:center; gap:8px; font-size:11px; font-weight:700;
+    letter-spacing:1.2px; text-transform:uppercase; color:#c9a06a;
+    margin-bottom:16px;
+  }
+  .hub-eyebrow::before{ content:""; width:16px; height:1px; background:#c9a06a; }
+  .hub-hero h1{
+    font-size:clamp(30px, 4.4vw, 46px); line-height:1.08; font-weight:700; color:#fff;
+    margin:0 0 14px; max-width:640px; letter-spacing:-.5px;
+  }
+  .hub-hero p{ font-size:15px; color:#9aa3b8; max-width:480px; line-height:1.6; margin:0; }
+
+  /* ---------------- Carousel ---------------- */
+  .hub-carousel-wrap{ max-width:1180px; margin:0 auto; padding:44px 32px 24px; position:relative; }
+  .hub-track{
+    display:flex; gap:24px; overflow-x:auto; scroll-snap-type:x mandatory;
+    padding:6px 2px 22px; scrollbar-width:none;
+  }
+  .hub-track::-webkit-scrollbar{ display:none; }
+  .hub-card{
+    scroll-snap-align:start; flex:0 0 min(560px, 88vw);
+    border-radius:20px; position:relative; overflow:hidden;
+    background:#12182b; border:1px solid rgba(255,255,255,.08);
+    padding:34px 32px 30px;
+    transition:transform .35s cubic-bezier(.22,1,.36,1), border-color .35s ease, box-shadow .35s ease;
+    cursor:pointer;
+    min-height:300px;
+    display:flex; flex-direction:column;
+    text-decoration:none; color:inherit;
+  }
+  .hub-card, .hub-card *{ text-decoration:none; }
+  .hub-card:hover{
+    transform:translateY(-6px);
+    border-color:rgba(255,255,255,.18);
+    box-shadow:0 24px 60px rgba(0,0,0,.45);
+  }
+  .hub-card .motif{ position:absolute; inset:0; opacity:.5; pointer-events:none; }
+  .hub-card .card-top{ position:relative; display:flex; align-items:flex-start; justify-content:space-between; }
+  .hub-card .icon-box{
+    width:52px; height:52px; border-radius:13px; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 20px rgba(0,0,0,.3);
+  }
+  .hub-card .go-arrow{
+    width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.16);
+    display:flex; align-items:center; justify-content:center; color:#cfd4e2;
+    transition:background .2s ease, transform .2s ease, border-color .2s ease;
+  }
+  .hub-card:hover .go-arrow{ background:#fff; color:#0b1120; transform:rotate(45deg); border-color:#fff; }
+  .hub-card .kicker{
+    margin-top:26px; font-size:10.5px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase;
+  }
+  .hub-card h2{ font-size:25px; font-weight:700; color:#fff; margin:8px 0 10px; letter-spacing:-.2px; }
+  .hub-card .desc{ font-size:13.5px; color:#9aa3b8; line-height:1.6; max-width:400px; margin:0 0 22px; }
+  .hub-card .stat-row{ display:flex; gap:26px; margin-top:auto; padding-top:18px; border-top:1px solid rgba(255,255,255,.08); position:relative; }
+  .hub-card .stat b{ display:block; font-size:18px; font-weight:800; color:#fff; font-family:"JetBrains Mono", monospace; }
+  .hub-card .stat span{ font-size:10px; color:#7c8496; text-transform:uppercase; letter-spacing:.5px; }
+
+  /* Logistics card signature: a dotted great-circle route with a plane */
+  .route-svg{ position:absolute; top:14px; right:-18px; width:230px; height:230px; opacity:.55; }
+
+  /* Ledger card signature: faint ruled ledger lines + a running total tick */
+  .ledger-lines{ position:absolute; inset:0; }
+
+  /* ---------------- Controls ---------------- */
+  .hub-controls{ display:flex; align-items:center; justify-content:space-between; max-width:1180px; margin:0 auto; padding:0 32px 60px; }
+  .hub-dots{ display:flex; gap:7px; }
+  .hub-dot{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.22); transition:all .25s ease; }
+  .hub-dot.active{ width:22px; background:#c9a06a; }
+  .hub-arrows{ display:flex; gap:10px; }
+  .hub-arrow-btn{
+    width:40px; height:40px; border-radius:50%; border:1px solid rgba(255,255,255,.16); background:transparent;
+    color:#cfd4e2; display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:background .2s ease, border-color .2s ease;
+  }
+  .hub-arrow-btn:hover{ background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.3); }
+
+  @media (max-width:640px){
+    .hub-header{ padding:18px 20px; }
+    .hub-hero{ padding:4px 20px 4px; }
+    .hub-carousel-wrap{ padding:32px 20px 16px; }
+    .hub-controls{ padding:0 20px 48px; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="hub-header">
+    <div class="hub-brand">
+      <span class="mark"><img id="logoImg" alt="Universal Logistics"></span>
+      <span>
+        <span class="name d-block">Universal Logistics</span>
+        <span class="sub d-block">Workspace Hub</span>
+      </span>
+    </div>
+    <span class="mono" style="font-size:11px; color:#6b7280;" id="hubClock">--:--:--</span>
+  </header>
+
+  <section class="hub-hero">
+    <div class="hub-eyebrow">Choose a workspace</div>
+    <h1 class="serif">Two systems.<br>One operation.</h1>
+    <p>Switch between shipment operations and your books — pick where you want to work.</p>
+  </section>
+
+  <section class="hub-carousel-wrap">
+    <div class="hub-track" id="hubTrack">
+
+      <!-- ===================== CARD 1: SHIPMENT OPERATIONS ===================== -->
+      <a class="hub-card" href="/dashboard.html" style="border-color:rgba(59,130,246,.18);">
+        <svg class="motif route-svg" viewBox="0 0 230 230" fill="none">
+          <path d="M10 190 Q 90 40 220 60" stroke="#3b82f6" stroke-width="1.4" stroke-dasharray="1 7" stroke-linecap="round"/>
+          <circle cx="10" cy="190" r="3" fill="#3b82f6"/>
+          <circle cx="220" cy="60" r="3" fill="#3b82f6"/>
+          <g transform="translate(150,72) rotate(-28)">
+            <path d="M0 0 L18 6 L9 9 L11 16 L6 14 L4 9 L-8 12 Z" fill="#3b82f6" opacity=".9"/>
+          </g>
+        </svg>
+        <div class="card-top">
+          <span class="icon-box" style="background:linear-gradient(145deg,#1d4ed8,#3b82f6);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 12h5l2-4h6l2 4h5M2 12v5a1 1 0 001 1h1.5M2 12l2-7a1 1 0 011-1h12a1 1 0 011 1l2 7M22 12v5a1 1 0 01-1 1h-1.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7.5" cy="18" r="1.6" fill="#fff"/><circle cx="16.5" cy="18" r="1.6" fill="#fff"/></svg>
+          </span>
+          <span class="go-arrow">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="kicker" style="color:#60a5fa;">Courier &amp; Cargo</div>
+        <h2>Shipment Operations</h2>
+        <p class="desc">Create Airway Bills, track consignments, manage customers, and monitor every shipment from booking to delivery.</p>
+        <div class="stat-row">
+          <span class="stat"><b id="statShipCount">—</b><span>Active AWBs</span></span>
+          <span class="stat"><b>24/7</b><span>Live tracking</span></span>
+        </div>
+      </a>
+
+      <!-- ===================== CARD 2: LEDGER & INVOICING ===================== -->
+      <a class="hub-card" href="/ledger/" style="border-color:rgba(16,185,129,.18);">
+        <svg class="motif ledger-lines" viewBox="0 0 560 300" fill="none">
+          <line x1="0" y1="70" x2="560" y2="70" stroke="#10b981" stroke-opacity=".18" stroke-width="1"/>
+          <line x1="0" y1="105" x2="560" y2="105" stroke="#10b981" stroke-opacity=".18" stroke-width="1"/>
+          <line x1="0" y1="140" x2="560" y2="140" stroke="#10b981" stroke-opacity=".18" stroke-width="1"/>
+          <line x1="0" y1="175" x2="560" y2="175" stroke="#10b981" stroke-opacity=".18" stroke-width="1"/>
+          <line x1="438" y1="40" x2="438" y2="230" stroke="#10b981" stroke-opacity=".14" stroke-width="1"/>
+        </svg>
+        <div class="card-top">
+          <span class="icon-box" style="background:linear-gradient(145deg,#047857,#10b981);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 3h9l5 5v13a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5M8 13h8M8 17h5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </span>
+          <span class="go-arrow">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="kicker" style="color:#34d399;">Accounts &amp; Billing</div>
+        <h2>Ledger &amp; Invoicing</h2>
+        <p class="desc">Keep party ledgers, raise invoices, track inventory and expenses, and generate reports for the business.</p>
+        <div class="stat-row">
+          <span class="stat"><b>Khata</b><span>Ledger book</span></span>
+          <span class="stat"><b>Local</b><span>Runs offline</span></span>
+        </div>
+      </a>
+
+    </div>
+
+    <div class="hub-controls">
+      <div class="hub-dots" id="hubDots"></div>
+      <div class="hub-arrows">
+        <button class="hub-arrow-btn" id="hubPrev" aria-label="Previous">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="hub-arrow-btn" id="hubNext" aria-label="Next">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+<script src="/js/templates.js"></script>
+<script>
+document.getElementById("logoImg").src = LOGO_ICON_DATA_URI;
+
+function tick(){
+  document.getElementById("hubClock").textContent = new Date().toLocaleTimeString("en-US", { hour:"2-digit", minute:"2-digit", second:"2-digit" });
+}
+tick(); setInterval(tick, 1000);
+
+// Best-effort shipment count for the stat (fails silently if not logged in)
+fetch("/api/shipments").then(r => r.ok ? r.json() : null).then(data => {
+  if(data && data.shipments) document.getElementById("statShipCount").textContent = data.shipments.length;
+}).catch(()=>{});
+
+// ---- Carousel ----
+const track = document.getElementById("hubTrack");
+const cards = Array.from(track.children);
+const dotsWrap = document.getElementById("hubDots");
+cards.forEach((_, i) => {
+  const d = document.createElement("span");
+  d.className = "hub-dot" + (i === 0 ? " active" : "");
+  d.addEventListener("click", () => scrollToCard(i));
+  dotsWrap.appendChild(d);
+});
+const dots = Array.from(dotsWrap.children);
+
+function scrollToCard(i){
+  cards[i].scrollIntoView({ behavior:"smooth", inline:"start", block:"nearest" });
+}
+function currentIndex(){
+  const scrollLeft = track.scrollLeft;
+  let closest = 0, min = Infinity;
+  cards.forEach((c, i) => {
+    const d = Math.abs(c.offsetLeft - scrollLeft);
+    if(d < min){ min = d; closest = i; }
+  });
+  return closest;
+}
+track.addEventListener("scroll", () => {
+  const idx = currentIndex();
+  dots.forEach((d, i) => d.classList.toggle("active", i === idx));
+}, { passive:true });
+
+document.getElementById("hubPrev").addEventListener("click", () => scrollToCard(Math.max(0, currentIndex()-1)));
+document.getElementById("hubNext").addEventListener("click", () => scrollToCard(Math.min(cards.length-1, currentIndex()+1)));
+
+document.addEventListener("keydown", (e) => {
+  if(e.key === "ArrowRight") scrollToCard(Math.min(cards.length-1, currentIndex()+1));
+  if(e.key === "ArrowLeft") scrollToCard(Math.max(0, currentIndex()-1));
+});
+</script>
+</body>
+</html>
