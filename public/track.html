@@ -27,6 +27,36 @@
   .detail-item .val{font-size:14px; font-weight:800; color:var(--v-slate-900); margin-top:3px; font-family:var(--v-mono);}
 
   .updated-note{font-size:11.5px; color:var(--v-slate-400); margin-top:18px; text-align:center;}
+
+  .track-search-row{display:flex; gap:10px; margin-bottom:22px;}
+  #awbInput{
+    flex:1; border:1.5px solid var(--v-slate-200); border-radius:10px;
+    padding:12px 14px; font-size:14px; font-weight:600; font-family:var(--v-mono);
+    letter-spacing:0.3px; outline:none; transition:border-color .15s ease;
+  }
+  #awbInput:focus{border-color:var(--v-blue-500);}
+  #trackBtn{
+    border:none; border-radius:10px; padding:12px 20px; font-size:14px; font-weight:800;
+    background:var(--v-blue-500); color:#fff; cursor:pointer; white-space:nowrap;
+  }
+  #trackBtn:disabled{opacity:0.6; cursor:default;}
+  .track-hint{font-size:12px; color:var(--v-slate-400); margin:-14px 0 22px; text-align:center;}
+  .track-again{
+    display:block; margin:20px auto 0; border:none; background:none; color:var(--v-blue-500);
+    font-weight:800; font-size:13px; cursor:pointer; text-align:center;
+  }
+
+  .tl-wrap{margin:22px 0 6px;}
+  .tl-heading{font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--v-slate-500); margin-bottom:12px;}
+  .tl-item{display:flex; gap:12px; position:relative;}
+  .tl-dot-col{display:flex; flex-direction:column; align-items:center; width:12px; flex-shrink:0;}
+  .tl-dot{width:11px; height:11px; border-radius:50%; background:var(--v-slate-300); margin-top:4px; flex-shrink:0;}
+  .tl-item.current .tl-dot{background:var(--v-blue-500); box-shadow:0 0 0 4px rgba(26,86,196,.15);}
+  .tl-line{flex:1; width:2px; background:var(--v-slate-200); margin:2px 0;}
+  .tl-body{flex:1; padding-bottom:18px;}
+  .tl-status{font-weight:800; font-size:13.5px; color:var(--v-slate-900);}
+  .tl-item.current .tl-status{color:var(--v-blue-600, var(--v-blue-500));}
+  .tl-meta{font-size:11.5px; color:var(--v-slate-400); margin-top:2px; font-family:var(--v-mono);}
 </style>
 <link rel="stylesheet" href="/css/tailwind.css">
 </head>
@@ -44,7 +74,12 @@
 
 <div class="v-track-body">
   <div class="v-track-card" id="card">
-    <div class="empty-state">Loading...</div>
+    <div class="track-search-row">
+      <input type="text" id="awbInput" placeholder="Apna Airway Bill No. ya Tracking No. daalein">
+      <button id="trackBtn">Track</button>
+    </div>
+    <div class="track-hint">Aapki printed AWB slip par jo number likha hai, wahi yahan enter karein.</div>
+    <div id="result"></div>
   </div>
 </div>
 
@@ -57,26 +92,55 @@ function escapeHtml(s){
   return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
-async function main(){
-  const id = new URLSearchParams(window.location.search).get("id");
-  const card = document.getElementById("card");
-  if(!id){
-    card.innerHTML = '<div class="empty-state">Koi shipment ID nahi mila.</div>';
+function renderTimelineHtml(events){
+  if(!events.length) return "";
+  // Most recent checkpoint first, highlighted as the current stage.
+  const ordered = [...events].reverse();
+  const items = ordered.map((ev, i) => `
+    <div class="tl-item ${i === 0 ? "current" : ""}">
+      <div class="tl-dot-col">
+        <div class="tl-dot"></div>
+        ${i < ordered.length - 1 ? '<div class="tl-line"></div>' : ""}
+      </div>
+      <div class="tl-body">
+        <div class="tl-status">${escapeHtml(ev.status)}${ev.country ? " — " + escapeHtml(ev.country) : ""}</div>
+        <div class="tl-meta">${new Date(ev.eventTime.replace(" ", "T") + "Z").toLocaleString()}</div>
+      </div>
+    </div>
+  `).join("");
+  return `<div class="tl-wrap"><div class="tl-heading">Tracking History</div>${items}</div>`;
+}
+
+const resultEl = document.getElementById("result");
+const inputEl = document.getElementById("awbInput");
+const btnEl = document.getElementById("trackBtn");
+
+async function trackShipment(query){
+  query = String(query || "").trim();
+  if(!query){
+    resultEl.innerHTML = '<div class="empty-state">Pehle Airway Bill No. ya Tracking No. daalein.</div>';
     return;
   }
 
+  btnEl.disabled = true;
+  const prevLabel = btnEl.textContent;
+  btnEl.textContent = "Searching...";
+  resultEl.innerHTML = '<div class="empty-state">Loading...</div>';
+
   try{
-    const res = await fetch(`/api/track/${id}`);
+    const res = await fetch(`/api/track/${encodeURIComponent(query)}`);
     if(!res.ok){
-      card.innerHTML = '<div class="empty-state">Ye shipment nahi mili. AWB number check kar lein.</div>';
+      resultEl.innerHTML = '<div class="empty-state">Ye shipment nahi mili. AWB number dobara check kar lein.</div>';
       return;
     }
     const s = await res.json();
 
-    card.innerHTML = `
+    resultEl.innerHTML = `
       <h2>Shipment Tracking</h2>
-      <div class="awb-line">AWB #${escapeHtml(s.awbnum || "—")}</div>
-      <div class="status-badge status-${s.status}">${escapeHtml(s.status)}</div>
+      <div class="awb-line">AWB #${escapeHtml(s.awbnum || "—")}${s.trackingNo ? ` &middot; Tracking #${escapeHtml(s.trackingNo)}` : ""}${s.switchNo ? ` &middot; Switch #${escapeHtml(s.switchNo)}` : ""}</div>
+      <div class="status-badge status-${escapeHtml(s.status)}">${escapeHtml(s.status)}</div>
+
+      ${renderTimelineHtml(s.events || [])}
 
       <div class="route-row">
         <div class="route-point">
@@ -98,12 +162,44 @@ async function main(){
       </div>
 
       <div class="updated-note">Last updated: ${new Date(s.updated_at).toLocaleString()}</div>
+      <button type="button" class="track-again" id="trackAgainBtn">Track another shipment</button>
     `;
+
+    document.getElementById("trackAgainBtn").addEventListener("click", () => {
+      inputEl.value = "";
+      resultEl.innerHTML = "";
+      inputEl.focus();
+      const url = new URL(window.location);
+      url.searchParams.delete("id");
+      url.searchParams.delete("awb");
+      window.history.replaceState({}, "", url);
+    });
+
+    // Keep the URL shareable/bookmarkable with whatever the person searched for.
+    const url = new URL(window.location);
+    url.searchParams.set("id", query);
+    window.history.replaceState({}, "", url);
   }catch(err){
-    card.innerHTML = '<div class="empty-state">Network error — page reload karein.</div>';
+    resultEl.innerHTML = '<div class="empty-state">Network error — page reload karein.</div>';
+  }finally{
+    btnEl.disabled = false;
+    btnEl.textContent = prevLabel;
   }
 }
-main();
+
+btnEl.addEventListener("click", () => trackShipment(inputEl.value));
+inputEl.addEventListener("keydown", (e) => {
+  if(e.key === "Enter") trackShipment(inputEl.value);
+});
+
+// If the page was opened with ?id=... or ?awb=... (e.g. from a QR code scan
+// or a shared link), auto-fill and search immediately.
+const params = new URLSearchParams(window.location.search);
+const prefill = params.get("id") || params.get("awb");
+if(prefill){
+  inputEl.value = prefill;
+  trackShipment(prefill);
+}
 </script>
 </body>
 </html>

@@ -178,6 +178,7 @@ async function loadShipments(){
       <td>${new Date(s.updated_at).toLocaleString()}</td>
       <td>
         <div class="row-actions">
+          <a class="act-edit" href="/track.html?id=${s.trackingNo || s.id}" target="_blank">Track</a>
           <a class="act-edit" href="/form.html?id=${s.id}">Edit</a>
           <a class="act-print" href="/print.html?id=${s.id}" target="_blank">Print</a>
           <button class="act-delete" data-id="${s.id}">Delete</button>

@@ -62,6 +62,28 @@ if (!columnExists("shipments", "status")) {
 if (!columnExists("shipments", "tracking_no")) {
   db.exec(`ALTER TABLE shipments ADD COLUMN tracking_no TEXT`);
 }
+// The carrier/airline "switch" number — assigned by the actual carrier once the
+// shipment is handed over to them. Not known at booking time, so the admin fills
+// it in manually later from the dashboard.
+if (!columnExists("shipments", "switch_no")) {
+  db.exec(`ALTER TABLE shipments ADD COLUMN switch_no TEXT`);
+}
+
+// Tracking timeline: each row is one checkpoint/update in a shipment's journey
+// (e.g. "Shipment Created", "Customs Clearance", "Arrived", "Delivered"), with
+// a country/location and a date-time that the admin sets manually. Shown as a
+// timeline on the public tracking page.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS tracking_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    shipment_id INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    country TEXT,
+    event_time TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (shipment_id) REFERENCES shipments(id)
+  );
+`);
 
 // Safety net: if for any reason there is no admin at all (e.g. manual DB edits),
 // promote the earliest account so the app always has someone who can manage it.

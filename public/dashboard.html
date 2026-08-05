@@ -32,6 +32,21 @@
   .datetime-cell b{color:var(--v-slate-700); font-weight:600;}
   .status-select-sm{font-size:12px; min-width:120px; border-radius:8px !important;}
   .action-btns .btn{font-size:11px; padding:4px 9px; border-radius:7px;}
+  .switch-sub{color:var(--v-blue-500);}
+
+  /* ---------- TRACKING TIMELINE MODAL ---------- */
+  .tl-item{display:flex; gap:12px; padding-bottom:18px; position:relative;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-dot-col{display:flex; flex-direction:column; align-items:center; width:14px; flex-shrink:0;}
+  .tl-dot{width:12px; height:12px; border-radius:50%; background:var(--v-blue-500); margin-top:3px; flex-shrink:0;}
+  .tl-line{flex:1; width:2px; background:var(--v-slate-200); margin-top:2px;}
+  .tl-body{flex:1;}
+  .tl-status{font-weight:800; font-size:13.5px; color:var(--v-slate-900);}
+  .tl-meta{font-size:11.5px; color:var(--v-slate-500); margin-top:2px; font-family:var(--v-mono);}
+  .tl-del{border:none; background:none; color:var(--v-rose-600, #9c2b2b); font-size:11px; font-weight:700; cursor:pointer; padding:0; margin-top:3px;}
+  .tl-empty{font-size:13px; color:var(--v-slate-400); padding:6px 0 14px;}
+  .switch-row{display:flex; gap:8px; align-items:center; margin-bottom:18px;}
+  .switch-row input{flex:1;}
 
   /* ---------- TAILWIND-LAYER POLISH ---------- */
   .shipment-table tbody tr{ transition: background-color .15s ease; }
@@ -232,6 +247,63 @@
   </div>
 </div>
 
+<!-- ===================== TRACKING MODAL ===================== -->
+<div class="modal fade" id="trackingModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tracking — <span id="tmAwb">-</span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label mb-1">Switch / Carrier No. <span class="text-muted">(jab carrier se mile, yahan daalein)</span></label>
+        <div class="switch-row">
+          <input type="text" class="form-control" id="tmSwitchInput" placeholder="Carrier ka switch/tracking number">
+          <button class="btn-v-primary btn-press" id="tmSwitchSaveBtn">Save</button>
+        </div>
+
+        <h6 class="v-widget-heading" style="margin-top:4px;">Tracking Timeline</h6>
+        <div id="tmTimeline" class="mb-3"></div>
+
+        <hr>
+        <h6 class="v-widget-heading">Add Tracking Update</h6>
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-md-4">
+            <label class="form-label mb-1">Stage</label>
+            <select class="form-select" id="tmStageSelect">
+              <option value="Shipment Created">Shipment Created</option>
+              <option value="Customs Clearance">Customs Clearance</option>
+              <option value="Shipment at Department">Shipment at Department</option>
+              <option value="In Transit">In Transit</option>
+              <option value="Shipment Arrived">Shipment Arrived</option>
+              <option value="Shipment Delivered">Shipment Delivered</option>
+              <option value="__custom__">Custom (khud likhein)...</option>
+            </select>
+            <input type="text" class="form-control mt-2" id="tmCustomStage" placeholder="Apna status likhein" style="display:none;">
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label mb-1">Country</label>
+            <input type="text" class="form-control" id="tmCountry" list="tmCountryList" placeholder="Country">
+            <datalist id="tmCountryList"></datalist>
+          </div>
+          <div class="col-6 col-md-2">
+            <label class="form-label mb-1">Date</label>
+            <input type="date" class="form-control" id="tmDate">
+          </div>
+          <div class="col-6 col-md-2">
+            <label class="form-label mb-1">Time</label>
+            <input type="time" class="form-control" id="tmTime">
+          </div>
+        </div>
+        <button class="btn-v-primary btn-press mt-3" id="tmAddBtn">+ Add Update</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== TOAST ===================== -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div id="statusToast" class="toast align-items-center text-white bg-success border-0" role="alert">
@@ -245,6 +317,7 @@
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/chart.umd.min.js"></script>
 <script src="/js/templates.js"></script>
+<script src="/js/countries.js"></script>
 <script>
 document.getElementById("logoImg").src = LOGO_ICON_DATA_URI;
 
@@ -466,6 +539,7 @@ function renderTable(){
       <td>
         <div class="awb-main">${escapeHtml(s.awbnum || "(no AWB)")}</div>
         ${s.trackingNo ? `<div class="track-sub">Track #${escapeHtml(s.trackingNo)}</div>` : ""}
+        ${s.switchNo ? `<div class="track-sub switch-sub">Switch #${escapeHtml(s.switchNo)}</div>` : ""}
       </td>
       <td>
         <span class="customer-chip">
@@ -487,6 +561,7 @@ function renderTable(){
       </td>
       <td>
         <div class="d-flex flex-column gap-1 action-btns">
+          <button class="btn btn-sm btn-brand-outline btn-track" data-id="${s.id}">Tracking</button>
           <a class="btn btn-sm btn-brand-outline" href="/form.html?id=${s.id}">Edit</a>
           <a class="btn btn-sm btn-outline-success" href="/print.html?id=${s.id}&only=bill" target="_blank">Print AWB</a>
           <a class="btn btn-sm btn-outline-success" href="/print.html?id=${s.id}&only=invoice" target="_blank">Print Invoice</a>
@@ -537,6 +612,12 @@ function renderTable(){
       deleteModal.show();
     });
   });
+
+  wrap.querySelectorAll(".btn-track").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      openTrackingModal(btn.getAttribute("data-id"));
+    });
+  });
 }
 
 document.getElementById("confirmDeleteBtn").addEventListener("click", async ()=>{
@@ -551,6 +632,110 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", async ()=>
 function escapeHtml(s){
   return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
+
+/* ---------- TRACKING MODAL ---------- */
+const trackingModal = new bootstrap.Modal(document.getElementById("trackingModal"));
+let tmShipmentId = null;
+
+document.getElementById("tmCountryList").innerHTML =
+  COUNTRIES.map(c => `<option value="${escapeHtml(c)}">`).join("");
+
+function tmSetDefaultDateTime(){
+  const now = new Date();
+  document.getElementById("tmDate").value = now.toISOString().slice(0, 10);
+  document.getElementById("tmTime").value = now.toTimeString().slice(0, 5);
+}
+
+document.getElementById("tmStageSelect").addEventListener("change", (e)=>{
+  document.getElementById("tmCustomStage").style.display = e.target.value === "__custom__" ? "block" : "none";
+});
+
+async function openTrackingModal(id){
+  tmShipmentId = id;
+  document.getElementById("tmAwb").textContent = "Loading...";
+  document.getElementById("tmSwitchInput").value = "";
+  document.getElementById("tmTimeline").innerHTML = '<div class="tl-empty">Loading...</div>';
+  document.getElementById("tmStageSelect").value = "Shipment Created";
+  document.getElementById("tmCustomStage").style.display = "none";
+  document.getElementById("tmCustomStage").value = "";
+  document.getElementById("tmCountry").value = "";
+  tmSetDefaultDateTime();
+  trackingModal.show();
+
+  const res = await fetch(`/api/shipments/${id}`);
+  const s = await res.json();
+  document.getElementById("tmAwb").textContent = s.awbnum || "(no AWB)";
+  document.getElementById("tmSwitchInput").value = s.switchNo || "";
+  renderTimeline(s.events || []);
+}
+
+function renderTimeline(events){
+  const wrap = document.getElementById("tmTimeline");
+  if(!events.length){
+    wrap.innerHTML = '<div class="tl-empty">Abhi tak koi tracking update nahi hai.</div>';
+    return;
+  }
+  wrap.innerHTML = events.map((ev, i) => `
+    <div class="tl-item">
+      <div class="tl-dot-col">
+        <div class="tl-dot"></div>
+        ${i < events.length - 1 ? '<div class="tl-line"></div>' : ""}
+      </div>
+      <div class="tl-body">
+        <div class="tl-status">${escapeHtml(ev.status)}${ev.country ? " — " + escapeHtml(ev.country) : ""}</div>
+        <div class="tl-meta">${new Date(ev.eventTime.replace(" ", "T") + "Z").toLocaleString()}</div>
+        <button type="button" class="tl-del" data-event-id="${ev.id}">Remove</button>
+      </div>
+    </div>
+  `).join("");
+
+  wrap.querySelectorAll(".tl-del").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      await fetch(`/api/shipments/${tmShipmentId}/events/${btn.getAttribute("data-event-id")}`, { method:"DELETE" });
+      openTrackingModal(tmShipmentId);
+      loadShipments();
+    });
+  });
+}
+
+document.getElementById("tmSwitchSaveBtn").addEventListener("click", async ()=>{
+  const shipRes = await fetch(`/api/shipments/${tmShipmentId}`);
+  const shipData = await shipRes.json();
+  await fetch(`/api/shipments/${tmShipmentId}`, {
+    method:"PUT",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ ...shipData, switchNo: document.getElementById("tmSwitchInput").value.trim() })
+  });
+  showToast("Switch number saved");
+  loadShipments();
+});
+
+document.getElementById("tmAddBtn").addEventListener("click", async ()=>{
+  const stageSel = document.getElementById("tmStageSelect").value;
+  const status = stageSel === "__custom__" ? document.getElementById("tmCustomStage").value.trim() : stageSel;
+  if(!status){ showToast("Status likhein", true); return; }
+
+  const country = document.getElementById("tmCountry").value.trim();
+  const date = document.getElementById("tmDate").value;
+  const time = document.getElementById("tmTime").value;
+  const eventTime = date && time ? `${date} ${time}` : undefined;
+
+  const res = await fetch(`/api/shipments/${tmShipmentId}/events`, {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ status, country, eventTime })
+  });
+
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    showToast(err.error || "Update add nahi hui", true);
+    return;
+  }
+
+  showToast("Tracking update added");
+  openTrackingModal(tmShipmentId);
+  loadShipments();
+});
 
 function exportToExcel(){
   const shipments = applyFilters(allShipments);
