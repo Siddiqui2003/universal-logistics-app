@@ -53,10 +53,142 @@
   .action-btns .btn{ transition: transform .12s ease, box-shadow .12s ease; }
   .action-btns .btn:hover{ transform: translateY(-1px); box-shadow:0 3px 8px rgba(15,23,42,.12); }
   .status-select-sm{ transition: box-shadow .15s ease; }
+
+  /* ================================================================
+     DASHBOARD DARK PALETTE — scoped to body.dash-dark only.
+     Does NOT touch theme.css, so customers.html / my-shipments.html
+     (which share the same .v-app / .v-card / .btn-v-primary classes)
+     stay exactly as they were.
+     ================================================================ */
+  body.dash-dark{
+    --dk-deep:#120C0B;
+    --dk-panel:#1B1210;
+    --dk-soft:#231613;
+    --dk-red:#E23B2E;
+    --dk-red-bright:#FF5A44;
+    --dk-red-deep:#7A1F17;
+    --dk-gold:#E8A33D;
+    --dk-paper:#F5EFE9;
+    --dk-mist:rgba(245,239,233,0.62);
+    --dk-mist-2:rgba(245,239,233,0.40);
+    --dk-line:rgba(245,239,233,0.12);
+    background:var(--dk-deep) !important;
+  }
+
+  body.dash-dark .app-sidebar{ background:var(--dk-panel); border-right:1px solid var(--dk-line); }
+  body.dash-dark .sidebar-brand{ border-bottom:1px solid var(--dk-line); }
+  body.dash-dark .sidebar-section-lbl{ color:var(--dk-mist-2); }
+  body.dash-dark .sidebar-link{ color:var(--dk-mist); }
+  body.dash-dark .sidebar-link:hover{ background:rgba(245,239,233,.06); color:var(--dk-paper); }
+  body.dash-dark .sidebar-link.active{ background:rgba(255,90,68,.16); color:var(--dk-red-bright); }
+  body.dash-dark .sidebar-link.active .dot{ background:var(--dk-red-bright); border-color:var(--dk-red-bright); }
+  body.dash-dark .sidebar-badge.blue{ background:rgba(255,90,68,.15); color:var(--dk-red-bright); border-color:rgba(255,90,68,.3); }
+  body.dash-dark .sidebar-badge.slate{ background:rgba(245,239,233,.06); color:var(--dk-mist); border-color:var(--dk-line); }
+  body.dash-dark .sidebar-footer{ border-top:1px solid var(--dk-line) !important; }
+  body.dash-dark .sidebar-footer .who .nm{ color:var(--dk-paper); }
+  body.dash-dark .sidebar-footer .who .rl{ color:var(--dk-mist-2); }
+  body.dash-dark .sidebar-footer .logout-btn{ color:var(--dk-mist); }
+  body.dash-dark .sidebar-footer .logout-btn:hover{ background:rgba(245,239,233,.1); color:var(--dk-paper); }
+  body.dash-dark a[href="/launcher.html"]{
+    background:rgba(245,239,233,.06) !important; border-color:var(--dk-line) !important; color:var(--dk-paper) !important;
+  }
+
+  body.dash-dark .app-topbar{ background:var(--dk-panel); border-bottom:1px solid var(--dk-line); box-shadow:none; }
+  body.dash-dark .topbar-title h1{ color:var(--dk-paper); }
+  body.dash-dark .sidebar-toggle{ color:var(--dk-paper); }
+  body.dash-dark .status-live{ background:rgba(232,163,61,.15); color:var(--dk-gold); }
+  body.dash-dark .status-live .dot-pulse{ background:var(--dk-gold); }
+  body.dash-dark .topbar-clock{ color:var(--dk-mist); }
+
+  body.dash-dark .btn-v-primary{
+    background:var(--dk-red-bright); border-color:var(--dk-red-bright); color:#fff;
+  }
+  body.dash-dark .btn-v-primary:hover{ background:var(--dk-red); border-color:var(--dk-red); }
+  body.dash-dark .btn-v-success{ background:var(--dk-gold); border-color:var(--dk-gold); color:var(--dk-deep); }
+  body.dash-dark .btn-v-success:hover{ background:#d1922f; border-color:#d1922f; }
+
+  body.dash-dark .v-stat-card{ background:var(--dk-soft); border:1px solid var(--dk-line); border-bottom-width:3px; }
+  body.dash-dark .v-stat-card .v-stat-lbl{ color:var(--dk-mist); }
+  body.dash-dark .v-stat-card .v-stat-num{ color:var(--dk-paper); }
+  body.dash-dark .v-stat-card.c-blue{ border-bottom-color:var(--dk-gold); }
+  body.dash-dark .v-stat-card.c-amber{ border-bottom-color:var(--dk-red-bright); }
+  body.dash-dark .v-stat-card.c-emerald{ border-bottom-color:var(--dk-red); }
+  body.dash-dark .v-stat-card.c-indigo{ border-bottom-color:var(--dk-red-deep); }
+  body.dash-dark .v-stat-card.c-rose{ border-bottom-color:var(--dk-mist-2); }
+  body.dash-dark .v-stat-card:hover{ box-shadow:0 8px 20px rgba(0,0,0,.35); }
+
+  body.dash-dark .v-card,
+  body.dash-dark .v-filter-bar{ background:var(--dk-soft); border:1px solid var(--dk-line); box-shadow:none; }
+  body.dash-dark .v-widget-heading,
+  body.dash-dark .v-section-heading{ color:var(--dk-paper); }
+  body.dash-dark .v-filter-bar label,
+  body.dash-dark .form-label{ color:var(--dk-mist); }
+  body.dash-dark .v-filter-bar .form-control,
+  body.dash-dark .v-filter-bar .form-select{
+    background:var(--dk-panel); border-color:var(--dk-line); color:var(--dk-paper);
+  }
+  body.dash-dark .v-filter-bar .form-control::placeholder{ color:var(--dk-mist-2); }
+  body.dash-dark .v-filter-bar .form-control:focus,
+  body.dash-dark .v-filter-bar .form-select:focus{
+    border-color:var(--dk-red-bright); box-shadow:0 0 0 3px rgba(255,90,68,.18);
+  }
+
+  body.dash-dark .activity-text{ color:var(--dk-paper); }
+  body.dash-dark .activity-time{ color:var(--dk-mist-2); }
+  body.dash-dark .activity-item{ border-bottom-color:var(--dk-line); }
+  body.dash-dark .empty-state{ color:var(--dk-mist-2); }
+
+  body.dash-dark .topbar-clock{ background:var(--dk-panel); border-color:var(--dk-line); color:var(--dk-mist); }
+
+  body.dash-dark .shipment-table,
+  body.dash-dark .ship-table,
+  body.dash-dark #listWrap table{
+    --bs-table-bg:transparent !important; background:transparent !important;
+  }
+  body.dash-dark .shipment-table thead th,
+  body.dash-dark .ship-table th{
+    background:var(--dk-panel) !important; color:var(--dk-mist); border-color:var(--dk-line) !important;
+  }
+  body.dash-dark .shipment-table td,
+  body.dash-dark .ship-table td,
+  body.dash-dark .shipment-table td *,
+  body.dash-dark .ship-table td *{ border-color:var(--dk-line) !important; color:var(--dk-paper) !important; }
+  body.dash-dark .shipment-table tbody tr:hover,
+  body.dash-dark .ship-table tr:hover td{ background:rgba(245,239,233,.04) !important; }
+  body.dash-dark .datetime-cell{ color:var(--dk-mist) !important; }
+  body.dash-dark .datetime-cell b{ color:var(--dk-paper) !important; }
+  body.dash-dark .awb-main{ color:var(--dk-paper) !important; }
+  body.dash-dark .track-sub{ color:var(--dk-mist) !important; }
+  body.dash-dark .customer-chip{ color:var(--dk-paper) !important; }
+  body.dash-dark .shipment-table .btn-brand-outline,
+  body.dash-dark .shipment-table td .btn-brand-outline{ color:var(--v-slate-700) !important; background:#fff !important; }
+
+  body.dash-dark .status-select-sm{
+    background:var(--dk-panel); border-color:var(--dk-line) !important; color:var(--dk-paper);
+  }
+  body.dash-dark .action-btns .btn-outline-secondary{ color:var(--dk-mist); border-color:var(--dk-line); }
+  body.dash-dark .action-btns .btn-outline-secondary:hover{ background:rgba(245,239,233,.08); color:var(--dk-paper); }
+  body.dash-dark .shipment-table .btn-track,
+  body.dash-dark .shipment-table td .btn-track{ color:var(--v-slate-700) !important; background:#fff !important; }
+
+  /* Bootstrap modal itself stays on its normal light surface (it floats above
+     the page, not part of the dashboard canvas) — only make sure the new
+     timeline dot/line colors read fine against that light modal body. */
+  body.dash-dark .tl-dot{ background:var(--dk-red-bright); }
+  body.dash-dark .tl-line{ background:var(--v-slate-200); }
+
+  /* The modal floats on its own normal light surface, not the dark canvas —
+     reset any dark-theme text colors that would otherwise wash out here. */
+  body.dash-dark .modal-content{ color:var(--v-slate-900); }
+  body.dash-dark .modal .form-label,
+  body.dash-dark .modal label{ color:var(--v-slate-700) !important; }
+  body.dash-dark .modal .v-widget-heading{ color:var(--v-slate-900) !important; }
+  body.dash-dark .modal .form-control,
+  body.dash-dark .modal .form-select{ background:#fff !important; color:var(--v-slate-900) !important; border-color:var(--v-slate-200) !important; }
 </style>
 <link rel="stylesheet" href="/css/tailwind.css">
 </head>
-<body class="v-app">
+<body class="v-app dash-dark">
 
 <div class="app-shell">
 
@@ -319,6 +451,7 @@
 <script src="/js/templates.js"></script>
 <script src="/js/countries.js"></script>
 <script>
+
 document.getElementById("logoImg").src = LOGO_ICON_DATA_URI;
 
 /* ---------- Sidebar toggle (mobile) + live clock ---------- */
@@ -408,9 +541,9 @@ function renderStatusChart(counts){
     labels: ["Pending", "Confirmed", "Shipped", "Cancelled"],
     datasets: [{
       data: [counts.Pending, counts.Confirmed, counts.Shipped, counts.Cancelled],
-      backgroundColor: ["#c8952c", "#1a7d43", "#1a56c4", "#9c2b2b"],
+      backgroundColor: ["#E8A33D", "#FF5A44", "#E23B2E", "#7A1F17"],
       borderWidth: 2,
-      borderColor: "#ffffff"
+      borderColor: "#231613"
     }]
   };
 
@@ -430,7 +563,7 @@ function renderStatusChart(counts){
       plugins: {
         legend: {
           position: "bottom",
-          labels: { boxWidth: 10, font: { family: "Inter", size: 11.5 }, padding: 14 }
+          labels: { boxWidth: 10, font: { family: "Inter", size: 11.5 }, padding: 14, color: "#F5EFE9" }
         }
       }
     }
@@ -539,7 +672,6 @@ function renderTable(){
       <td>
         <div class="awb-main">${escapeHtml(s.awbnum || "(no AWB)")}</div>
         ${s.trackingNo ? `<div class="track-sub">Track #${escapeHtml(s.trackingNo)}</div>` : ""}
-        ${s.switchNo ? `<div class="track-sub switch-sub">Switch #${escapeHtml(s.switchNo)}</div>` : ""}
       </td>
       <td>
         <span class="customer-chip">
@@ -628,10 +760,6 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", async ()=>
   pendingDeleteId = null;
   loadShipments();
 });
-
-function escapeHtml(s){
-  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-}
 
 /* ---------- TRACKING MODAL ---------- */
 const trackingModal = new bootstrap.Modal(document.getElementById("trackingModal"));
@@ -736,6 +864,10 @@ document.getElementById("tmAddBtn").addEventListener("click", async ()=>{
   openTrackingModal(tmShipmentId);
   loadShipments();
 });
+
+function escapeHtml(s){
+  return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
 
 function exportToExcel(){
   const shipments = applyFilters(allShipments);
