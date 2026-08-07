@@ -88,7 +88,7 @@
         <div class="add-row">
           <div><label>Full Name</label><input type="text" id="newName"></div>
           <div><label>Email</label><input type="email" id="newEmail"></div>
-          <div><label>Password</label><input type="password" id="newPassword" placeholder="Kam se kam 6 characters"></div>
+          <div><label>Password</label><input type="password" id="newPassword" placeholder="At least 6 characters"></div>
           <button id="addBtn">+ Add Customer</button>
         </div>
         <div class="msg" id="msgBox"></div>
@@ -146,7 +146,7 @@ async function loadCustomers(){
   if(navCount) navCount.textContent = (data.customers || []).length;
 
   if(!data.customers || data.customers.length === 0){
-    wrap.innerHTML = '<div class="empty-state">Abhi tak koi customer add nahi hua. Upar form se pehla customer add karein.</div>';
+    wrap.innerHTML = '<div class="empty-state">No customers added yet. Add your first customer using the form above.</div>';
     return;
   }
 
@@ -172,7 +172,7 @@ async function loadCustomers(){
 
   wrap.querySelectorAll(".act-delete").forEach(btn=>{
     btn.addEventListener("click", async ()=>{
-      if(!confirm("Ye customer account delete karna chahte hain? Unki sab bookings bhi delete ho jayengi.")) return;
+      if(!confirm("Delete this customer account? All of their bookings will also be deleted.")) return;
       const id = btn.getAttribute("data-id");
       await fetch(`/api/admin/customers/${id}`, { method:"DELETE" });
       loadCustomers();
@@ -192,7 +192,7 @@ document.getElementById("addBtn").addEventListener("click", async ()=>{
   msgBox.className = "msg";
 
   if(!name || !email || !password){
-    msgBox.textContent = "Name, email, aur password teeno zaroori hain.";
+    msgBox.textContent = "Name, email, and password are all required.";
     msgBox.className = "msg error";
     return;
   }
@@ -203,7 +203,7 @@ document.getElementById("addBtn").addEventListener("click", async ()=>{
   });
   const data = await res.json();
   if(!res.ok){
-    msgBox.textContent = data.error || "Customer add nahi ho saka";
+    msgBox.textContent = data.error || "Could not add customer";
     msgBox.className = "msg error";
     return;
   }

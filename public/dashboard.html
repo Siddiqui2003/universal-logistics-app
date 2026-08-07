@@ -291,7 +291,7 @@
           <div class="chart-wrap">
             <canvas id="statusChart"></canvas>
           </div>
-          <div id="chartEmpty" class="empty-state py-4" style="display:none;">Koi data nahi hai.</div>
+          <div id="chartEmpty" class="empty-state py-4" style="display:none;">No data available.</div>
         </div>
       </div>
     </div>
@@ -369,7 +369,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        Ye shipment permanently delete ho jayegi. Ye action wapas nahi ho sakta.
+        This shipment will be permanently deleted. This action cannot be undone.
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -388,7 +388,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <label class="form-label mb-1">Switch / Carrier No. <span class="text-muted">(jab carrier se mile, yahan daalein)</span></label>
+        <label class="form-label mb-1">Switch / Carrier No. <span class="text-muted">(enter here once received from the carrier)</span></label>
         <div class="switch-row">
           <input type="text" class="form-control" id="tmSwitchInput" placeholder="Carrier ka switch/tracking number">
           <button class="btn-v-primary btn-press" id="tmSwitchSaveBtn">Save</button>
@@ -409,9 +409,9 @@
               <option value="In Transit">In Transit</option>
               <option value="Shipment Arrived">Shipment Arrived</option>
               <option value="Shipment Delivered">Shipment Delivered</option>
-              <option value="__custom__">Custom (khud likhein)...</option>
+              <option value="__custom__">Custom (type your own)...</option>
             </select>
-            <input type="text" class="form-control mt-2" id="tmCustomStage" placeholder="Apna status likhein" style="display:none;">
+            <input type="text" class="form-control mt-2" id="tmCustomStage" placeholder="Enter your own status" style="display:none;">
           </div>
           <div class="col-12 col-md-4">
             <label class="form-label mb-1">Country</label>
@@ -584,7 +584,7 @@ function timeAgo(dateStr){
 function renderActivityFeed(shipments){
   const feed = document.getElementById("activityFeed");
   if(shipments.length === 0){
-    feed.innerHTML = '<div class="empty-state py-4">Abhi tak koi activity nahi hai.</div>';
+    feed.innerHTML = '<div class="empty-state py-4">No activity yet.</div>';
     return;
   }
   const recent = [...shipments].sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at)).slice(0, 8);
@@ -641,14 +641,14 @@ async function loadShipments(){
   try{
     const res = await fetch("/api/shipments");
     if(!res.ok){
-      let errMsg = "Shipments load nahi ho sakin (server error).";
+      let errMsg = "Could not load shipments (server error).";
       try{ const errData = await res.json(); errMsg = errData.error || errMsg; }catch(e){}
       wrap.innerHTML = `<div class="empty-state">${escapeHtml(errMsg)}</div>`;
       return;
     }
     data = await res.json();
   }catch(err){
-    wrap.innerHTML = '<div class="empty-state">Network error — page reload kar ke dobara try karein.</div>';
+    wrap.innerHTML = '<div class="empty-state">Network error — please reload the page and try again.</div>';
     return;
   }
 
@@ -663,7 +663,7 @@ function renderTable(){
   const shipments = applyFilters(allShipments);
 
   if(shipments.length === 0){
-    wrap.innerHTML = '<div class="empty-state">Koi shipment is filter se match nahi hui.</div>';
+    wrap.innerHTML = '<div class="empty-state">No shipments match this filter.</div>';
     return;
   }
 
@@ -800,7 +800,7 @@ async function openTrackingModal(id){
 function renderTimeline(events){
   const wrap = document.getElementById("tmTimeline");
   if(!events.length){
-    wrap.innerHTML = '<div class="tl-empty">Abhi tak koi tracking update nahi hai.</div>';
+    wrap.innerHTML = '<div class="tl-empty">No tracking updates yet.</div>';
     return;
   }
   wrap.innerHTML = events.map((ev, i) => `
@@ -841,7 +841,7 @@ document.getElementById("tmSwitchSaveBtn").addEventListener("click", async ()=>{
 document.getElementById("tmAddBtn").addEventListener("click", async ()=>{
   const stageSel = document.getElementById("tmStageSelect").value;
   const status = stageSel === "__custom__" ? document.getElementById("tmCustomStage").value.trim() : stageSel;
-  if(!status){ showToast("Status likhein", true); return; }
+  if(!status){ showToast("Please enter a status", true); return; }
 
   const country = document.getElementById("tmCountry").value.trim();
   const date = document.getElementById("tmDate").value;
@@ -856,7 +856,7 @@ document.getElementById("tmAddBtn").addEventListener("click", async ()=>{
 
   if(!res.ok){
     const err = await res.json().catch(()=>({}));
-    showToast(err.error || "Update add nahi hui", true);
+    showToast(err.error || "Could not add update", true);
     return;
   }
 

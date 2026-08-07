@@ -75,10 +75,10 @@
 <div class="v-track-body">
   <div class="v-track-card" id="card">
     <div class="track-search-row">
-      <input type="text" id="awbInput" placeholder="Apna Airway Bill No. ya Tracking No. daalein">
+      <input type="text" id="awbInput" placeholder="Enter your Airway Bill No. or Tracking No.">
       <button id="trackBtn">Track</button>
     </div>
-    <div class="track-hint">Aapki printed AWB slip par jo number likha hai, wahi yahan enter karein.</div>
+    <div class="track-hint">Enter the number printed on your AWB slip here.</div>
     <div id="result"></div>
   </div>
 </div>
@@ -118,7 +118,7 @@ const btnEl = document.getElementById("trackBtn");
 async function trackShipment(query){
   query = String(query || "").trim();
   if(!query){
-    resultEl.innerHTML = '<div class="empty-state">Pehle Airway Bill No. ya Tracking No. daalein.</div>';
+    resultEl.innerHTML = '<div class="empty-state">Please enter an Airway Bill No. or Tracking No. first.</div>';
     return;
   }
 
@@ -130,7 +130,7 @@ async function trackShipment(query){
   try{
     const res = await fetch(`/api/track/${encodeURIComponent(query)}`);
     if(!res.ok){
-      resultEl.innerHTML = '<div class="empty-state">Ye shipment nahi mili. AWB number dobara check kar lein.</div>';
+      resultEl.innerHTML = '<div class="empty-state">This shipment was not found. Please double-check the AWB number.</div>';
       return;
     }
     const s = await res.json();
@@ -180,7 +180,7 @@ async function trackShipment(query){
     url.searchParams.set("id", query);
     window.history.replaceState({}, "", url);
   }catch(err){
-    resultEl.innerHTML = '<div class="empty-state">Network error — page reload karein.</div>';
+    resultEl.innerHTML = '<div class="empty-state">Network error — please reload the page.</div>';
   }finally{
     btnEl.disabled = false;
     btnEl.textContent = prevLabel;

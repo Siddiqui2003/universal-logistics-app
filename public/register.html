@@ -14,7 +14,7 @@
 <div class="v-auth-card">
   <div class="v-auth-logo"><img id="logoImg" alt="Universal Logistics & International"></div>
   <h1>Universal Logistics</h1>
-  <div class="v-auth-tag">Pehla account (Admin/Owner) banayen — is ke baad public registration band ho jayegi</div>
+  <div class="v-auth-tag">Create the first account (Admin/Owner) — public registration will be disabled after this</div>
 
   <form id="registerForm">
     <label>Full Name</label>
@@ -27,7 +27,7 @@
     <button type="submit">Create Account</button>
   </form>
 
-  <div class="v-auth-switch">Pehle se account hai? <a href="/login.html">Login here</a></div>
+  <div class="v-auth-switch">Already have an account? <a href="/login.html">Login here</a></div>
 </div>
 
 <script src="/js/bootstrap.bundle.min.js"></script>
@@ -56,7 +56,7 @@ document.getElementById("registerForm").addEventListener("submit", async (e)=>{
     }
     window.location.href = data.user.role === "admin" ? "/dashboard.html" : "/my-shipments.html";
   }catch(err){
-    errorBox.textContent = "Network error — server chal raha hai check karein.";
+    errorBox.textContent = "Network error — please check that the server is running.";
     errorBox.style.display = "block";
   }
 });

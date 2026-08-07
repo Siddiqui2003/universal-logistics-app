@@ -285,7 +285,7 @@
       <legend>Shipment / Cargo</legend>
       <label>Dimension</label>
       <textarea id="dimension" placeholder="33*40*33, 33*40*33 ..."></textarea>
-      <div class="hint" style="margin-top:4px;">Volumetric Weight = (L×W×H sab pieces ka total) ÷ 5000. Agar Service field mein "Australia" likha ho to ÷ 4000 hoga.</div>
+      <div class="hint" style="margin-top:4px;">Volumetric Weight = (L×W×H total of all pieces) ÷ 5000. If the Service field contains "Australia", divide by 4000 instead.</div>
       <div class="row2">
         <div><label>Service</label><input type="text" id="service" placeholder="Via UK UPS saver"></div>
         <div>
@@ -312,12 +312,12 @@
         <option value="SAMPLE INVOICE">Sample Invoice</option>
       </select>
       <div id="productRows" style="margin-top:10px;"></div>
-      <button type="button" id="addProductBtn" style="width:100%; margin-top:6px; padding:8px; font-size:12.5px; font-weight:700; background:#e8edff; color:var(--blue); border:1px dashed var(--blue); border-radius:6px; cursor:pointer;">+ Product Add Karein</button>
+      <button type="button" id="addProductBtn" style="width:100%; margin-top:6px; padding:8px; font-size:12.5px; font-weight:700; background:#e8edff; color:var(--blue); border:1px dashed var(--blue); border-radius:6px; cursor:pointer;">+ Add Product</button>
       <div class="row2" style="margin-top:10px;">
         <div><label>Shipper Tax ID</label><input type="text" id="shipperTaxId"></div>
         <div><label>Consignee Tax ID</label><input type="text" id="consigneeTaxId"></div>
       </div>
-      <div class="hint" style="margin-top:6px;">Item Description mein type karein — HS Code list se select ho sakta hai.</div>
+      <div class="hint" style="margin-top:6px;">Type in Item Description — you can select from the HS Code list.</div>
     </fieldset>
 
     <div class="settings-card">
@@ -344,7 +344,7 @@
       <div class="settings-row">
         <div class="settings-row-text">
           <span class="settings-row-label">Terms &amp; Conditions</span>
-          <span class="settings-row-sub">Bill ke sath ek hi page par print hoti hain</span>
+          <span class="settings-row-sub">Prints on the same page as the bill</span>
         </div>
         <label class="v-toggle">
           <input type="checkbox" id="showTnc" checked>
@@ -355,7 +355,7 @@
       <div class="settings-row">
         <div class="settings-row-text">
           <span class="settings-row-label">Include Invoice</span>
-          <span class="settings-row-sub">Alag page par gift/commercial invoice</span>
+          <span class="settings-row-sub">Gift/commercial invoice on a separate page</span>
         </div>
         <label class="v-toggle">
           <input type="checkbox" id="showInvoice" checked>
@@ -378,7 +378,7 @@
     </div>
     <div class="preview-outer">
       <div id="printArea">
-        <div class="preview-empty">Form bharna shuru karein — bill/invoice yahan live nazar aayegi.</div>
+        <div class="preview-empty">Start filling the form — the bill/invoice will appear live here.</div>
       </div>
     </div>
   </div>
