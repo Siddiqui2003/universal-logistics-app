@@ -210,7 +210,7 @@
     margin-top:56px;
   }
   .action-card{
-    flex:1;
+    flex:0 1 300px;
     text-align:left;
     background:rgba(245,239,233,0.04);
     border:1px solid var(--line);
@@ -253,6 +253,7 @@
     h1{ font-size:32px; }
     .plain-name{ font-size:34px; }
     .action-row{ flex-direction:column; margin-top:36px; }
+    .action-card{ flex-basis:auto; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -314,14 +315,6 @@
           </div>
           <div class="action-title">Track a Shipment</div>
           <div class="action-sub">Enter your tracking number for live status</div>
-        </a>
-
-        <a href="/launcher.html" class="action-card">
-          <div class="action-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M5 8l7-5 7 5M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <div class="action-title">Explore Workspace</div>
-          <div class="action-sub">Switch between operations and ledger tools</div>
         </a>
       </div>
     </div>
