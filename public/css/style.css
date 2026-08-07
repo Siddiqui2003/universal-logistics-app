@@ -503,13 +503,12 @@
   }
   .invoice-head{
     display:flex;
-    justify-content:space-between;
+    justify-content:flex-end;
     align-items:center;
     border-bottom:3px solid var(--blue);
     padding-bottom:12px;
     margin-bottom:18px;
   }
-  .invoice-head img{max-height:76px;}
   .invoice-title{text-align:right;}
   .invoice-title h2{margin:0; font-size:26px; letter-spacing:1px; color:var(--blue); font-family:"Playfair Display", serif; font-weight:800;}
   .invoice-title .awb{font-size:12px; font-weight:700; margin-top:4px; color:var(--red);}

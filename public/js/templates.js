@@ -261,7 +261,6 @@ function invoiceHTML(v, products){
   return `
   <div class="invoice">
     <div class="invoice-head">
-      <img src="${LOGO_DATA_URI}" alt="Universal Logistics & International">
       <div class="invoice-title">
         <h2>${esc(v.invoiceType || "GIFT INVOICE")}</h2>
         <div class="awb">AIR WAYBILL NUMBER: ${esc(v.awbnum)}</div>
