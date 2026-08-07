@@ -9,20 +9,81 @@
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/theme.css">
 <style>
+  @keyframes fadeInUp{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeIn{
+    from{ opacity:0; }
+    to{ opacity:1; }
+  }
+  @keyframes cardIn{
+    from{ opacity:0; transform:translateY(10px) scale(.98); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+  @keyframes topbarIn{
+    from{ opacity:0; transform:translateY(-14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  @keyframes pulseRing{
+    0%{ transform:scale(.55); opacity:.55; }
+    70%{ transform:scale(1.9); opacity:0; }
+    100%{ transform:scale(1.9); opacity:0; }
+  }
+  @keyframes dotBounce{
+    0%, 80%, 100%{ transform:scale(0); opacity:.4; }
+    40%{ transform:scale(1); opacity:1; }
+  }
+  @keyframes planeMove{
+    0%{ left:-4px; opacity:0; }
+    12%{ opacity:1; }
+    88%{ opacity:1; }
+    100%{ left:calc(100% - 12px); opacity:0; }
+  }
+  @keyframes shake{
+    10%, 90%{ transform:translateX(-1px); }
+    20%, 80%{ transform:translateX(2px); }
+    30%, 50%, 70%{ transform:translateX(-4px); }
+    40%, 60%{ transform:translateX(4px); }
+  }
+
+  body.v-track{ overflow-x:hidden; }
+  .v-track-topbar{ animation:topbarIn .5s cubic-bezier(.22,1,.36,1) both; }
+  .v-track-card{ animation:cardIn .55s cubic-bezier(.22,1,.36,1) both; transition:box-shadow .25s ease; }
+  .v-track-card:focus-within{ box-shadow:0 14px 36px rgba(15,23,42,.10); }
+
   .awb-line{color:var(--v-slate-500); font-size:13px; margin-bottom:18px; font-family:var(--v-mono);}
   .status-badge{
     display:inline-block; padding:6px 16px; border-radius:24px;
     font-size:12px; font-weight:800; letter-spacing:0.4px; margin-bottom:22px; text-transform:uppercase;
+    position:relative;
   }
+  .status-badge .live-ping{
+    display:inline-block; width:7px; height:7px; border-radius:50%; background:currentColor;
+    margin-right:7px; position:relative; top:-1px;
+  }
+  .status-badge .live-ping::after{
+    content:""; position:absolute; inset:0; border-radius:50%; background:currentColor;
+    animation:pulseRing 1.6s cubic-bezier(0,0,.2,1) infinite;
+  }
+
   .route-row{display:flex; align-items:center; gap:14px; margin-bottom:24px;}
   .route-point{flex:1;}
   .route-point .lbl{font-size:10.5px; color:var(--v-slate-500); text-transform:uppercase; letter-spacing:0.4px; font-weight:800;}
   .route-point .val{font-size:16px; font-weight:800; color:var(--v-slate-900); margin-top:4px;}
   .route-point .sub{font-size:12px; color:var(--v-slate-400); margin-top:1px;}
-  .route-arrow{font-size:20px; color:var(--v-blue-500); flex-shrink:0;}
+  .route-arrow{
+    font-size:20px; color:var(--v-blue-500); flex-shrink:0; position:relative;
+    width:34px; height:20px; overflow:hidden; display:flex; align-items:center; justify-content:center;
+  }
+  .route-arrow .plane-fly{
+    position:absolute; top:3px; font-size:13px; animation:planeMove 2.8s ease-in-out infinite;
+  }
 
   .detail-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:6px;}
-  .detail-item{background:var(--v-slate-50); border-radius:10px; padding:11px 13px;}
+  .detail-item{background:var(--v-slate-50); border-radius:10px; padding:11px 13px; transition:transform .18s ease, box-shadow .18s ease;}
+  .detail-item:hover{ transform:translateY(-2px); box-shadow:0 6px 16px rgba(15,23,42,.07); }
   .detail-item .lbl{font-size:10px; color:var(--v-slate-500); text-transform:uppercase; letter-spacing:.3px; font-weight:800;}
   .detail-item .val{font-size:14px; font-weight:800; color:var(--v-slate-900); margin-top:3px; font-family:var(--v-mono);}
 
@@ -32,31 +93,75 @@
   #awbInput{
     flex:1; border:1.5px solid var(--v-slate-200); border-radius:10px;
     padding:12px 14px; font-size:14px; font-weight:600; font-family:var(--v-mono);
-    letter-spacing:0.3px; outline:none; transition:border-color .15s ease;
+    letter-spacing:0.3px; outline:none; transition:border-color .15s ease, box-shadow .15s ease;
   }
-  #awbInput:focus{border-color:var(--v-blue-500);}
+  #awbInput:focus{border-color:var(--v-blue-500); box-shadow:0 0 0 3px rgba(26,86,196,.12);}
+  #awbInput.shake{ animation:shake .4s ease; border-color:#c0392b; }
   #trackBtn{
     border:none; border-radius:10px; padding:12px 20px; font-size:14px; font-weight:800;
     background:var(--v-blue-500); color:#fff; cursor:pointer; white-space:nowrap;
+    transition:background .18s ease, transform .12s ease;
+    display:inline-flex; align-items:center; gap:8px;
   }
-  #trackBtn:disabled{opacity:0.6; cursor:default;}
+  #trackBtn:hover:not(:disabled){ background:var(--v-blue-600, #1a56c4); transform:translateY(-1px); }
+  #trackBtn:active:not(:disabled){ transform:translateY(0) scale(.97); }
+  #trackBtn:disabled{opacity:0.75; cursor:default;}
+  .btn-spinner{
+    width:14px; height:14px; border-radius:50%;
+    border:2px solid rgba(255,255,255,.4); border-top-color:#fff;
+    animation:spin .7s linear infinite; flex-shrink:0;
+  }
   .track-hint{font-size:12px; color:var(--v-slate-400); margin:-14px 0 22px; text-align:center;}
   .track-again{
     display:block; margin:20px auto 0; border:none; background:none; color:var(--v-blue-500);
-    font-weight:800; font-size:13px; cursor:pointer; text-align:center;
+    font-weight:800; font-size:13px; cursor:pointer; text-align:center; transition:opacity .15s ease;
   }
+  .track-again:hover{ opacity:.7; }
+
+  .loading-state{ display:flex; align-items:center; justify-content:center; gap:6px; padding:32px 0; animation:fadeIn .3s ease both; }
+  .loading-state .ld-dot{
+    width:8px; height:8px; border-radius:50%; background:var(--v-blue-500);
+    animation:dotBounce 1.2s ease-in-out infinite;
+  }
+  .loading-state .ld-dot:nth-child(2){ animation-delay:.15s; }
+  .loading-state .ld-dot:nth-child(3){ animation-delay:.3s; }
+
+  .empty-state{ animation:fadeIn .3s ease both; }
+
+  .result-reveal > *{ animation:fadeInUp .5s cubic-bezier(.22,1,.36,1) both; }
+  .result-reveal > *:nth-child(1){ animation-delay:.02s; }
+  .result-reveal > *:nth-child(2){ animation-delay:.07s; }
+  .result-reveal > *:nth-child(3){ animation-delay:.12s; }
+  .result-reveal > *:nth-child(4){ animation-delay:.17s; }
+  .result-reveal > *:nth-child(5){ animation-delay:.22s; }
+  .result-reveal > *:nth-child(6){ animation-delay:.27s; }
+  .result-reveal > *:nth-child(7){ animation-delay:.32s; }
 
   .tl-wrap{margin:22px 0 6px;}
   .tl-heading{font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.4px; color:var(--v-slate-500); margin-bottom:12px;}
-  .tl-item{display:flex; gap:12px; position:relative;}
+  .tl-item{display:flex; gap:12px; position:relative; animation:fadeInUp .45s cubic-bezier(.22,1,.36,1) both;}
+  .tl-item:nth-child(1){ animation-delay:.05s; }
+  .tl-item:nth-child(2){ animation-delay:.12s; }
+  .tl-item:nth-child(3){ animation-delay:.19s; }
+  .tl-item:nth-child(4){ animation-delay:.26s; }
+  .tl-item:nth-child(5){ animation-delay:.33s; }
+  .tl-item:nth-child(n+6){ animation-delay:.4s; }
   .tl-dot-col{display:flex; flex-direction:column; align-items:center; width:12px; flex-shrink:0;}
-  .tl-dot{width:11px; height:11px; border-radius:50%; background:var(--v-slate-300); margin-top:4px; flex-shrink:0;}
-  .tl-item.current .tl-dot{background:var(--v-blue-500); box-shadow:0 0 0 4px rgba(26,86,196,.15);}
+  .tl-dot{width:11px; height:11px; border-radius:50%; background:var(--v-slate-300); margin-top:4px; flex-shrink:0; position:relative;}
+  .tl-item.current .tl-dot{background:var(--v-blue-500);}
+  .tl-item.current .tl-dot::after{
+    content:""; position:absolute; inset:-4px; border-radius:50%; background:var(--v-blue-500);
+    opacity:.4; animation:pulseRing 1.8s cubic-bezier(0,0,.2,1) infinite;
+  }
   .tl-line{flex:1; width:2px; background:var(--v-slate-200); margin:2px 0;}
   .tl-body{flex:1; padding-bottom:18px;}
   .tl-status{font-weight:800; font-size:13.5px; color:var(--v-slate-900);}
   .tl-item.current .tl-status{color:var(--v-blue-600, var(--v-blue-500));}
   .tl-meta{font-size:11.5px; color:var(--v-slate-400); margin-top:2px; font-family:var(--v-mono);}
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001s !important; animation-iteration-count:1 !important; transition-duration:.001s !important; }
+  }
 </style>
 <link rel="stylesheet" href="/css/tailwind.css">
 </head>
@@ -114,31 +219,43 @@ function renderTimelineHtml(events){
 const resultEl = document.getElementById("result");
 const inputEl = document.getElementById("awbInput");
 const btnEl = document.getElementById("trackBtn");
+const FINAL_STATUSES = ["delivered", "cancelled"];
+
+function shakeInput(){
+  inputEl.classList.remove("shake");
+  // Force reflow so the animation can restart on repeated errors.
+  void inputEl.offsetWidth;
+  inputEl.classList.add("shake");
+}
 
 async function trackShipment(query){
   query = String(query || "").trim();
   if(!query){
     resultEl.innerHTML = '<div class="empty-state">Please enter an Airway Bill No. or Tracking No. first.</div>';
+    shakeInput();
     return;
   }
 
   btnEl.disabled = true;
-  const prevLabel = btnEl.textContent;
-  btnEl.textContent = "Searching...";
-  resultEl.innerHTML = '<div class="empty-state">Loading...</div>';
+  const prevHtml = btnEl.innerHTML;
+  btnEl.innerHTML = '<span class="btn-spinner"></span><span>Searching...</span>';
+  resultEl.innerHTML = '<div class="loading-state"><span class="ld-dot"></span><span class="ld-dot"></span><span class="ld-dot"></span></div>';
 
   try{
     const res = await fetch(`/api/track/${encodeURIComponent(query)}`);
     if(!res.ok){
       resultEl.innerHTML = '<div class="empty-state">This shipment was not found. Please double-check the AWB number.</div>';
+      shakeInput();
       return;
     }
     const s = await res.json();
+    const isLive = !FINAL_STATUSES.includes(String(s.status || "").toLowerCase());
 
     resultEl.innerHTML = `
+      <div class="result-reveal">
       <h2>Shipment Tracking</h2>
       <div class="awb-line">AWB #${escapeHtml(s.awbnum || "—")}${s.trackingNo ? ` &middot; Tracking #${escapeHtml(s.trackingNo)}` : ""}${s.switchNo ? ` &middot; Switch #${escapeHtml(s.switchNo)}` : ""}</div>
-      <div class="status-badge status-${escapeHtml(s.status)}">${escapeHtml(s.status)}</div>
+      <div class="status-badge status-${escapeHtml(s.status)}">${isLive ? '<span class="live-ping"></span>' : ""}${escapeHtml(s.status)}</div>
 
       ${renderTimelineHtml(s.events || [])}
 
@@ -148,7 +265,7 @@ async function trackShipment(query){
           <div class="val">${escapeHtml(s.shipperCity || s.shipperName || "—")}</div>
           <div class="sub">${escapeHtml(s.shipperCountry || "")}</div>
         </div>
-        <div class="route-arrow">&#10230;</div>
+        <div class="route-arrow">&#10230;${isLive ? '<span class="plane-fly">&#9992;</span>' : ""}</div>
         <div class="route-point">
           <div class="lbl">To</div>
           <div class="val">${escapeHtml(s.consigneeCity || s.consigneeName || "—")}</div>
@@ -163,6 +280,7 @@ async function trackShipment(query){
 
       <div class="updated-note">Last updated: ${new Date(s.updated_at).toLocaleString()}</div>
       <button type="button" class="track-again" id="trackAgainBtn">Track another shipment</button>
+      </div>
     `;
 
     document.getElementById("trackAgainBtn").addEventListener("click", () => {
@@ -183,7 +301,7 @@ async function trackShipment(query){
     resultEl.innerHTML = '<div class="empty-state">Network error — please reload the page.</div>';
   }finally{
     btnEl.disabled = false;
-    btnEl.textContent = prevLabel;
+    btnEl.innerHTML = prevHtml;
   }
 }
 
