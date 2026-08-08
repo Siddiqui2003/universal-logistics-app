@@ -176,8 +176,18 @@ router.delete("/:id", (req, res) => {
     });
   }
 
-  db.prepare("DELETE FROM shipments WHERE id = ?").run(req.params.id);
-  res.json({ ok: true });
+  try {
+    // tracking_events has a foreign key on shipment_id with no ON DELETE
+    // CASCADE, and Node's built-in sqlite module enforces foreign keys by
+    // default — so any tracking history has to be cleared first, or the
+    // shipment delete below is silently rejected by the DB.
+    db.prepare("DELETE FROM tracking_events WHERE shipment_id = ?").run(req.params.id);
+    db.prepare("DELETE FROM shipments WHERE id = ?").run(req.params.id);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Failed to delete shipment", req.params.id, err);
+    res.status(500).json({ error: "Could not delete this shipment due to a server error." });
+  }
 });
 
 // ---------- TRACKING TIMELINE ----------
