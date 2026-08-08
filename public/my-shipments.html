@@ -27,6 +27,8 @@
   .row-actions .act-print:hover{background:var(--v-emerald-50);}
   .row-actions .act-delete{background:#fff; border:1px solid var(--v-rose-100); color:var(--v-rose-600);}
   .row-actions .act-delete:hover{background:var(--v-rose-50);}
+  .row-actions .act-duplicate{background:#fff; border:1px solid var(--v-blue-100); color:var(--v-blue-600);}
+  .row-actions .act-duplicate:hover{background:var(--v-blue-50);}
 </style>
 <link rel="stylesheet" href="/css/tailwind.css">
 </head>
@@ -183,6 +185,7 @@ async function loadShipments(){
         <div class="row-actions">
           <a class="act-edit" href="/form.html?id=${s.id}">Edit</a>
           <a class="act-print" href="/print.html?id=${s.id}" target="_blank">Print</a>
+          <button class="act-duplicate" data-id="${s.id}">Duplicate</button>
           <button class="act-delete" data-id="${s.id}">Delete</button>
         </div>
       </td>
@@ -219,6 +222,30 @@ async function loadShipments(){
       }catch(err){
         alert("Network error — could not delete this shipment.");
         btn.disabled = false;
+      }
+    });
+  });
+
+  wrap.querySelectorAll(".act-duplicate").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const id = btn.getAttribute("data-id");
+      btn.disabled = true;
+      const prevText = btn.textContent;
+      btn.textContent = "Duplicating...";
+      try{
+        const res = await fetch(`/api/shipments/${id}/duplicate`, { method:"POST" });
+        const data = await res.json().catch(()=>({}));
+        if(!res.ok){
+          alert(data.error || "Could not duplicate this shipment.");
+          btn.disabled = false;
+          btn.textContent = prevText;
+          return;
+        }
+        window.location.href = `/form.html?id=${data.id}`;
+      }catch(err){
+        alert("Network error — could not duplicate this shipment.");
+        btn.disabled = false;
+        btn.textContent = prevText;
       }
     });
   });

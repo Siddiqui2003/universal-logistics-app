@@ -134,6 +134,36 @@ router.post("/", (req, res) => {
   res.json({ id: shipmentId, trackingNo });
 });
 
+// ---------- DUPLICATE an existing shipment ----------
+// Copies all shipper/consignee/cargo details into a brand-new booking so repeat
+// shipments don't have to be typed out again. The AWB number is cleared (a
+// duplicate physical waybill would be wrong) and a fresh tracking number /
+// tracking timeline is generated, just like any new shipment.
+router.post("/:id/duplicate", (req, res) => {
+  const existing = isAdmin(req)
+    ? db.prepare("SELECT * FROM shipments WHERE id = ?").get(req.params.id)
+    : db.prepare("SELECT * FROM shipments WHERE id = ? AND user_id = ?").get(req.params.id, req.user.id);
+
+  if (!existing) return res.status(404).json({ error: "Shipment not found" });
+
+  const parsed = JSON.parse(existing.data);
+  const newForm = { ...(parsed.form || {}), awbnum: "" };
+  const data = JSON.stringify({ ...parsed, form: newForm });
+  const trackingNo = generateTrackingNo();
+
+  const result = db
+    .prepare("INSERT INTO shipments (user_id, awbnum, tracking_no, data, status) VALUES (?, ?, ?, ?, 'Pending')")
+    .run(req.user.id, "", trackingNo, data);
+
+  const shipmentId = Number(result.lastInsertRowid);
+
+  db.prepare(
+    "INSERT INTO tracking_events (shipment_id, status, country, event_time) VALUES (?, 'Shipment Created', ?, datetime('now'))"
+  ).run(shipmentId, newForm.shipperCountry || "");
+
+  res.json({ id: shipmentId, trackingNo });
+});
+
 // ---------- UPDATE an existing shipment ----------
 router.put("/:id", (req, res) => {
   const existing = isAdmin(req)

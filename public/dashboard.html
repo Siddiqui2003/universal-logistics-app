@@ -698,6 +698,7 @@ function renderTable(){
         <div class="d-flex flex-column gap-1 action-btns">
           <button class="btn btn-sm btn-brand-outline btn-track" data-id="${s.id}">Tracking</button>
           <a class="btn btn-sm btn-brand-outline" href="/form.html?id=${s.id}">Edit</a>
+          <button class="btn btn-sm btn-brand-outline btn-duplicate" data-id="${s.id}">Duplicate</button>
           <a class="btn btn-sm btn-outline-success" href="/print.html?id=${s.id}&only=bill" target="_blank">Print AWB</a>
           <a class="btn btn-sm btn-outline-success" href="/print.html?id=${s.id}&only=invoice" target="_blank">Print Invoice</a>
           <button class="btn btn-sm btn-outline-danger btn-delete" data-id="${s.id}">Delete</button>
@@ -751,6 +752,30 @@ function renderTable(){
   wrap.querySelectorAll(".btn-track").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       openTrackingModal(btn.getAttribute("data-id"));
+    });
+  });
+
+  wrap.querySelectorAll(".btn-duplicate").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      btn.disabled = true;
+      const prevText = btn.textContent;
+      btn.textContent = "Duplicating...";
+      try{
+        const res = await fetch(`/api/shipments/${btn.getAttribute("data-id")}/duplicate`, { method:"POST" });
+        const data = await res.json().catch(()=>({}));
+        if(!res.ok){
+          showToast(data.error || "Could not duplicate this shipment.", true);
+          btn.disabled = false;
+          btn.textContent = prevText;
+          return;
+        }
+        showToast("Shipment duplicated — opening the copy to edit");
+        window.location.href = `/form.html?id=${data.id}`;
+      }catch(err){
+        showToast("Network error — could not duplicate this shipment.", true);
+        btn.disabled = false;
+        btn.textContent = prevText;
+      }
     });
   });
 }
