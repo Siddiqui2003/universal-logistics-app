@@ -145,6 +145,7 @@
   .status-badge{ display:inline-block; padding:6px 14px; border-radius:6px; font-size:12px; font-weight:bold; letter-spacing:0.3px; cursor:pointer; border:none; text-transform:uppercase; color:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.15); transition:transform 0.1s ease, filter 0.15s ease; }
   .status-badge.paid{ background:#2e8b4f; }
   .status-badge.unpaid{ background:#c0392b; }
+  .status-badge.added{ background:#1f6fb2; }
   .status-badge:hover{ filter:brightness(1.1); transform:translateY(-1px); }
   @media (max-width: 900px){ .form-grid{ grid-template-columns: 1fr 1fr; } }
   .form-grid label, .field label{
@@ -425,6 +426,18 @@
       </div>
     </div>
 
+    <div class="panel" id="shipmentNotifyPanel" style="display:none; border-color:#f0c674; background:#fff9ec;">
+      <h3 style="color:#a8730f;">📦 New Airway Bills — Invoice Pending <span id="shipmentNotifyCount" class="section-label" style="background:#e8a63a; color:#fff; border-radius:10px; padding:2px 9px; margin-left:6px; font-size:11px;"></span></h3>
+      <div class="hint">These shipments were created in the operations system and don't have an invoice yet.</div>
+      <div class="invoice-list-grid" id="shipmentNotifyGrid" style="margin-top:10px;"></div>
+    </div>
+
+    <div class="panel" id="shipmentUpdatedPanel" style="display:none; border-color:#e8a6a6; background:#fff5f5;">
+      <h3 style="color:#c0392b;">🔄 Airway Bill Changed — Invoice May Be Outdated <span id="shipmentUpdatedCount" class="section-label" style="background:#c0392b; color:#fff; border-radius:10px; padding:2px 9px; margin-left:6px; font-size:11px;"></span></h3>
+      <div class="hint">The linked airway bill was edited after this invoice was created/synced.</div>
+      <div class="invoice-list-grid" id="shipmentUpdatedGrid" style="margin-top:10px;"></div>
+    </div>
+
     <div class="panel">
       <h3 class="panel-toggle" onclick="toggleCompanyPanel()">🏢 Company Details (shown on every invoice) <span id="companyToggleIcon" style="margin-left:auto; font-size:12px;">▼</span></h3>
       <div id="companyPanelBody">
@@ -530,6 +543,7 @@
           <select id="invStatus">
             <option value="unpaid">Unpaid</option>
             <option value="paid">Paid</option>
+            <option value="added">Added</option>
           </select>
         </div>
         <div class="field" style="max-width:240px;">
@@ -670,7 +684,7 @@ function renderMain(){
     });
   }
 }
-function renderAll(){ renderSidebar(); renderMain(); renderInvoiceList(); renderInvoiceAccountOptions(); }
+function renderAll(){ renderSidebar(); renderMain(); renderInvoiceList(); renderInvoiceAccountOptions(); renderShipmentNotifications(); }
 function escapeHtml(str){ const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
 function addAccount(){
   const input = document.getElementById('newAcctName');
@@ -781,6 +795,8 @@ let invoices = [];
 let itemRowCounter = 0;
 let currentInvoiceId = null;
 let currentLinkedTxId = null;
+let currentInvoiceShipmentId = null;
+let currentInvoiceShipmentSyncedAt = null;
 
 function defaultCompany(){
   return {
@@ -897,6 +913,8 @@ function startNewInvoice(){
 function resetInvoiceForm(){
   currentInvoiceId = null;
   currentLinkedTxId = null;
+  currentInvoiceShipmentId = null;
+  currentInvoiceShipmentSyncedAt = null;
   document.getElementById('invNumber').value = nextInvoiceNumber();
   document.getElementById('invDate').value = new Date().toISOString().slice(0,10);
   document.getElementById('invDueDate').value = '';
@@ -965,6 +983,8 @@ function collectInvoiceFromForm(){
     courierCOD: parseFloat(document.getElementById('courierCOD').value) || 0,
     linkedAccountId: document.getElementById('invLinkedAccount').value || '',
     linkedTxId: currentLinkedTxId || null,
+    shipmentId: currentInvoiceShipmentId || null,
+    shipmentSyncedAt: currentInvoiceShipmentSyncedAt || null,
     subtotal: totals.subtotal, tax: totals.tax, total: totals.total,
     createdAt: Date.now()
   };
@@ -1019,6 +1039,8 @@ function editInvoice(id){
   if(!inv) return;
   currentInvoiceId = inv.id;
   currentLinkedTxId = inv.linkedTxId || null;
+  currentInvoiceShipmentId = inv.shipmentId || null;
+  currentInvoiceShipmentSyncedAt = inv.shipmentSyncedAt || null;
   document.getElementById('invNumber').value = inv.number;
   document.getElementById('invDate').value = inv.date;
   document.getElementById('invDueDate').value = inv.dueDate || '';
@@ -1077,10 +1099,16 @@ function viewInvoiceInLedger(id){
   renderAll();
 }
 
+function invStatusLabel(status){
+  return status === 'paid' ? 'Paid' : (status === 'added' ? 'Added' : 'Unpaid');
+}
+function invStatusClass(status){
+  return status === 'paid' ? 'paid' : (status === 'added' ? 'added' : 'unpaid');
+}
 function toggleInvoiceStatus(id){
   const inv = invoices.find(i => i.id === id);
   if(!inv) return;
-  inv.status = (inv.status === 'paid') ? 'unpaid' : 'paid';
+  inv.status = (inv.status === 'unpaid') ? 'paid' : (inv.status === 'paid') ? 'added' : 'unpaid';
   saveInvoicesToStorage(); renderInvoiceList();
 }
 function renderInvoiceList(){
@@ -1097,8 +1125,8 @@ function renderInvoiceList(){
     card.className = 'invoice-card';
     card.innerHTML = `
       <div>
-        <div class="inv-num">${escapeHtml(inv.number)}<span class="status-badge ${inv.status === 'paid' ? 'paid' : 'unpaid'}" style="margin-left:8px; padding:4px 12px; font-size:10.5px;" title="Click to toggle" onclick="toggleInvoiceStatus('${inv.id}')">${inv.status === 'paid' ? 'Paid' : 'Unpaid'}</span></div>
-        <div class="inv-meta">${escapeHtml(inv.billName || 'No client name')} — ${inv.date}${linkedAcc ? ` · 🔗 linked to <strong>${escapeHtml(linkedAcc.name)}</strong>` : ''}</div>
+        <div class="inv-num">${escapeHtml(inv.number)}<span class="status-badge ${invStatusClass(inv.status)}" style="margin-left:8px; padding:4px 12px; font-size:10.5px;" title="Click to toggle" onclick="toggleInvoiceStatus('${inv.id}')">${invStatusLabel(inv.status)}</span></div>
+        <div class="inv-meta">${escapeHtml(inv.billName || 'No client name')} — ${inv.date}${linkedAcc ? ` · 🔗 linked to <strong>${escapeHtml(linkedAcc.name)}</strong>` : ''}${inv.shipmentId ? ` · 📦 from Airway Bill ${escapeHtml(inv.shipRef || ('#' + inv.shipmentId))}` : ''}</div>
       </div>
       <div style="display:flex; align-items:center; gap:14px;">
         <div class="inv-amt">${fmt(inv.total || 0)}</div>
@@ -1157,7 +1185,7 @@ function buildInvoiceHTML(inv, company){
         <div class="num">No: ${escapeHtml(inv.number)}</div>
         <div class="num">Date: ${inv.date}</div>
         ${inv.dueDate ? `<div class="num">Due: ${inv.dueDate}</div>` : ''}
-        <div class="num" style="margin-top:6px; font-weight:bold; text-transform:uppercase;">${inv.status === 'paid' ? 'PAID' : 'UNPAID'}</div>
+        <div class="num" style="margin-top:6px; font-weight:bold; text-transform:uppercase;">${invStatusLabel(inv.status).toUpperCase()}</div>
       </div>
     </div>
 
@@ -1388,14 +1416,221 @@ function downloadSavedInvoicePDF(id){
 }
 
 /* ============================================================
+   AIRWAY BILL (SHIPMENT) SYNC
+   Pulls shipments created in the operations system (form.html /
+   dashboard.html) and:
+   - shows a "new shipment, no invoice yet" notification with a
+     one-click "Create Invoice" that pre-fills client/date/weight
+     etc. from the shipment (only Rate is left for manual entry)
+   - flags already-linked invoices whose shipment was edited since
+     the invoice was created/last synced, with a re-sync option
+   ============================================================ */
+const DISMISSED_SHIPMENTS_KEY = 'myLedgerDismissedShipmentNotifs_v1';
+let allShipments = [];
+let dismissedShipmentIds = [];
+
+function loadDismissedShipments(){
+  try{ dismissedShipmentIds = JSON.parse(localStorage.getItem(DISMISSED_SHIPMENTS_KEY) || '[]'); }
+  catch(e){ dismissedShipmentIds = []; }
+}
+function saveDismissedShipments(){
+  try{ localStorage.setItem(DISMISSED_SHIPMENTS_KEY, JSON.stringify(dismissedShipmentIds)); }catch(e){}
+}
+function dismissShipmentNotif(id){
+  if(!dismissedShipmentIds.includes(id)) dismissedShipmentIds.push(id);
+  saveDismissedShipments();
+  renderShipmentNotifications();
+}
+
+async function fetchShipmentsForSync(){
+  try{
+    const res = await fetch('/api/shipments', { credentials: 'same-origin' });
+    if(!res.ok) return; // not logged in / no access — fail silently, feature just stays hidden
+    const json = await res.json();
+    allShipments = json.shipments || [];
+    renderShipmentNotifications();
+  }catch(e){
+    // offline or server not reachable — silently skip, ledger still works standalone
+  }
+}
+
+function invoicedShipmentIds(){
+  return new Set(invoices.filter(i => i.shipmentId).map(i => i.shipmentId));
+}
+
+function renderShipmentNotifications(){
+  const invoicedIds = invoicedShipmentIds();
+
+  // ---- Panel 1: shipments with no invoice yet ----
+  const pending = allShipments.filter(s => !invoicedIds.has(s.id) && !dismissedShipmentIds.includes(s.id));
+  const notifyPanel = document.getElementById('shipmentNotifyPanel');
+  const notifyGrid = document.getElementById('shipmentNotifyGrid');
+  if(notifyPanel && notifyGrid){
+    if(pending.length === 0){
+      notifyPanel.style.display = 'none';
+    }else{
+      notifyPanel.style.display = 'block';
+      document.getElementById('shipmentNotifyCount').textContent = pending.length;
+      notifyGrid.innerHTML = pending.map(s => `
+        <div class="invoice-card">
+          <div>
+            <div class="inv-num">${escapeHtml(s.awbnum || s.trackingNo || ('Shipment #' + s.id))}</div>
+            <div class="inv-meta">${escapeHtml(s.shipperName || '')} → ${escapeHtml(s.consigneeName || '')} · ${escapeHtml(s.destination || '')}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button class="btn btn-navy" style="padding:7px 14px; font-size:12.5px;" onclick="createInvoiceFromShipment(${s.id})">+ Create Invoice</button>
+            <button class="icon-btn" title="Dismiss" onclick="dismissShipmentNotif(${s.id})">✕</button>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+
+  // ---- Panel 2: linked invoices whose shipment changed since last sync ----
+  const outdated = invoices.filter(inv => {
+    if(!inv.shipmentId) return false;
+    const s = allShipments.find(x => x.id === inv.shipmentId);
+    return s && inv.shipmentSyncedAt && s.updated_at && s.updated_at !== inv.shipmentSyncedAt;
+  });
+  const updPanel = document.getElementById('shipmentUpdatedPanel');
+  const updGrid = document.getElementById('shipmentUpdatedGrid');
+  if(updPanel && updGrid){
+    if(outdated.length === 0){
+      updPanel.style.display = 'none';
+    }else{
+      updPanel.style.display = 'block';
+      document.getElementById('shipmentUpdatedCount').textContent = outdated.length;
+      updGrid.innerHTML = outdated.map(inv => `
+        <div class="invoice-card">
+          <div>
+            <div class="inv-num">${escapeHtml(inv.number)}</div>
+            <div class="inv-meta">${escapeHtml(inv.billName || '')} — linked airway bill was edited after this invoice was synced</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <button class="btn btn-outline" style="padding:7px 14px; font-size:12.5px;" onclick="syncInvoiceFromShipment('${inv.id}')">🔄 Re-sync</button>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+}
+
+// Maps a shipment (as returned by GET /api/shipments/:id) to the fields the
+// invoice form can auto-fill. Rate is intentionally left blank — only the
+// user knows what to charge; everything else (weight, dates, client,
+// origin/destination, tracking) is pulled straight from the airway bill.
+function shipmentToInvoiceFields(s){
+  const f = s.form || {};
+  const items = (s.products && s.products.length)
+    ? s.products.map(p => ({
+        desc: [p.description || p.desc || f.service || 'Freight charges', p.hsCode ? `(HS ${p.hsCode})` : ''].filter(Boolean).join(' '),
+        pieces: Number(p.quantity || p.pieces || 1) || 1,
+        weight: Number(f.chargeWeight || f.weight || 0) || 0,
+        rate: 0
+      }))
+    : [{
+        desc: f.service || 'Freight charges',
+        pieces: 1,
+        weight: Number(f.chargeWeight || f.weight || 0) || 0,
+        rate: 0
+      }];
+
+  return {
+    shipmentId: s.id,
+    shipmentSyncedAt: s.updated_at,
+    invDate: f.date || s.created_at ? (f.date || (s.created_at || '').slice(0,10)) : '',
+    billName: f.consigneeCompany || f.consigneeName || '',
+    billAddress: f.consigneeAddress || '',
+    billContact: f.consigneePhone || f.consigneeEmail || '',
+    shipOrigin: f.origin || '',
+    shipDest: f.destination || '',
+    shipRef: s.trackingNo || s.awbnum || '',
+    items
+  };
+}
+
+async function createInvoiceFromShipment(shipmentId){
+  try{
+    const res = await fetch(`/api/shipments/${shipmentId}`, { credentials: 'same-origin' });
+    if(!res.ok){ alert('Could not load this shipment from the operations system.'); return; }
+    const s = await res.json();
+    const mapped = shipmentToInvoiceFields(s);
+
+    switchView('invoice');
+    startNewInvoice();
+
+    document.getElementById('invDate').value = mapped.invDate || '';
+    document.getElementById('billName').value = mapped.billName;
+    document.getElementById('billAddress').value = mapped.billAddress;
+    document.getElementById('billContact').value = mapped.billContact;
+    document.getElementById('shipOrigin').value = mapped.shipOrigin;
+    document.getElementById('shipDest').value = mapped.shipDest;
+    document.getElementById('shipRef').value = mapped.shipRef;
+
+    document.getElementById('itemsBody').innerHTML = '';
+    mapped.items.forEach(it => addItemRow(it.desc, it.pieces, it.weight, it.rate, ''));
+
+    currentInvoiceShipmentId = mapped.shipmentId;
+    currentInvoiceShipmentSyncedAt = mapped.shipmentSyncedAt;
+
+    recalcTotals();
+    alert('Shipment details loaded — just add the Rate (and any other charges), then Save Invoice.');
+  }catch(e){
+    alert('Could not load this shipment from the operations system.');
+  }
+}
+
+// Re-pulls the (possibly changed) shipment into an already-saved invoice.
+// Only the auto-filled fields are refreshed; rates already entered on
+// matching item rows are preserved, so nothing the user typed is lost
+// unless the shipment's item list itself changed.
+async function syncInvoiceFromShipment(invoiceId){
+  const inv = invoices.find(i => i.id === invoiceId);
+  if(!inv || !inv.shipmentId) return;
+  try{
+    const res = await fetch(`/api/shipments/${inv.shipmentId}`, { credentials: 'same-origin' });
+    if(!res.ok){ alert('Could not reload this shipment from the operations system.'); return; }
+    const s = await res.json();
+    const mapped = shipmentToInvoiceFields(s);
+
+    inv.date = mapped.invDate || inv.date;
+    inv.billName = mapped.billName;
+    inv.billAddress = mapped.billAddress;
+    inv.billContact = mapped.billContact;
+    inv.shipOrigin = mapped.shipOrigin;
+    inv.shipDest = mapped.shipDest;
+    inv.shipRef = mapped.shipRef;
+    inv.shipmentSyncedAt = mapped.shipmentSyncedAt;
+
+    // Preserve previously entered rates where the item description lines up;
+    // new/changed item rows come in with rate 0 for the user to review.
+    inv.items = (mapped.items || []).map((it, idx) => {
+      const prev = (inv.items || [])[idx];
+      return (prev && prev.desc === it.desc) ? { ...it, rate: prev.rate } : it;
+    });
+
+    saveInvoicesToStorage();
+    renderInvoiceList();
+    renderShipmentNotifications();
+    if(currentInvoiceId === inv.id) editInvoice(inv.id); // refresh the open form if this invoice is currently being edited
+    alert('Invoice refreshed from the latest airway bill details. Please double-check rates for any changed items.');
+  }catch(e){
+    alert('Could not reload this shipment from the operations system.');
+  }
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 document.getElementById('txDate').value = new Date().toISOString().slice(0,10);
 loadData();
 loadCompanySettings();
+loadDismissedShipments();
 loadInvoices();
 resetInvoiceForm();
 renderAll();
+fetchShipmentsForSync();
+setInterval(fetchShipmentsForSync, 120000); // re-check every 2 minutes for new/changed airway bills
 </script>
 </body>
 </html>
