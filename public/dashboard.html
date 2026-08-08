@@ -757,11 +757,31 @@ function renderTable(){
 
 document.getElementById("confirmDeleteBtn").addEventListener("click", async ()=>{
   if(!pendingDeleteId) return;
-  await fetch(`/api/shipments/${pendingDeleteId}`, { method:"DELETE" });
-  deleteModal.hide();
-  showToast("Shipment deleted");
-  pendingDeleteId = null;
-  loadShipments();
+  const confirmBtn = document.getElementById("confirmDeleteBtn");
+  confirmBtn.disabled = true;
+
+  try{
+    const res = await fetch(`/api/shipments/${pendingDeleteId}`, { method:"DELETE" });
+    const data = await res.json().catch(()=>({}));
+
+    if(!res.ok){
+      deleteModal.hide();
+      showToast(data.error || "Could not delete this shipment.", true);
+      pendingDeleteId = null;
+      return;
+    }
+
+    deleteModal.hide();
+    showToast("Shipment deleted");
+    pendingDeleteId = null;
+    loadShipments();
+  }catch(err){
+    deleteModal.hide();
+    showToast("Network error — could not delete this shipment.", true);
+    pendingDeleteId = null;
+  }finally{
+    confirmBtn.disabled = false;
+  }
 });
 
 /* ---------- TRACKING MODAL ---------- */

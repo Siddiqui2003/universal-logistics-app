@@ -206,8 +206,20 @@ async function loadShipments(){
     btn.addEventListener("click", async ()=>{
       if(!confirm("Delete this shipment?")) return;
       const id = btn.getAttribute("data-id");
-      await fetch(`/api/shipments/${id}`, { method:"DELETE" });
-      loadShipments();
+      btn.disabled = true;
+      try{
+        const res = await fetch(`/api/shipments/${id}`, { method:"DELETE" });
+        const data = await res.json().catch(()=>({}));
+        if(!res.ok){
+          alert(data.error || "Could not delete this shipment.");
+          btn.disabled = false;
+          return;
+        }
+        loadShipments();
+      }catch(err){
+        alert("Network error — could not delete this shipment.");
+        btn.disabled = false;
+      }
     });
   });
 }

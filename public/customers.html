@@ -177,8 +177,20 @@ async function loadCustomers(){
     btn.addEventListener("click", async ()=>{
       if(!confirm("Delete this customer account? All of their bookings will also be deleted.")) return;
       const id = btn.getAttribute("data-id");
-      await fetch(`/api/admin/customers/${id}`, { method:"DELETE" });
-      loadCustomers();
+      btn.disabled = true;
+      try{
+        const res = await fetch(`/api/admin/customers/${id}`, { method:"DELETE" });
+        const data = await res.json().catch(()=>({}));
+        if(!res.ok){
+          alert(data.error || "Could not delete this customer.");
+          btn.disabled = false;
+          return;
+        }
+        loadCustomers();
+      }catch(err){
+        alert("Network error — could not delete this customer.");
+        btn.disabled = false;
+      }
     });
   });
 }
