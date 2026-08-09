@@ -384,6 +384,25 @@
   </div>
 </div>
 
+<!-- ===================== CREATE INVOICE PROMPT ===================== -->
+<div class="modal fade" id="invoicePromptModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Airway Bill Saved</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">Create an invoice for this shipment in the Ledger? The customer, origin, destination, and AWB number will be filled in automatically — you'll just add the weight, rate, and service.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Not now</button>
+        <button type="button" class="btn btn-v-primary" id="goToInvoiceBtn">Create Invoice</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="/js/bootstrap.bundle.min.js"></script>
 <script src="/js/qrcode.js"></script>
 <script src="/js/jsbarcode.js"></script>
@@ -658,6 +677,7 @@ async function loadExisting(){
 }
 
 async function saveShipment(){
+  const isNewShipment = !shipmentId;
   const payload = {
     form: getValues(),
     products,
@@ -688,6 +708,11 @@ async function saveShipment(){
     }
     status.textContent = "Saved ✓";
     setTimeout(()=> status.textContent = "", 2000);
+
+    if(isNewShipment){
+      pendingInvoicePayload = payload.form;
+      invoicePromptModal.show();
+    }
   }catch(err){
     status.textContent = "Network error";
   }
@@ -695,6 +720,28 @@ async function saveShipment(){
 }
 
 document.getElementById("saveBtn").addEventListener("click", saveShipment);
+
+let pendingInvoicePayload = null;
+const invoicePromptModal = new bootstrap.Modal(document.getElementById("invoicePromptModal"));
+
+document.getElementById("goToInvoiceBtn").addEventListener("click", ()=>{
+  if(!pendingInvoicePayload){ invoicePromptModal.hide(); return; }
+  const awbData = {
+    awbnum: pendingInvoicePayload.awbnum || "",
+    trackingNo: pendingInvoicePayload.trackingNo || "",
+    shipperName: pendingInvoicePayload.shipperName || "",
+    shipperPhone: pendingInvoicePayload.shipperPhone || "",
+    shipperAddress: pendingInvoicePayload.shipperAddress || "",
+    shipperCity: pendingInvoicePayload.shipperCity || "",
+    shipperCountry: pendingInvoicePayload.shipperCountry || "",
+    consigneeName: pendingInvoicePayload.consigneeName || "",
+    consigneeCity: pendingInvoicePayload.consigneeCity || "",
+    consigneeCountry: pendingInvoicePayload.consigneeCountry || ""
+  };
+  const encoded = encodeURIComponent(btoa(JSON.stringify(awbData)));
+  invoicePromptModal.hide();
+  window.location.href = `/ledger/?fromAwb=${encoded}`;
+});
 
 document.getElementById("printBtn").addEventListener("click", async ()=>{
   const id = await saveShipment();
