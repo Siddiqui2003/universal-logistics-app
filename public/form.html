@@ -393,7 +393,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p class="mb-0">Create an invoice for this shipment in the Ledger? The customer, origin, destination, and AWB number will be filled in automatically — you'll just add the weight, rate, and service.</p>
+        <p class="mb-0">Create an invoice for this shipment in the Ledger? The customer, origin, destination, AWB number, and weight will be filled in automatically — you'll just set the rate and service.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Not now</button>
@@ -736,7 +736,8 @@ document.getElementById("goToInvoiceBtn").addEventListener("click", ()=>{
     shipperCountry: pendingInvoicePayload.shipperCountry || "",
     consigneeName: pendingInvoicePayload.consigneeName || "",
     consigneeCity: pendingInvoicePayload.consigneeCity || "",
-    consigneeCountry: pendingInvoicePayload.consigneeCountry || ""
+    consigneeCountry: pendingInvoicePayload.consigneeCountry || "",
+    weight: pendingInvoicePayload.chargeWeight || pendingInvoicePayload.weight || ""
   };
   const encoded = encodeURIComponent(btoa(JSON.stringify(awbData)));
   invoicePromptModal.hide();
