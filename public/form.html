@@ -163,6 +163,108 @@
   @media (max-width: 420px){
     .ab-triple{grid-template-columns:1fr;}
   }
+
+  /* ---------- FROM / TO CARD (Shipper & Consignee — Universal Logistics theme) ---------- */
+  fieldset.from-to-card{
+    padding:16px 16px 14px !important;
+    background:#fff;
+  }
+  fieldset.from-to-card > legend{
+    font-size:12.5px !important; text-transform:uppercase; letter-spacing:.4px;
+  }
+
+  .ft-grid{
+    display:grid;
+    grid-template-columns:1fr 54px 1fr;
+    gap:0 16px;
+  }
+
+  .ft-col{min-width:0;}
+
+  .ft-col-head{
+    display:flex; align-items:center; gap:8px;
+    margin:0 0 12px;
+    padding-bottom:8px;
+    border-bottom:2px solid var(--v-slate-200);
+  }
+  .ft-badge{
+    font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
+    padding:3px 9px; border-radius:20px; color:#fff; flex-shrink:0;
+  }
+  .ft-badge-from{background:var(--v-slate-900);}
+  .ft-badge-to{background:var(--v-blue-600);}
+  .ft-col-title{font-size:13.5px; font-weight:800; color:var(--v-slate-900);}
+
+  .ft-field{margin-bottom:10px; position:relative;}
+  .ft-field label{
+    display:block; font-size:10.5px; font-weight:700; color:var(--v-slate-500) !important;
+    text-transform:uppercase; letter-spacing:.3px; margin:0 0 4px !important;
+  }
+  .ft-field input[type=text], .ft-field textarea{
+    width:100%; padding:8px 10px; font-size:12.5px;
+    border:1px solid var(--v-slate-200); border-radius:8px; font-family:inherit; background:#fff;
+    transition:border-color .12s ease, box-shadow .12s ease;
+  }
+  .ft-field textarea{min-height:52px; resize:vertical;}
+  .ft-field input:focus, .ft-field textarea:focus{
+    outline:none; border-color:var(--v-blue-500); box-shadow:0 0 0 3px rgba(59,130,246,.15);
+  }
+  /* emerald check once a required field has a value */
+  .ft-field.ft-filled > label::after{
+    content:"\2713"; color:var(--v-emerald-600); font-weight:800; margin-left:5px;
+  }
+  .ft-field.ft-filled input[type=text], .ft-field.ft-filled textarea{
+    border-color:var(--v-emerald-500);
+  }
+
+  .ft-triple{display:grid; grid-template-columns:0.7fr 1fr 1.3fr; gap:6px;}
+  .ft-triple input{min-width:0;}
+
+  .ft-switch-col{
+    display:flex; align-items:flex-start; justify-content:center;
+    position:relative; padding-top:120px;
+  }
+  .ft-switch-col::before{
+    content:""; position:absolute; top:0; bottom:0; left:50%; width:1px; background:var(--v-slate-200);
+  }
+  .ft-switch-btn{
+    position:relative; z-index:1;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    background:var(--v-slate-900); color:#fff; border:none; border-radius:10px;
+    padding:10px 8px; font-size:10.5px; font-weight:800; letter-spacing:.2px;
+    cursor:pointer; width:100%;
+  }
+  .ft-switch-btn:hover{background:var(--v-blue-600);}
+  .ft-switch-icon{font-size:16px; line-height:1;}
+
+  .ft-shared-row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(62px, 1fr));
+    gap:8px 10px;
+    margin-top:12px; padding-top:12px;
+    border-top:1px dashed var(--v-slate-200);
+  }
+  .ft-shared-row .ab-field label{white-space:normal;}
+
+  @media (max-width: 700px){
+    .ft-grid{grid-template-columns:1fr;}
+    .ft-switch-col{padding-top:0; margin:6px 0 14px;}
+    .ft-switch-col::before{display:none;}
+    .ft-switch-btn{flex-direction:row; justify-content:center;}
+  }
+
+  /* ---------- INVOICE LOCKED NOTICE ---------- */
+  .invoice-locked-notice{
+    background:var(--v-amber-50); border:1px dashed var(--v-amber-500); border-radius:12px;
+    padding:16px 18px; display:flex; flex-direction:column; gap:8px; align-items:flex-start;
+  }
+  .invoice-locked-icon{font-size:20px; line-height:1;}
+  .invoice-locked-title{font-size:13.5px; font-weight:800; color:var(--v-amber-700);}
+  .invoice-locked-sub{font-size:11.5px; color:var(--v-slate-600); line-height:1.5; margin-top:2px;}
+  .invoice-locked-missing{
+    margin:6px 0 0; padding-left:18px; font-size:11px; color:var(--v-amber-700); font-weight:700;
+  }
+  .invoice-locked-missing li{margin-bottom:2px;}
 </style>
 <link rel="stylesheet" href="/css/tailwind.css">
 </head>
@@ -196,95 +298,131 @@
       <input type="text" id="awbnum" placeholder="10236243" required>
     </fieldset>
 
-    <fieldset>
-      <legend>Shipper</legend>
-      <label class="required-lbl">Shipper's Name</label>
-      <input type="text" id="shipperName" required>
-      <label class="required-lbl">Shipper's Address</label>
-      <textarea id="shipperAddress" required></textarea>
-      <label>Shipper Email</label>
-      <input type="text" id="shipperEmail">
-    </fieldset>
+    <fieldset class="from-to-card">
+      <legend>Shipper &amp; Consignee</legend>
 
-    <fieldset>
-      <legend>Consignee</legend>
-      <label>Consignee Company</label>
-      <input type="text" id="consigneeCompany">
-      <label class="required-lbl">Consignee's Address</label>
-      <textarea id="consigneeAddress" required></textarea>
-    </fieldset>
+      <div class="ft-grid">
 
-    <fieldset class="account-block">
-      <legend>Account Block</legend>
-      <div class="ab-grid">
-
-        <div class="ab-field">
-          <label class="required-lbl">Consignee Name</label>
-          <input type="text" id="consigneeName" required>
-        </div>
-        <div class="ab-field">
-          <label>Consignee's Email</label>
-          <input type="text" id="consigneeEmail">
-        </div>
-
-        <div class="ab-field">
-          <label>Shipper's NTN / CNIC</label>
-          <input type="text" id="shipperCnic">
-        </div>
-        <div class="ab-field">
-          <label>Bag Number</label>
-          <input type="text" id="bagNumber">
-        </div>
-
-        <div class="ab-field">
-          <label>Zip / City / Country <span class="ab-tag">Shipper</span></label>
-          <div class="ab-triple">
-            <input type="text" id="shipperZip" placeholder="Zip">
-            <input type="text" id="shipperCity" placeholder="City">
-            <input type="text" id="shipperCountry" value="Pakistan" placeholder="Country">
+        <!-- ============ FROM / SHIPPER ============ -->
+        <div class="ft-col">
+          <div class="ft-col-head">
+            <span class="ft-badge ft-badge-from">From</span>
+            <span class="ft-col-title">Shipper</span>
           </div>
-        </div>
-        <div class="ab-field">
-          <label>Zip / City / Country <span class="ab-tag">Consignee</span></label>
-          <div class="ab-triple">
-            <input type="text" id="consigneeZip" placeholder="Zip">
-            <input type="text" id="consigneeCity" placeholder="City">
-            <input type="text" id="consigneeCountry" value="United States of America" placeholder="Country">
+
+          <div class="ft-field">
+            <label class="required-lbl">Name</label>
+            <input type="text" id="shipperName" required>
+          </div>
+
+          <div class="ft-field">
+            <label class="required-lbl">Address</label>
+            <textarea id="shipperAddress" required></textarea>
+          </div>
+
+          <div class="ft-field">
+            <label>Email</label>
+            <input type="text" id="shipperEmail" placeholder="name@example.com">
+          </div>
+
+          <div class="ft-field">
+            <label class="required-lbl">NTN / CNIC</label>
+            <input type="text" id="shipperCnic" required>
+          </div>
+
+          <div class="ft-field">
+            <label>Zip / City / Country</label>
+            <div class="ft-triple">
+              <input type="text" id="shipperZip" placeholder="Zip">
+              <input type="text" id="shipperCity" placeholder="City">
+              <input type="text" id="shipperCountry" value="Pakistan" placeholder="Country">
+            </div>
+          </div>
+
+          <div class="ft-field">
+            <label class="required-lbl">Telephone #</label>
+            <input type="text" id="shipperPhone" required>
           </div>
         </div>
 
-        <div class="ab-field">
-          <label class="required-lbl">Shipper's Telephone #</label>
-          <input type="text" id="shipperPhone" required>
-        </div>
-        <div class="ab-field">
-          <label class="required-lbl">Consignee's Telephone #</label>
-          <input type="text" id="consigneePhone" required>
+        <!-- ============ SWITCH ============ -->
+        <div class="ft-switch-col">
+          <button type="button" id="switchBtn" class="ft-switch-btn" title="Swap Shipper &amp; Consignee">
+            <span class="ft-switch-icon">&#8646;</span><span>Switch</span>
+          </button>
         </div>
 
-        <div class="ab-row-five">
-          <div class="ab-field">
-            <label>Shipper's Reference</label>
-            <input type="text" id="reference">
+        <!-- ============ TO / CONSIGNEE ============ -->
+        <div class="ft-col">
+          <div class="ft-col-head">
+            <span class="ft-badge ft-badge-to">To</span>
+            <span class="ft-col-title">Consignee</span>
           </div>
-          <div class="ab-field">
-            <label class="required-lbl">Pieces</label>
-            <input type="text" id="pieces" required>
+
+          <div class="ft-field">
+            <label class="required-lbl">Name</label>
+            <input type="text" id="consigneeName" required>
           </div>
-          <div class="ab-field">
-            <label class="required-lbl">Weight (KG)</label>
-            <input type="text" id="weight" required>
+
+          <div class="ft-field">
+            <label>Company</label>
+            <input type="text" id="consigneeCompany">
           </div>
-          <div class="ab-field">
-            <label>Vol. Weight (KG) <span class="ab-auto">auto</span></label>
-            <input type="text" id="volWeight" readonly style="background:#f3f3f0;">
+
+          <div class="ft-field">
+            <label class="required-lbl">Address</label>
+            <textarea id="consigneeAddress" required></textarea>
           </div>
-          <div class="ab-field">
-            <label>Chg. Weight (KG) <span class="ab-auto">auto</span></label>
-            <input type="text" id="chargeWeight" readonly style="background:#f3f3f0;">
+
+          <div class="ft-field">
+            <label>Email</label>
+            <input type="text" id="consigneeEmail" placeholder="name@example.com">
+          </div>
+
+          <div class="ft-field">
+            <label>Bag Number</label>
+            <input type="text" id="bagNumber">
+          </div>
+
+          <div class="ft-field">
+            <label>Zip / City / Country</label>
+            <div class="ft-triple">
+              <input type="text" id="consigneeZip" placeholder="Zip">
+              <input type="text" id="consigneeCity" placeholder="City">
+              <input type="text" id="consigneeCountry" value="United States of America" placeholder="Country">
+            </div>
+          </div>
+
+          <div class="ft-field">
+            <label class="required-lbl">Telephone #</label>
+            <input type="text" id="consigneePhone" required>
           </div>
         </div>
 
+      </div>
+
+      <!-- ============ SHARED SHIPMENT ROW ============ -->
+      <div class="ft-shared-row">
+        <div class="ab-field">
+          <label>Shipper's Reference</label>
+          <input type="text" id="reference">
+        </div>
+        <div class="ab-field">
+          <label class="required-lbl">Pieces</label>
+          <input type="text" id="pieces" required>
+        </div>
+        <div class="ab-field">
+          <label class="required-lbl">Weight (KG)</label>
+          <input type="text" id="weight" required>
+        </div>
+        <div class="ab-field">
+          <label>Vol. Weight (KG) <span class="ab-auto">auto</span></label>
+          <input type="text" id="volWeight" readonly style="background:#f3f3f0;">
+        </div>
+        <div class="ab-field">
+          <label>Chg. Weight (KG) <span class="ab-auto">auto</span></label>
+          <input type="text" id="chargeWeight" readonly style="background:#f3f3f0;">
+        </div>
       </div>
     </fieldset>
 
@@ -309,7 +447,7 @@
     </fieldset>
 
 
-    <fieldset>
+    <fieldset id="invoiceFieldset" style="display:none;">
       <legend>Invoice (Products / HS Codes)</legend>
       <label>Invoice Type</label>
       <select id="invoiceType">
@@ -326,6 +464,15 @@
       </div>
       <div class="hint" style="margin-top:6px;">Type in Item Description — you can select from the HS Code list.</div>
     </fieldset>
+
+    <div id="invoiceLockedNotice" class="invoice-locked-notice">
+      <div class="invoice-locked-icon">&#128274;</div>
+      <div class="invoice-locked-text">
+        <div class="invoice-locked-title">Invoice section locked</div>
+        <div class="invoice-locked-sub">Fill in all required Shipper &amp; Consignee fields above (Name, Address, NTN/CNIC, Telephone #) to unlock Invoice / HS Codes.</div>
+      </div>
+      <ul id="invoiceLockedMissing" class="invoice-locked-missing"></ul>
+    </div>
 
     <div class="settings-card">
       <div class="settings-card-title">Print Settings</div>
@@ -640,6 +787,78 @@ document.addEventListener("click", (e)=>{
   }
 });
 
+/* ---------- Shipper ⇄ Consignee Switch ---------- */
+const SWAP_PAIRS = [
+  ["shipperName","consigneeName"],
+  ["shipperAddress","consigneeAddress"],
+  ["shipperEmail","consigneeEmail"],
+  ["shipperZip","consigneeZip"],
+  ["shipperCity","consigneeCity"],
+  ["shipperCountry","consigneeCountry"],
+  ["shipperPhone","consigneePhone"]
+];
+document.getElementById("switchBtn").addEventListener("click", ()=>{
+  SWAP_PAIRS.forEach(([a,b])=>{
+    const elA = document.getElementById(a), elB = document.getElementById(b);
+    if(!elA || !elB) return;
+    const tmp = elA.value;
+    elA.value = elB.value;
+    elB.value = tmp;
+  });
+  document.querySelectorAll(".ft-field input, .ft-field textarea").forEach(refreshFtFilled);
+  refreshInvoiceGate();
+  updatePreview();
+});
+
+/* live emerald checkmark once a From/To field has a value */
+function refreshFtFilled(el){
+  const wrap = el.closest(".ft-field");
+  if(!wrap) return;
+  wrap.classList.toggle("ft-filled", !!el.value && el.value.trim().length > 0);
+}
+document.querySelectorAll(".ft-field input, .ft-field textarea").forEach(el=>{
+  refreshFtFilled(el);
+  el.addEventListener("input", ()=> refreshFtFilled(el));
+});
+
+/* ---------- Gate the Invoice section behind Shipper/Consignee required fields ---------- */
+const INVOICE_GATE_FIELDS = [
+  { id:"shipperName", label:"Shipper's Name" },
+  { id:"shipperAddress", label:"Shipper's Address" },
+  { id:"shipperCnic", label:"Shipper's NTN / CNIC" },
+  { id:"shipperPhone", label:"Shipper's Telephone #" },
+  { id:"consigneeName", label:"Consignee Name" },
+  { id:"consigneeAddress", label:"Consignee's Address" },
+  { id:"consigneePhone", label:"Consignee's Telephone #" }
+];
+
+function refreshInvoiceGate(){
+  const invoiceFieldset = document.getElementById("invoiceFieldset");
+  const lockedNotice = document.getElementById("invoiceLockedNotice");
+  const missingListEl = document.getElementById("invoiceLockedMissing");
+  if(!invoiceFieldset || !lockedNotice) return;
+
+  const missing = INVOICE_GATE_FIELDS.filter(f => {
+    const el = document.getElementById(f.id);
+    return !el || !el.value || !el.value.trim();
+  });
+
+  if(missing.length === 0){
+    invoiceFieldset.style.display = "";
+    lockedNotice.style.display = "none";
+  } else {
+    invoiceFieldset.style.display = "none";
+    lockedNotice.style.display = "flex";
+    missingListEl.innerHTML = missing.map(f => `<li>${f.label}</li>`).join("");
+  }
+}
+
+INVOICE_GATE_FIELDS.forEach(f => {
+  const el = document.getElementById(f.id);
+  if(el) el.addEventListener("input", refreshInvoiceGate);
+});
+refreshInvoiceGate();
+
 document.getElementById("addProductBtn").addEventListener("click", ()=>{
   products.push({ desc:"", hsCode:"", uom:"Piece(s)", qty:"1", price:"0.00" });
   renderProductRows();
@@ -674,7 +893,11 @@ async function loadExisting(){
   const res = await fetch(`/api/shipments/${shipmentId}`);
   if(!res.ok) return;
   const data = await res.json();
-  if(data.form) setValues(data.form);
+  if(data.form){
+    setValues(data.form);
+    document.querySelectorAll(".ft-field input, .ft-field textarea").forEach(refreshFtFilled);
+    refreshInvoiceGate();
+  }
   if(data.products && data.products.length) products = data.products;
   if(data.copies) document.getElementById("copyCount").value = data.copies;
   syncCopiesDisplay();
@@ -686,6 +909,7 @@ async function loadExisting(){
 const REQUIRED_FIELDS = [
   { id:"shipperName", label:"Shipper's Name" },
   { id:"shipperAddress", label:"Shipper's Address" },
+  { id:"shipperCnic", label:"Shipper's NTN / CNIC" },
   { id:"shipperPhone", label:"Shipper's Telephone #" },
   { id:"consigneeName", label:"Consignee Name" },
   { id:"consigneeAddress", label:"Consignee's Address" },
