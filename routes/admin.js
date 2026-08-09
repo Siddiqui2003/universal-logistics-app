@@ -9,14 +9,16 @@ router.use(requireAdmin);
 // ---------- LIST all customer accounts ----------
 router.get("/customers", (req, res) => {
   const rows = db
-    .prepare("SELECT id, name, email, created_at FROM users WHERE role = 'customer' ORDER BY created_at DESC")
+    .prepare(
+      "SELECT id, name, email, account_number, shipper_reference, last_active_at, created_at FROM users WHERE role = 'customer' ORDER BY created_at DESC"
+    )
     .all();
   res.json({ customers: rows });
 });
 
 // ---------- CREATE a new customer login ----------
 router.post("/customers", (req, res) => {
-  const { name, email, password } = req.body || {};
+  const { name, email, password, accountNumber, shipperReference } = req.body || {};
   if (!name || !email || !password) {
     return res.status(400).json({ error: "Name, email, and password are required" });
   }
@@ -31,10 +33,26 @@ router.post("/customers", (req, res) => {
 
   const passwordHash = bcrypt.hashSync(password, 10);
   const result = db
-    .prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'customer')")
-    .run(name, email.toLowerCase(), passwordHash);
+    .prepare(
+      "INSERT INTO users (name, email, password_hash, role, account_number, shipper_reference) VALUES (?, ?, ?, 'customer', ?, ?)"
+    )
+    .run(name, email.toLowerCase(), passwordHash, (accountNumber || "").trim() || null, (shipperReference || "").trim() || null);
 
   res.json({ id: Number(result.lastInsertRowid) });
+});
+
+// ---------- UPDATE a customer's Account # / Shipper's Reference ----------
+router.patch("/customers/:id", (req, res) => {
+  const row = db.prepare("SELECT id FROM users WHERE id = ? AND role = 'customer'").get(req.params.id);
+  if (!row) return res.status(404).json({ error: "Customer not found" });
+
+  const { accountNumber, shipperReference } = req.body || {};
+  db.prepare("UPDATE users SET account_number = ?, shipper_reference = ? WHERE id = ?").run(
+    (accountNumber || "").trim() || null,
+    (shipperReference || "").trim() || null,
+    req.params.id
+  );
+  res.json({ ok: true });
 });
 
 // ---------- DELETE a customer account ----------
@@ -76,6 +94,19 @@ router.get("/shipments", (req, res) => {
     };
   });
   res.json({ shipments });
+});
+
+// ---------- Customer's last-30-days activity history ----------
+router.get("/customers/:id/activity", (req, res) => {
+  const row = db.prepare("SELECT id FROM users WHERE id = ? AND role = 'customer'").get(req.params.id);
+  if (!row) return res.status(404).json({ error: "Customer not found" });
+
+  const events = db
+    .prepare(
+      "SELECT event_time FROM activity_log WHERE user_id = ? AND event_time >= datetime('now', '-30 days') ORDER BY event_time DESC"
+    )
+    .all(req.params.id);
+  res.json({ events: events.map((e) => e.event_time) });
 });
 
 module.exports = router;

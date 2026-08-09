@@ -9,18 +9,6 @@ function isAdmin(req) {
   return req.user.role === "admin";
 }
 
-// Generates a random 7-digit tracking number and makes sure it isn't already
-// in use by another shipment (extremely unlikely to collide, but we check anyway).
-function generateTrackingNo() {
-  for (let attempt = 0; attempt < 20; attempt++) {
-    const candidate = String(Math.floor(1000000 + Math.random() * 9000000)); // 1000000-9999999
-    const existing = db.prepare("SELECT id FROM shipments WHERE tracking_no = ?").get(candidate);
-    if (!existing) return candidate;
-  }
-  // Extremely unlikely fallback: timestamp-based 7 digits
-  return String(Date.now()).slice(-7);
-}
-
 // Normalizes an admin-supplied date/time (from separate <input type=date> and
 // <input type=time> fields, joined client-side as "YYYY-MM-DD HH:MM") into the
 // same text format SQLite's datetime('now') produces. Falls back to "now" for
@@ -87,10 +75,10 @@ router.get("/:id", (req, res) => {
 
   if (!row) return res.status(404).json({ error: "Shipment not found" });
 
-  // Backfill a tracking number for shipments created before this feature existed.
-  let trackingNo = row.tracking_no;
-  if (!trackingNo) {
-    trackingNo = generateTrackingNo();
+  // The tracking number is always the AWB number itself. Backfill it for
+  // older rows where the two might have drifted apart.
+  let trackingNo = row.awbnum || "";
+  if (trackingNo !== row.tracking_no) {
     db.prepare("UPDATE shipments SET tracking_no = ? WHERE id = ?").run(trackingNo, row.id);
   }
 
@@ -115,7 +103,7 @@ router.post("/", (req, res) => {
   // Customers always start a new booking as "Pending" — only the admin can set a
   // different status. This keeps the booking review workflow trustworthy.
   const finalStatus = isAdmin(req) ? status || "Pending" : "Pending";
-  const trackingNo = generateTrackingNo();
+  const trackingNo = form.awbnum || "";
 
   const data = JSON.stringify({ form, products: products || [], showTnc, showInvoice, copies });
   const result = db
@@ -149,7 +137,7 @@ router.post("/:id/duplicate", (req, res) => {
   const parsed = JSON.parse(existing.data);
   const newForm = { ...(parsed.form || {}), awbnum: "" };
   const data = JSON.stringify({ ...parsed, form: newForm });
-  const trackingNo = generateTrackingNo();
+  const trackingNo = "";
 
   const result = db
     .prepare("INSERT INTO shipments (user_id, awbnum, tracking_no, data, status) VALUES (?, ?, ?, ?, 'Pending')")
@@ -187,8 +175,8 @@ router.put("/:id", (req, res) => {
   const finalSwitchNo = isAdmin(req) && switchNo !== undefined ? switchNo : existing.switch_no;
 
   db.prepare(
-    "UPDATE shipments SET awbnum = ?, data = ?, status = ?, switch_no = ?, updated_at = datetime('now') WHERE id = ?"
-  ).run(form.awbnum || "", data, finalStatus, finalSwitchNo, req.params.id);
+    "UPDATE shipments SET awbnum = ?, tracking_no = ?, data = ?, status = ?, switch_no = ?, updated_at = datetime('now') WHERE id = ?"
+  ).run(form.awbnum || "", form.awbnum || "", data, finalStatus, finalSwitchNo, req.params.id);
 
   res.json({ ok: true });
 });

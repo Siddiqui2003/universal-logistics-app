@@ -164,6 +164,15 @@
     .ab-triple{grid-template-columns:1fr;}
   }
 
+  /* ---------- Per-box Dimension inputs (L x W x H per piece) ---------- */
+  .dim-boxes{display:flex; flex-direction:column; gap:6px;}
+  .dim-box-row{display:flex; align-items:center; gap:6px;}
+  .dim-box-row .dim-box-label{
+    flex:0 0 58px; font-size:12px; color:var(--v-slate-500, #64748b); font-weight:600;
+  }
+  .dim-box-row input{width:0; flex:1; min-width:0; text-align:center;}
+  .dim-box-row .dim-x{flex:0 0 auto; color:var(--v-slate-400, #94a3b8); font-weight:600;}
+
   /* ---------- FROM / TO CARD (Shipper & Consignee — Universal Logistics theme) ---------- */
   fieldset.from-to-card{
     padding:16px 16px 14px !important;
@@ -289,7 +298,7 @@
         <div><label>Time</label><input type="time" id="time"></div>
       </div>
       <div class="row2">
-        <div><label>Origin</label><input type="text" id="origin" placeholder="Pakistan"></div>
+        <div><label>Origin</label><input type="text" id="origin" value="Pakistan" readonly></div>
         <div><label class="required-lbl">Destination</label><input type="text" id="destination" placeholder="United States of America" required></div>
       </div>
       <label>Account #</label>
@@ -429,7 +438,8 @@
     <fieldset>
       <legend>Shipment / Cargo</legend>
       <label>Dimension</label>
-      <textarea id="dimension" placeholder="33*40*33, 33*40*33 ..."></textarea>
+      <input type="hidden" id="dimension">
+      <div id="dimensionBoxes" class="dim-boxes"></div>
       <div class="hint" style="margin-top:4px;">Volumetric Weight = (L×W×H total of all pieces) ÷ 5000. If the Service field contains "Australia", divide by 4000 instead.</div>
       <div class="row2">
         <div><label>Service</label><input type="text" id="service" placeholder="Via UK UPS saver"></div>
@@ -622,7 +632,7 @@ function updatePreview(){
     const v = getValues();
     v.id = shipmentId || "PREVIEW";
     v.created_at = new Date().toISOString();
-    v.trackingNo = shipmentId ? formatTrackingNo(shipmentId, v.created_at) : "PREVIEW";
+    v.trackingNo = v.awbnum || "";
 
     const copies = parseInt(document.getElementById("copyCount").value, 10) || 1;
     const showTnc = document.getElementById("showTnc").checked;
@@ -753,7 +763,85 @@ function calcDerivedFields(){
   chargeWeightEl.value = chargeable > 0 ? chargeable.toFixed(3) : "";
 }
 
-document.getElementById("dimension").addEventListener("input", calcDerivedFields);
+/* ---------- Per-box Dimension inputs ----------
+   One row of L / W / H boxes per piece. The count of rows follows the
+   "Pieces" field: 1 box → 1 dimension row, 10 boxes → 10 dimension rows.
+   The three inputs per row are combined into the same "L*W*H, L*W*H, ..."
+   string the rest of the app (calcDerivedFields, print, saved data) expects,
+   kept in sync via the hidden #dimension input. */
+const MAX_DIM_BOXES = 300;
+
+function getDimensionRowsFromHiddenValue(){
+  const raw = (document.getElementById("dimension").value || "").trim();
+  if(!raw) return [];
+  return raw.split(",").map(s=>{
+    const nums = s.trim().split("*").map(n=>n.trim());
+    return { l: nums[0] || "", w: nums[1] || "", h: nums[2] || "" };
+  });
+}
+
+function syncDimensionHiddenValue(){
+  const rows = Array.from(document.querySelectorAll("#dimensionBoxes .dim-box-row")).map(row=>{
+    const l = row.querySelector(".dim-l").value.trim();
+    const w = row.querySelector(".dim-w").value.trim();
+    const h = row.querySelector(".dim-h").value.trim();
+    return { l, w, h };
+  });
+  const str = rows
+    .filter(r => r.l || r.w || r.h)
+    .map(r => `${r.l || 0}*${r.w || 0}*${r.h || 0}`)
+    .join(", ");
+  document.getElementById("dimension").value = str;
+  calcDerivedFields();
+}
+
+function renderDimensionBoxes(preserveExisting){
+  const wrap = document.getElementById("dimensionBoxes");
+  if(!wrap) return;
+
+  let count = parseInt(document.getElementById("pieces").value, 10);
+  if(isNaN(count) || count < 1) count = 1;
+  if(count > MAX_DIM_BOXES) count = MAX_DIM_BOXES;
+
+  // Preserve values already typed into the visible boxes (when the user
+  // changes Pieces) — otherwise (e.g. loading a saved shipment) seed from
+  // the hidden field's saved "L*W*H, ..." string.
+  const existingRows = preserveExisting
+    ? Array.from(wrap.querySelectorAll(".dim-box-row")).map(row=>({
+        l: row.querySelector(".dim-l").value,
+        w: row.querySelector(".dim-w").value,
+        h: row.querySelector(".dim-h").value,
+      }))
+    : getDimensionRowsFromHiddenValue();
+
+  wrap.innerHTML = "";
+  for(let i=0; i<count; i++){
+    const existing = existingRows[i] || { l:"", w:"", h:"" };
+    const row = document.createElement("div");
+    row.className = "dim-box-row";
+    row.innerHTML = `
+      <span class="dim-box-label">Box ${i+1}</span>
+      <input type="text" class="dim-l" placeholder="L" value="${existing.l ? escapeAttr(existing.l) : ""}">
+      <span class="dim-x">&times;</span>
+      <input type="text" class="dim-w" placeholder="W" value="${existing.w ? escapeAttr(existing.w) : ""}">
+      <span class="dim-x">&times;</span>
+      <input type="text" class="dim-h" placeholder="H" value="${existing.h ? escapeAttr(existing.h) : ""}">
+    `;
+    wrap.appendChild(row);
+  }
+
+  wrap.querySelectorAll("input").forEach(inp=>{
+    inp.addEventListener("input", syncDimensionHiddenValue);
+  });
+
+  syncDimensionHiddenValue();
+}
+
+function escapeAttr(s){
+  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;");
+}
+
+document.getElementById("pieces").addEventListener("input", ()=> renderDimensionBoxes(true));
 document.getElementById("service").addEventListener("input", calcDerivedFields);
 document.getElementById("weight").addEventListener("input", calcDerivedFields);
 
@@ -1043,6 +1131,26 @@ REQUIRED_FIELDS.forEach(f => {
   const me = await meRes.json();
   document.getElementById("backLink").href = me.user.role === "admin" ? "/dashboard.html" : "/my-shipments.html";
   await loadExisting();
+  renderDimensionBoxes(false);
+
+  // If the admin has assigned this customer a fixed Account # and/or
+  // Shipper's Reference, lock those fields to those values — the customer
+  // can't change them per-shipment, and any old saved value is overridden.
+  if(me.user.role === "customer"){
+    const acctEl = document.getElementById("account");
+    const refEl = document.getElementById("reference");
+    if(me.user.accountNumber){
+      acctEl.value = me.user.accountNumber;
+      acctEl.readOnly = true;
+      acctEl.style.background = "#f3f3f0";
+    }
+    if(me.user.shipperReference){
+      refEl.value = me.user.shipperReference;
+      refEl.readOnly = true;
+      refEl.style.background = "#f3f3f0";
+    }
+  }
+
   renderProductRows();
   updatePreview();
 })();

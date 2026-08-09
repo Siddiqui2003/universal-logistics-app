@@ -92,9 +92,12 @@
           <div><label>Full Name</label><input type="text" id="newName"></div>
           <div><label>Email</label><input type="email" id="newEmail"></div>
           <div><label>Password</label><input type="password" id="newPassword" placeholder="At least 6 characters"></div>
+          <div><label>Account #</label><input type="text" id="newAccountNumber" placeholder="Optional"></div>
+          <div><label>Shipper's Reference</label><input type="text" id="newShipperReference" placeholder="Optional"></div>
           <button id="addBtn">+ Add Customer</button>
         </div>
         <div class="msg" id="msgBox"></div>
+        <p style="font-size:12px;color:#777;margin:6px 0 0;">Account # aur Shipper's Reference dene par woh us customer ke booking form mein fix (locked) ho jayenge — customer khud unhe change nahi kar sakega.</p>
       </div>
 
       <div class="dash-head mb-3">
@@ -108,6 +111,16 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<div id="historyOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:10px;max-width:420px;width:92%;max-height:80vh;display:flex;flex-direction:column;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #eee;">
+      <h3 style="margin:0;font-size:16px;" id="historyTitle">Activity History</h3>
+      <button id="historyCloseBtn" style="border:none;background:none;font-size:20px;line-height:1;cursor:pointer;color:#888;">&times;</button>
+    </div>
+    <div style="padding:14px 18px;overflow-y:auto;" id="historyBody">Loading...</div>
   </div>
 </div>
 
@@ -140,6 +153,22 @@ async function loadUser(){
   return data.user;
 }
 
+function formatLastActive(ts){
+  if(!ts) return '<span style="color:#aaa;">Never</span>';
+  // SQLite datetime('now') returns UTC without a "Z" suffix — mark it explicitly so JS parses it as UTC, not local time.
+  const then = new Date(ts.replace(" ", "T") + "Z");
+  if(isNaN(then.getTime())) return escapeHtml(ts);
+  const diffMs = Date.now() - then.getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if(mins < 1) return "Just now";
+  if(mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if(hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if(days < 7) return `${days}d ago`;
+  return then.toLocaleDateString();
+}
+
 async function loadCustomers(){
   const res = await fetch("/api/admin/customers");
   const data = await res.json();
@@ -154,12 +183,17 @@ async function loadCustomers(){
   }
 
   const rows = data.customers.map(c => `
-    <tr>
+    <tr data-row-id="${c.id}">
       <td>${escapeHtml(c.name)}</td>
       <td>${escapeHtml(c.email)}</td>
+      <td><input type="text" class="acct-input" data-id="${c.id}" data-field="accountNumber" value="${escapeHtml(c.account_number || "")}" placeholder="—" style="width:110px;"></td>
+      <td><input type="text" class="acct-input" data-id="${c.id}" data-field="shipperReference" value="${escapeHtml(c.shipper_reference || "")}" placeholder="—" style="width:130px;"></td>
+      <td>${formatLastActive(c.last_active_at)}</td>
       <td>${new Date(c.created_at).toLocaleDateString()}</td>
       <td>
         <div class="row-actions">
+          <button class="act-history" data-id="${c.id}" data-name="${escapeHtml(c.name)}">History</button>
+          <button class="act-save" data-id="${c.id}">Save</button>
           <button class="act-delete" data-id="${c.id}">Delete</button>
         </div>
       </td>
@@ -168,10 +202,46 @@ async function loadCustomers(){
 
   wrap.innerHTML = `
     <table class="ship-table">
-      <tr><th>Name</th><th>Email</th><th>Added On</th><th>Actions</th></tr>
+      <tr><th>Name</th><th>Email</th><th>Account #</th><th>Shipper's Reference</th><th>Last Active</th><th>Added On</th><th>Actions</th></tr>
       ${rows}
     </table>
   `;
+
+  wrap.querySelectorAll(".act-history").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      openHistoryModal(btn.getAttribute("data-id"), btn.getAttribute("data-name"));
+    });
+  });
+
+  wrap.querySelectorAll(".act-save").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const id = btn.getAttribute("data-id");
+      const row = wrap.querySelector(`tr[data-row-id="${id}"]`);
+      const accountNumber = row.querySelector('[data-field="accountNumber"]').value.trim();
+      const shipperReference = row.querySelector('[data-field="shipperReference"]').value.trim();
+      btn.disabled = true;
+      btn.textContent = "Saving...";
+      try{
+        const res = await fetch(`/api/admin/customers/${id}`, {
+          method:"PATCH", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ accountNumber, shipperReference })
+        });
+        const data = await res.json().catch(()=>({}));
+        if(!res.ok){
+          alert(data.error || "Could not save.");
+          btn.disabled = false;
+          btn.textContent = "Save";
+          return;
+        }
+        btn.textContent = "Saved ✓";
+        setTimeout(()=>{ btn.textContent = "Save"; btn.disabled = false; }, 1200);
+      }catch(err){
+        alert("Network error — could not save.");
+        btn.disabled = false;
+        btn.textContent = "Save";
+      }
+    });
+  });
 
   wrap.querySelectorAll(".act-delete").forEach(btn=>{
     btn.addEventListener("click", async ()=>{
@@ -199,10 +269,50 @@ function escapeHtml(s){
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
+function formatHistoryTime(ts){
+  const d = new Date(ts.replace(" ", "T") + "Z");
+  if(isNaN(d.getTime())) return escapeHtml(ts);
+  return d.toLocaleString(undefined, { day:"numeric", month:"short", year:"numeric", hour:"2-digit", minute:"2-digit" });
+}
+
+async function openHistoryModal(id, name){
+  const overlay = document.getElementById("historyOverlay");
+  const body = document.getElementById("historyBody");
+  document.getElementById("historyTitle").textContent = `${name} — Last 30 Days`;
+  body.innerHTML = "Loading...";
+  overlay.style.display = "flex";
+
+  try{
+    const res = await fetch(`/api/admin/customers/${id}/activity`);
+    const data = await res.json();
+    if(!res.ok){
+      body.innerHTML = `<div class="empty-state">${escapeHtml(data.error || "Could not load history.")}</div>`;
+      return;
+    }
+    if(!data.events || data.events.length === 0){
+      body.innerHTML = '<div class="empty-state">No activity in the last 30 days.</div>';
+      return;
+    }
+    body.innerHTML = `<ul style="list-style:none;margin:0;padding:0;">${
+      data.events.map(ts => `<li style="padding:8px 0;border-bottom:1px solid #f0f0f0;font-size:14px;">${formatHistoryTime(ts)}</li>`).join("")
+    }</ul>`;
+  }catch(err){
+    body.innerHTML = '<div class="empty-state">Network error — could not load history.</div>';
+  }
+}
+
+document.getElementById("historyCloseBtn").addEventListener("click", ()=>{
+  document.getElementById("historyOverlay").style.display = "none";
+});
+document.getElementById("historyOverlay").addEventListener("click", (e)=>{
+  if(e.target.id === "historyOverlay") document.getElementById("historyOverlay").style.display = "none";
+});
 document.getElementById("addBtn").addEventListener("click", async ()=>{
   const name = document.getElementById("newName").value.trim();
   const email = document.getElementById("newEmail").value.trim();
   const password = document.getElementById("newPassword").value;
+  const accountNumber = document.getElementById("newAccountNumber").value.trim();
+  const shipperReference = document.getElementById("newShipperReference").value.trim();
   const msgBox = document.getElementById("msgBox");
   msgBox.className = "msg";
 
@@ -214,7 +324,7 @@ document.getElementById("addBtn").addEventListener("click", async ()=>{
 
   const res = await fetch("/api/admin/customers", {
     method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ name, email, password })
+    body: JSON.stringify({ name, email, password, accountNumber, shipperReference })
   });
   const data = await res.json();
   if(!res.ok){
@@ -228,6 +338,8 @@ document.getElementById("addBtn").addEventListener("click", async ()=>{
   document.getElementById("newName").value = "";
   document.getElementById("newEmail").value = "";
   document.getElementById("newPassword").value = "";
+  document.getElementById("newAccountNumber").value = "";
+  document.getElementById("newShipperReference").value = "";
   loadCustomers();
 });
 
