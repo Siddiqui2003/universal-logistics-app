@@ -47,6 +47,13 @@
   #saveBtn{background:var(--v-emerald-600) !important; color:#fff !important;}
   #saveBtn:hover{background:var(--v-emerald-700) !important;}
   #saveStatus{font-size:12px; color:var(--v-slate-500); margin-left:10px;}
+  #saveStatus.save-status-error{color:#c0392b; font-weight:700;}
+  .field-error{
+    border-color:#c0392b !important;
+    box-shadow:0 0 0 3px rgba(192,57,43,.14) !important;
+    background:#fff6f5 !important;
+  }
+  label.required-lbl::after{ content:" *"; color:#c0392b; font-weight:800; }
 
   /* ---------- PRINT SETTINGS CARD ---------- */
   .settings-card{
@@ -181,20 +188,20 @@
       </div>
       <div class="row2">
         <div><label>Origin</label><input type="text" id="origin" placeholder="Pakistan"></div>
-        <div><label>Destination</label><input type="text" id="destination" placeholder="United States of America"></div>
+        <div><label class="required-lbl">Destination</label><input type="text" id="destination" placeholder="United States of America" required></div>
       </div>
       <label>Account #</label>
       <input type="text" id="account">
-      <label>Airway Bill Number</label>
-      <input type="text" id="awbnum" placeholder="10236243">
+      <label class="required-lbl">Airway Bill Number</label>
+      <input type="text" id="awbnum" placeholder="10236243" required>
     </fieldset>
 
     <fieldset>
       <legend>Shipper</legend>
-      <label>Shipper's Name</label>
-      <input type="text" id="shipperName">
-      <label>Shipper's Address</label>
-      <textarea id="shipperAddress"></textarea>
+      <label class="required-lbl">Shipper's Name</label>
+      <input type="text" id="shipperName" required>
+      <label class="required-lbl">Shipper's Address</label>
+      <textarea id="shipperAddress" required></textarea>
       <label>Shipper Email</label>
       <input type="text" id="shipperEmail">
     </fieldset>
@@ -203,8 +210,8 @@
       <legend>Consignee</legend>
       <label>Consignee Company</label>
       <input type="text" id="consigneeCompany">
-      <label>Consignee's Address</label>
-      <textarea id="consigneeAddress"></textarea>
+      <label class="required-lbl">Consignee's Address</label>
+      <textarea id="consigneeAddress" required></textarea>
     </fieldset>
 
     <fieldset class="account-block">
@@ -212,8 +219,8 @@
       <div class="ab-grid">
 
         <div class="ab-field">
-          <label>Consignee Name</label>
-          <input type="text" id="consigneeName">
+          <label class="required-lbl">Consignee Name</label>
+          <input type="text" id="consigneeName" required>
         </div>
         <div class="ab-field">
           <label>Consignee's Email</label>
@@ -247,12 +254,12 @@
         </div>
 
         <div class="ab-field">
-          <label>Shipper's Telephone #</label>
-          <input type="text" id="shipperPhone">
+          <label class="required-lbl">Shipper's Telephone #</label>
+          <input type="text" id="shipperPhone" required>
         </div>
         <div class="ab-field">
-          <label>Consignee's Telephone #</label>
-          <input type="text" id="consigneePhone">
+          <label class="required-lbl">Consignee's Telephone #</label>
+          <input type="text" id="consigneePhone" required>
         </div>
 
         <div class="ab-row-five">
@@ -261,12 +268,12 @@
             <input type="text" id="reference">
           </div>
           <div class="ab-field">
-            <label>Pieces</label>
-            <input type="text" id="pieces">
+            <label class="required-lbl">Pieces</label>
+            <input type="text" id="pieces" required>
           </div>
           <div class="ab-field">
-            <label>Weight (KG)</label>
-            <input type="text" id="weight">
+            <label class="required-lbl">Weight (KG)</label>
+            <input type="text" id="weight" required>
           </div>
           <div class="ab-field">
             <label>Vol. Weight (KG) <span class="ab-auto">auto</span></label>
@@ -676,7 +683,59 @@ async function loadExisting(){
   renderProductRows();
 }
 
+const REQUIRED_FIELDS = [
+  { id:"shipperName", label:"Shipper's Name" },
+  { id:"shipperAddress", label:"Shipper's Address" },
+  { id:"shipperPhone", label:"Shipper's Telephone #" },
+  { id:"consigneeName", label:"Consignee Name" },
+  { id:"consigneeAddress", label:"Consignee's Address" },
+  { id:"consigneePhone", label:"Consignee's Telephone #" },
+  { id:"awbnum", label:"Airway Bill Number" },
+  { id:"weight", label:"Weight" },
+  { id:"pieces", label:"Pieces" },
+  { id:"destination", label:"Destination" }
+];
+
+function clearFieldErrors(){
+  REQUIRED_FIELDS.forEach(f => {
+    const el = document.getElementById(f.id);
+    if(el) el.classList.remove("field-error");
+  });
+}
+
+function validateRequiredFields(){
+  clearFieldErrors();
+  let firstInvalid = null;
+  const missing = [];
+
+  REQUIRED_FIELDS.forEach(f => {
+    const el = document.getElementById(f.id);
+    if(!el) return;
+    if(!el.value || !el.value.trim()){
+      el.classList.add("field-error");
+      missing.push(f.label);
+      if(!firstInvalid) firstInvalid = el;
+    }
+  });
+
+  if(firstInvalid){
+    firstInvalid.scrollIntoView({ behavior:"smooth", block:"center" });
+    firstInvalid.focus();
+  }
+
+  return missing;
+}
+
 async function saveShipment(){
+  const missing = validateRequiredFields();
+  if(missing.length){
+    const status = document.getElementById("saveStatus");
+    status.textContent = `Please fill in: ${missing.join(", ")}`;
+    status.classList.add("save-status-error");
+    return;
+  }
+  document.getElementById("saveStatus").classList.remove("save-status-error");
+
   const isNewShipment = !shipmentId;
   const payload = {
     form: getValues(),
@@ -747,6 +806,11 @@ document.getElementById("goToInvoiceBtn").addEventListener("click", ()=>{
 document.getElementById("printBtn").addEventListener("click", async ()=>{
   const id = await saveShipment();
   if(id) window.open(`/print.html?id=${id}`, "_blank");
+});
+
+REQUIRED_FIELDS.forEach(f => {
+  const el = document.getElementById(f.id);
+  if(el) el.addEventListener("input", () => el.classList.remove("field-error"));
 });
 
 (async function init(){
