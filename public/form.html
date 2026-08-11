@@ -163,117 +163,6 @@
   @media (max-width: 420px){
     .ab-triple{grid-template-columns:1fr;}
   }
-
-  /* ---------- Per-box Dimension inputs (L x W x H per piece) ---------- */
-  .dim-boxes{display:flex; flex-direction:column; gap:6px;}
-  .dim-box-row{display:flex; align-items:center; gap:6px;}
-  .dim-box-row .dim-box-label{
-    flex:0 0 58px; font-size:12px; color:var(--v-slate-500, #64748b); font-weight:600;
-  }
-  .dim-box-row input{width:0; flex:1; min-width:0; text-align:center;}
-  .dim-box-row .dim-x{flex:0 0 auto; color:var(--v-slate-400, #94a3b8); font-weight:600;}
-
-  /* ---------- FROM / TO CARD (Shipper & Consignee — Universal Logistics theme) ---------- */
-  fieldset.from-to-card{
-    padding:16px 16px 14px !important;
-    background:#fff;
-  }
-  fieldset.from-to-card > legend{
-    font-size:12.5px !important; text-transform:uppercase; letter-spacing:.4px;
-  }
-
-  .ft-grid{
-    display:grid;
-    grid-template-columns:1fr 54px 1fr;
-    gap:0 16px;
-  }
-
-  .ft-col{min-width:0;}
-
-  .ft-col-head{
-    display:flex; align-items:center; gap:8px;
-    margin:0 0 12px;
-    padding-bottom:8px;
-    border-bottom:2px solid var(--v-slate-200);
-  }
-  .ft-badge{
-    font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
-    padding:3px 9px; border-radius:20px; color:#fff; flex-shrink:0;
-  }
-  .ft-badge-from{background:var(--v-slate-900);}
-  .ft-badge-to{background:var(--v-blue-600);}
-  .ft-col-title{font-size:13.5px; font-weight:800; color:var(--v-slate-900);}
-
-  .ft-field{margin-bottom:10px; position:relative;}
-  .ft-field label{
-    display:block; font-size:10.5px; font-weight:700; color:var(--v-slate-500) !important;
-    text-transform:uppercase; letter-spacing:.3px; margin:0 0 4px !important;
-  }
-  .ft-field input[type=text], .ft-field textarea{
-    width:100%; padding:8px 10px; font-size:12.5px;
-    border:1px solid var(--v-slate-200); border-radius:8px; font-family:inherit; background:#fff;
-    transition:border-color .12s ease, box-shadow .12s ease;
-  }
-  .ft-field textarea{min-height:52px; resize:vertical;}
-  .ft-field input:focus, .ft-field textarea:focus{
-    outline:none; border-color:var(--v-blue-500); box-shadow:0 0 0 3px rgba(59,130,246,.15);
-  }
-  /* emerald check once a required field has a value */
-  .ft-field.ft-filled > label::after{
-    content:"\2713"; color:var(--v-emerald-600); font-weight:800; margin-left:5px;
-  }
-  .ft-field.ft-filled input[type=text], .ft-field.ft-filled textarea{
-    border-color:var(--v-emerald-500);
-  }
-
-  .ft-triple{display:grid; grid-template-columns:0.7fr 1fr 1.3fr; gap:6px;}
-  .ft-triple input{min-width:0;}
-
-  .ft-switch-col{
-    display:flex; align-items:flex-start; justify-content:center;
-    position:relative; padding-top:120px;
-  }
-  .ft-switch-col::before{
-    content:""; position:absolute; top:0; bottom:0; left:50%; width:1px; background:var(--v-slate-200);
-  }
-  .ft-switch-btn{
-    position:relative; z-index:1;
-    display:flex; flex-direction:column; align-items:center; gap:3px;
-    background:var(--v-slate-900); color:#fff; border:none; border-radius:10px;
-    padding:10px 8px; font-size:10.5px; font-weight:800; letter-spacing:.2px;
-    cursor:pointer; width:100%;
-  }
-  .ft-switch-btn:hover{background:var(--v-blue-600);}
-  .ft-switch-icon{font-size:16px; line-height:1;}
-
-  .ft-shared-row{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(62px, 1fr));
-    gap:8px 10px;
-    margin-top:12px; padding-top:12px;
-    border-top:1px dashed var(--v-slate-200);
-  }
-  .ft-shared-row .ab-field label{white-space:normal;}
-
-  @media (max-width: 700px){
-    .ft-grid{grid-template-columns:1fr;}
-    .ft-switch-col{padding-top:0; margin:6px 0 14px;}
-    .ft-switch-col::before{display:none;}
-    .ft-switch-btn{flex-direction:row; justify-content:center;}
-  }
-
-  /* ---------- INVOICE LOCKED NOTICE ---------- */
-  .invoice-locked-notice{
-    background:var(--v-amber-50); border:1px dashed var(--v-amber-500); border-radius:12px;
-    padding:16px 18px; display:flex; flex-direction:column; gap:8px; align-items:flex-start;
-  }
-  .invoice-locked-icon{font-size:20px; line-height:1;}
-  .invoice-locked-title{font-size:13.5px; font-weight:800; color:var(--v-amber-700);}
-  .invoice-locked-sub{font-size:11.5px; color:var(--v-slate-600); line-height:1.5; margin-top:2px;}
-  .invoice-locked-missing{
-    margin:6px 0 0; padding-left:18px; font-size:11px; color:var(--v-amber-700); font-weight:700;
-  }
-  .invoice-locked-missing li{margin-bottom:2px;}
 </style>
 <link rel="stylesheet" href="/css/tailwind.css">
 </head>
@@ -298,7 +187,7 @@
         <div><label>Time</label><input type="time" id="time"></div>
       </div>
       <div class="row2">
-        <div><label>Origin</label><input type="text" id="origin" value="Pakistan" readonly></div>
+        <div><label>Origin</label><input type="text" id="origin" placeholder="Pakistan"></div>
         <div><label class="required-lbl">Destination</label><input type="text" id="destination" placeholder="United States of America" required></div>
       </div>
       <label>Account #</label>
@@ -307,139 +196,102 @@
       <input type="text" id="awbnum" placeholder="10236243" required>
     </fieldset>
 
-    <fieldset class="from-to-card">
-      <legend>Shipper &amp; Consignee</legend>
+    <fieldset>
+      <legend>Shipper</legend>
+      <label class="required-lbl">Shipper's Name</label>
+      <input type="text" id="shipperName" required>
+      <label class="required-lbl">Shipper's Address</label>
+      <textarea id="shipperAddress" required></textarea>
+      <label>Shipper Email</label>
+      <input type="text" id="shipperEmail">
+    </fieldset>
 
-      <div class="ft-grid">
+    <fieldset>
+      <legend>Consignee</legend>
+      <label>Consignee Company</label>
+      <input type="text" id="consigneeCompany">
+      <label class="required-lbl">Consignee's Address</label>
+      <textarea id="consigneeAddress" required></textarea>
+    </fieldset>
 
-        <!-- ============ FROM / SHIPPER ============ -->
-        <div class="ft-col">
-          <div class="ft-col-head">
-            <span class="ft-badge ft-badge-from">From</span>
-            <span class="ft-col-title">Shipper</span>
-          </div>
+    <fieldset class="account-block">
+      <legend>Account Block</legend>
+      <div class="ab-grid">
 
-          <div class="ft-field">
-            <label class="required-lbl">Name</label>
-            <input type="text" id="shipperName" required>
-          </div>
-
-          <div class="ft-field">
-            <label class="required-lbl">Address</label>
-            <textarea id="shipperAddress" required></textarea>
-          </div>
-
-          <div class="ft-field">
-            <label>Email</label>
-            <input type="text" id="shipperEmail" placeholder="name@example.com">
-          </div>
-
-          <div class="ft-field">
-            <label class="required-lbl">NTN / CNIC</label>
-            <input type="text" id="shipperCnic" required>
-          </div>
-
-          <div class="ft-field">
-            <label>Zip / City / Country</label>
-            <div class="ft-triple">
-              <input type="text" id="shipperZip" placeholder="Zip">
-              <input type="text" id="shipperCity" placeholder="City">
-              <input type="text" id="shipperCountry" value="Pakistan" placeholder="Country">
-            </div>
-          </div>
-
-          <div class="ft-field">
-            <label class="required-lbl">Telephone #</label>
-            <input type="text" id="shipperPhone" required>
-          </div>
-        </div>
-
-        <!-- ============ SWITCH ============ -->
-        <div class="ft-switch-col">
-          <button type="button" id="switchBtn" class="ft-switch-btn" title="Swap Shipper &amp; Consignee">
-            <span class="ft-switch-icon">&#8646;</span><span>Switch</span>
-          </button>
-        </div>
-
-        <!-- ============ TO / CONSIGNEE ============ -->
-        <div class="ft-col">
-          <div class="ft-col-head">
-            <span class="ft-badge ft-badge-to">To</span>
-            <span class="ft-col-title">Consignee</span>
-          </div>
-
-          <div class="ft-field">
-            <label class="required-lbl">Name</label>
-            <input type="text" id="consigneeName" required>
-          </div>
-
-          <div class="ft-field">
-            <label>Company</label>
-            <input type="text" id="consigneeCompany">
-          </div>
-
-          <div class="ft-field">
-            <label class="required-lbl">Address</label>
-            <textarea id="consigneeAddress" required></textarea>
-          </div>
-
-          <div class="ft-field">
-            <label>Email</label>
-            <input type="text" id="consigneeEmail" placeholder="name@example.com">
-          </div>
-
-          <div class="ft-field">
-            <label>Bag Number</label>
-            <input type="text" id="bagNumber">
-          </div>
-
-          <div class="ft-field">
-            <label>Zip / City / Country</label>
-            <div class="ft-triple">
-              <input type="text" id="consigneeZip" placeholder="Zip">
-              <input type="text" id="consigneeCity" placeholder="City">
-              <input type="text" id="consigneeCountry" value="United States of America" placeholder="Country">
-            </div>
-          </div>
-
-          <div class="ft-field">
-            <label class="required-lbl">Telephone #</label>
-            <input type="text" id="consigneePhone" required>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ============ SHARED SHIPMENT ROW ============ -->
-      <div class="ft-shared-row">
         <div class="ab-field">
-          <label>Shipper's Reference</label>
-          <input type="text" id="reference">
+          <label class="required-lbl">Consignee Name</label>
+          <input type="text" id="consigneeName" required>
         </div>
         <div class="ab-field">
-          <label class="required-lbl">Pieces</label>
-          <input type="text" id="pieces" required>
+          <label>Consignee's Email</label>
+          <input type="text" id="consigneeEmail">
+        </div>
+
+        <div class="ab-field">
+          <label>Shipper's NTN / CNIC</label>
+          <input type="text" id="shipperCnic">
         </div>
         <div class="ab-field">
-          <label class="required-lbl">Weight (KG)</label>
-          <input type="text" id="weight" required>
+          <label>Bag Number</label>
+          <input type="text" id="bagNumber">
+        </div>
+
+        <div class="ab-field">
+          <label>Zip / City / Country <span class="ab-tag">Shipper</span></label>
+          <div class="ab-triple">
+            <input type="text" id="shipperZip" placeholder="Zip">
+            <input type="text" id="shipperCity" placeholder="City">
+            <input type="text" id="shipperCountry" value="Pakistan" placeholder="Country">
+          </div>
         </div>
         <div class="ab-field">
-          <label>Vol. Weight (KG) <span class="ab-auto">auto</span></label>
-          <input type="text" id="volWeight" readonly style="background:#f3f3f0;">
+          <label>Zip / City / Country <span class="ab-tag">Consignee</span></label>
+          <div class="ab-triple">
+            <input type="text" id="consigneeZip" placeholder="Zip">
+            <input type="text" id="consigneeCity" placeholder="City">
+            <input type="text" id="consigneeCountry" value="United States of America" placeholder="Country">
+          </div>
+        </div>
+
+        <div class="ab-field">
+          <label class="required-lbl">Shipper's Telephone #</label>
+          <input type="text" id="shipperPhone" required>
         </div>
         <div class="ab-field">
-          <label>Chg. Weight (KG) <span class="ab-auto">auto</span></label>
-          <input type="text" id="chargeWeight" readonly style="background:#f3f3f0;">
+          <label class="required-lbl">Consignee's Telephone #</label>
+          <input type="text" id="consigneePhone" required>
         </div>
+
+        <div class="ab-row-five">
+          <div class="ab-field">
+            <label>Shipper's Reference</label>
+            <input type="text" id="reference">
+          </div>
+          <div class="ab-field">
+            <label class="required-lbl">Pieces</label>
+            <input type="text" id="pieces" required>
+          </div>
+          <div class="ab-field">
+            <label class="required-lbl">Weight (KG)</label>
+            <input type="text" id="weight" required>
+          </div>
+          <div class="ab-field">
+            <label>Vol. Weight (KG) <span class="ab-auto">auto</span></label>
+            <input type="text" id="volWeight" readonly style="background:#f3f3f0;">
+          </div>
+          <div class="ab-field">
+            <label>Chg. Weight (KG) <span class="ab-auto">auto</span></label>
+            <input type="text" id="chargeWeight" readonly style="background:#f3f3f0;">
+          </div>
+        </div>
+
       </div>
     </fieldset>
 
     <fieldset>
       <legend>Shipment / Cargo</legend>
       <label>Dimension</label>
-      <input type="hidden" id="dimension">
-      <div id="dimensionBoxes" class="dim-boxes"></div>
+      <textarea id="dimension" placeholder="33*40*33, 33*40*33 ..."></textarea>
       <div class="hint" style="margin-top:4px;">Volumetric Weight = (L×W×H total of all pieces) ÷ 5000. If the Service field contains "Australia", divide by 4000 instead.</div>
       <div class="row2">
         <div><label>Service</label><input type="text" id="service" placeholder="Via UK UPS saver"></div>
@@ -457,7 +309,7 @@
     </fieldset>
 
 
-    <fieldset id="invoiceFieldset" style="display:none;">
+    <fieldset>
       <legend>Invoice (Products / HS Codes)</legend>
       <label>Invoice Type</label>
       <select id="invoiceType">
@@ -474,15 +326,6 @@
       </div>
       <div class="hint" style="margin-top:6px;">Type in Item Description — you can select from the HS Code list.</div>
     </fieldset>
-
-    <div id="invoiceLockedNotice" class="invoice-locked-notice">
-      <div class="invoice-locked-icon">&#128274;</div>
-      <div class="invoice-locked-text">
-        <div class="invoice-locked-title">Invoice section locked</div>
-        <div class="invoice-locked-sub">Fill in all required Shipper &amp; Consignee fields above (Name, Address, NTN/CNIC, Telephone #) to unlock Invoice / HS Codes.</div>
-      </div>
-      <ul id="invoiceLockedMissing" class="invoice-locked-missing"></ul>
-    </div>
 
     <div class="settings-card">
       <div class="settings-card-title">Print Settings</div>
@@ -519,10 +362,10 @@
       <div class="settings-row">
         <div class="settings-row-text">
           <span class="settings-row-label">Include Invoice</span>
-          <span class="settings-row-sub">Gift/commercial invoice on a separate page</span>
+          <span class="settings-row-sub">Gift/commercial invoice on a separate page (use the Ledger app for real invoices)</span>
         </div>
         <label class="v-toggle">
-          <input type="checkbox" id="showInvoice" checked>
+          <input type="checkbox" id="showInvoice">
           <span class="v-toggle-track"><span class="v-toggle-thumb"></span></span>
         </label>
       </div>
@@ -557,10 +400,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <p class="mb-0">Create an invoice for this shipment in the Ledger? The customer, origin, destination, AWB number, and weight will be filled in automatically — you'll just set the rate and service.</p>
+        <p class="mb-0">Airway Bill saved. Would you like to record this in the Ledger?</p>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer flex-wrap">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Not now</button>
+        <button type="button" class="btn btn-outline-secondary" id="goToVendorLedgerBtn">Record Vendor Ledger</button>
         <button type="button" class="btn btn-v-primary" id="goToInvoiceBtn">Create Invoice</button>
       </div>
     </div>
@@ -632,7 +476,7 @@ function updatePreview(){
     const v = getValues();
     v.id = shipmentId || "PREVIEW";
     v.created_at = new Date().toISOString();
-    v.trackingNo = v.awbnum || "";
+    v.trackingNo = shipmentId ? formatTrackingNo(shipmentId, v.created_at) : "PREVIEW";
 
     const copies = parseInt(document.getElementById("copyCount").value, 10) || 1;
     const showTnc = document.getElementById("showTnc").checked;
@@ -763,85 +607,7 @@ function calcDerivedFields(){
   chargeWeightEl.value = chargeable > 0 ? chargeable.toFixed(3) : "";
 }
 
-/* ---------- Per-box Dimension inputs ----------
-   One row of L / W / H boxes per piece. The count of rows follows the
-   "Pieces" field: 1 box → 1 dimension row, 10 boxes → 10 dimension rows.
-   The three inputs per row are combined into the same "L*W*H, L*W*H, ..."
-   string the rest of the app (calcDerivedFields, print, saved data) expects,
-   kept in sync via the hidden #dimension input. */
-const MAX_DIM_BOXES = 300;
-
-function getDimensionRowsFromHiddenValue(){
-  const raw = (document.getElementById("dimension").value || "").trim();
-  if(!raw) return [];
-  return raw.split(",").map(s=>{
-    const nums = s.trim().split("*").map(n=>n.trim());
-    return { l: nums[0] || "", w: nums[1] || "", h: nums[2] || "" };
-  });
-}
-
-function syncDimensionHiddenValue(){
-  const rows = Array.from(document.querySelectorAll("#dimensionBoxes .dim-box-row")).map(row=>{
-    const l = row.querySelector(".dim-l").value.trim();
-    const w = row.querySelector(".dim-w").value.trim();
-    const h = row.querySelector(".dim-h").value.trim();
-    return { l, w, h };
-  });
-  const str = rows
-    .filter(r => r.l || r.w || r.h)
-    .map(r => `${r.l || 0}*${r.w || 0}*${r.h || 0}`)
-    .join(", ");
-  document.getElementById("dimension").value = str;
-  calcDerivedFields();
-}
-
-function renderDimensionBoxes(preserveExisting){
-  const wrap = document.getElementById("dimensionBoxes");
-  if(!wrap) return;
-
-  let count = parseInt(document.getElementById("pieces").value, 10);
-  if(isNaN(count) || count < 1) count = 1;
-  if(count > MAX_DIM_BOXES) count = MAX_DIM_BOXES;
-
-  // Preserve values already typed into the visible boxes (when the user
-  // changes Pieces) — otherwise (e.g. loading a saved shipment) seed from
-  // the hidden field's saved "L*W*H, ..." string.
-  const existingRows = preserveExisting
-    ? Array.from(wrap.querySelectorAll(".dim-box-row")).map(row=>({
-        l: row.querySelector(".dim-l").value,
-        w: row.querySelector(".dim-w").value,
-        h: row.querySelector(".dim-h").value,
-      }))
-    : getDimensionRowsFromHiddenValue();
-
-  wrap.innerHTML = "";
-  for(let i=0; i<count; i++){
-    const existing = existingRows[i] || { l:"", w:"", h:"" };
-    const row = document.createElement("div");
-    row.className = "dim-box-row";
-    row.innerHTML = `
-      <span class="dim-box-label">Box ${i+1}</span>
-      <input type="text" class="dim-l" placeholder="L" value="${existing.l ? escapeAttr(existing.l) : ""}">
-      <span class="dim-x">&times;</span>
-      <input type="text" class="dim-w" placeholder="W" value="${existing.w ? escapeAttr(existing.w) : ""}">
-      <span class="dim-x">&times;</span>
-      <input type="text" class="dim-h" placeholder="H" value="${existing.h ? escapeAttr(existing.h) : ""}">
-    `;
-    wrap.appendChild(row);
-  }
-
-  wrap.querySelectorAll("input").forEach(inp=>{
-    inp.addEventListener("input", syncDimensionHiddenValue);
-  });
-
-  syncDimensionHiddenValue();
-}
-
-function escapeAttr(s){
-  return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;");
-}
-
-document.getElementById("pieces").addEventListener("input", ()=> renderDimensionBoxes(true));
+document.getElementById("dimension").addEventListener("input", calcDerivedFields);
 document.getElementById("service").addEventListener("input", calcDerivedFields);
 document.getElementById("weight").addEventListener("input", calcDerivedFields);
 
@@ -874,78 +640,6 @@ document.addEventListener("click", (e)=>{
     document.querySelectorAll(".p-suggestions").forEach(b=> b.classList.remove("open"));
   }
 });
-
-/* ---------- Shipper ⇄ Consignee Switch ---------- */
-const SWAP_PAIRS = [
-  ["shipperName","consigneeName"],
-  ["shipperAddress","consigneeAddress"],
-  ["shipperEmail","consigneeEmail"],
-  ["shipperZip","consigneeZip"],
-  ["shipperCity","consigneeCity"],
-  ["shipperCountry","consigneeCountry"],
-  ["shipperPhone","consigneePhone"]
-];
-document.getElementById("switchBtn").addEventListener("click", ()=>{
-  SWAP_PAIRS.forEach(([a,b])=>{
-    const elA = document.getElementById(a), elB = document.getElementById(b);
-    if(!elA || !elB) return;
-    const tmp = elA.value;
-    elA.value = elB.value;
-    elB.value = tmp;
-  });
-  document.querySelectorAll(".ft-field input, .ft-field textarea").forEach(refreshFtFilled);
-  refreshInvoiceGate();
-  updatePreview();
-});
-
-/* live emerald checkmark once a From/To field has a value */
-function refreshFtFilled(el){
-  const wrap = el.closest(".ft-field");
-  if(!wrap) return;
-  wrap.classList.toggle("ft-filled", !!el.value && el.value.trim().length > 0);
-}
-document.querySelectorAll(".ft-field input, .ft-field textarea").forEach(el=>{
-  refreshFtFilled(el);
-  el.addEventListener("input", ()=> refreshFtFilled(el));
-});
-
-/* ---------- Gate the Invoice section behind Shipper/Consignee required fields ---------- */
-const INVOICE_GATE_FIELDS = [
-  { id:"shipperName", label:"Shipper's Name" },
-  { id:"shipperAddress", label:"Shipper's Address" },
-  { id:"shipperCnic", label:"Shipper's NTN / CNIC" },
-  { id:"shipperPhone", label:"Shipper's Telephone #" },
-  { id:"consigneeName", label:"Consignee Name" },
-  { id:"consigneeAddress", label:"Consignee's Address" },
-  { id:"consigneePhone", label:"Consignee's Telephone #" }
-];
-
-function refreshInvoiceGate(){
-  const invoiceFieldset = document.getElementById("invoiceFieldset");
-  const lockedNotice = document.getElementById("invoiceLockedNotice");
-  const missingListEl = document.getElementById("invoiceLockedMissing");
-  if(!invoiceFieldset || !lockedNotice) return;
-
-  const missing = INVOICE_GATE_FIELDS.filter(f => {
-    const el = document.getElementById(f.id);
-    return !el || !el.value || !el.value.trim();
-  });
-
-  if(missing.length === 0){
-    invoiceFieldset.style.display = "";
-    lockedNotice.style.display = "none";
-  } else {
-    invoiceFieldset.style.display = "none";
-    lockedNotice.style.display = "flex";
-    missingListEl.innerHTML = missing.map(f => `<li>${f.label}</li>`).join("");
-  }
-}
-
-INVOICE_GATE_FIELDS.forEach(f => {
-  const el = document.getElementById(f.id);
-  if(el) el.addEventListener("input", refreshInvoiceGate);
-});
-refreshInvoiceGate();
 
 document.getElementById("addProductBtn").addEventListener("click", ()=>{
   products.push({ desc:"", hsCode:"", uom:"Piece(s)", qty:"1", price:"0.00" });
@@ -981,11 +675,7 @@ async function loadExisting(){
   const res = await fetch(`/api/shipments/${shipmentId}`);
   if(!res.ok) return;
   const data = await res.json();
-  if(data.form){
-    setValues(data.form);
-    document.querySelectorAll(".ft-field input, .ft-field textarea").forEach(refreshFtFilled);
-    refreshInvoiceGate();
-  }
+  if(data.form) setValues(data.form);
   if(data.products && data.products.length) products = data.products;
   if(data.copies) document.getElementById("copyCount").value = data.copies;
   syncCopiesDisplay();
@@ -997,7 +687,6 @@ async function loadExisting(){
 const REQUIRED_FIELDS = [
   { id:"shipperName", label:"Shipper's Name" },
   { id:"shipperAddress", label:"Shipper's Address" },
-  { id:"shipperCnic", label:"Shipper's NTN / CNIC" },
   { id:"shipperPhone", label:"Shipper's Telephone #" },
   { id:"consigneeName", label:"Consignee Name" },
   { id:"consigneeAddress", label:"Consignee's Address" },
@@ -1038,7 +727,8 @@ function validateRequiredFields(){
   return missing;
 }
 
-async function saveShipment(){
+async function saveShipment(opts){
+  opts = opts || {};
   const missing = validateRequiredFields();
   if(missing.length){
     const status = document.getElementById("saveStatus");
@@ -1082,7 +772,9 @@ async function saveShipment(){
 
     if(isNewShipment){
       pendingInvoicePayload = payload.form;
-      invoicePromptModal.show();
+      if(!opts.suppressInvoicePrompt){
+        invoicePromptModal.show();
+      }
     }
   }catch(err){
     status.textContent = "Network error";
@@ -1115,9 +807,23 @@ document.getElementById("goToInvoiceBtn").addEventListener("click", ()=>{
   window.location.href = `/ledger/?fromAwb=${encoded}`;
 });
 
+document.getElementById("goToVendorLedgerBtn").addEventListener("click", ()=>{
+  if(!pendingInvoicePayload){ invoicePromptModal.hide(); return; }
+  const vendorData = {
+    awbnum: pendingInvoicePayload.awbnum || "",
+    weight: pendingInvoicePayload.chargeWeight || pendingInvoicePayload.weight || ""
+  };
+  const encoded = encodeURIComponent(btoa(JSON.stringify(vendorData)));
+  invoicePromptModal.hide();
+  window.location.href = `/ledger/?fromAwbVendor=${encoded}`;
+});
+
 document.getElementById("printBtn").addEventListener("click", async ()=>{
-  const id = await saveShipment();
+  const id = await saveShipment({ suppressInvoicePrompt: true });
   if(id) window.open(`/print.html?id=${id}`, "_blank");
+  if(id && pendingInvoicePayload){
+    setTimeout(()=> invoicePromptModal.show(), 300);
+  }
 });
 
 REQUIRED_FIELDS.forEach(f => {
@@ -1131,26 +837,6 @@ REQUIRED_FIELDS.forEach(f => {
   const me = await meRes.json();
   document.getElementById("backLink").href = me.user.role === "admin" ? "/dashboard.html" : "/my-shipments.html";
   await loadExisting();
-  renderDimensionBoxes(false);
-
-  // If the admin has assigned this customer a fixed Account # and/or
-  // Shipper's Reference, lock those fields to those values — the customer
-  // can't change them per-shipment, and any old saved value is overridden.
-  if(me.user.role === "customer"){
-    const acctEl = document.getElementById("account");
-    const refEl = document.getElementById("reference");
-    if(me.user.accountNumber){
-      acctEl.value = me.user.accountNumber;
-      acctEl.readOnly = true;
-      acctEl.style.background = "#f3f3f0";
-    }
-    if(me.user.shipperReference){
-      refEl.value = me.user.shipperReference;
-      refEl.readOnly = true;
-      refEl.style.background = "#f3f3f0";
-    }
-  }
-
   renderProductRows();
   updatePreview();
 })();
