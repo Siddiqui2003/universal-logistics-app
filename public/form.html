@@ -192,8 +192,11 @@
       </div>
       <label>Account #</label>
       <input type="text" id="account">
-      <label class="required-lbl">Airway Bill Number</label>
-      <input type="text" id="awbnum" placeholder="10236243" required>
+      <label>Airway Bill Number</label>
+      <div style="display:flex; gap:6px;">
+        <input type="text" id="awbnum" placeholder="10236243" style="flex:1;">
+        <button type="button" id="regenAwbBtn" title="Generate a new number" style="flex:0 0 auto; padding:0 12px; border-radius:8px; border:1px solid var(--v-slate-200); background:#fff; cursor:pointer;">🔄</button>
+      </div>
     </fieldset>
 
     <fieldset>
@@ -691,7 +694,6 @@ const REQUIRED_FIELDS = [
   { id:"consigneeName", label:"Consignee Name" },
   { id:"consigneeAddress", label:"Consignee's Address" },
   { id:"consigneePhone", label:"Consignee's Telephone #" },
-  { id:"awbnum", label:"Airway Bill Number" },
   { id:"weight", label:"Weight" },
   { id:"pieces", label:"Pieces" },
   { id:"destination", label:"Destination" }
@@ -831,12 +833,30 @@ REQUIRED_FIELDS.forEach(f => {
   if(el) el.addEventListener("input", () => el.classList.remove("field-error"));
 });
 
+function generateRandomAwbNumber(){
+  // 8-digit number in the same style as this company's existing AWBs (e.g. 10236243)
+  return String(10000000 + Math.floor(Math.random() * 90000000));
+}
+
+document.getElementById("regenAwbBtn").addEventListener("click", () => {
+  document.getElementById("awbnum").value = generateRandomAwbNumber();
+  updatePreview();
+});
+
 (async function init(){
   const meRes = await fetch("/api/auth/me");
   if(!meRes.ok){ window.location.href = "/login.html"; return; }
   const me = await meRes.json();
-  document.getElementById("backLink").href = me.user.role === "admin" ? "/dashboard.html" : "/my-shipments.html";
+  const isAdmin = me.user.role === "admin";
+  document.getElementById("backLink").href = isAdmin ? "/dashboard.html" : "/my-shipments.html";
   await loadExisting();
+  if(!shipmentId && !document.getElementById("awbnum").value){
+    document.getElementById("awbnum").value = generateRandomAwbNumber();
+  }
+  if(!isAdmin){
+    document.getElementById("awbnum").readOnly = true;
+    document.getElementById("regenAwbBtn").style.display = "none";
+  }
   renderProductRows();
   updatePreview();
 })();
